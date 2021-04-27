@@ -24,6 +24,15 @@ class BudgetTestCase(TestCase):
         budget = Budget.objects.get(name="Home budget")
         self.assertEqual(budget.user.name, "Adam")
 
+    def test_budget_is_not_created_when_name_is_empty_string(self):
+        """Budget needs to have at least one character name"""
+        self.assertRaises(
+            Exception,
+            Budget.objects.create,
+            name="",
+            user=MockUser.objects.create(name="Krzysiek"),
+        )
+
 
 class CategoryTestCase(TestCase):
 
