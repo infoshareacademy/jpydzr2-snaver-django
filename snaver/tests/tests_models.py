@@ -24,15 +24,6 @@ class BudgetTestCase(TestCase):
         budget = Budget.objects.get(name="Home budget")
         self.assertEqual(budget.user.name, "Adam")
 
-    def test_budget_is_not_created_when_name_is_empty_string(self):
-        """Budget needs to have at least one character name"""
-        self.assertRaises(
-            Exception,
-            Budget.objects.create,
-            name="",
-            user=MockUser.objects.create(name="Krzysiek"),
-        )
-
 
 class CategoryTestCase(TestCase):
 
@@ -92,3 +83,10 @@ class TransactionTestCase(TestCase):
     def test_transaction_has_correct_amount(self):
         transaction = Transaction.objects.get(name="Spiderman")
         self.assertEqual(transaction.amount, Decimal(30.00))
+
+    def test_user_has_transaction(self):
+        user = MockUser.objects.get(name="Mariola")
+        self.assertEqual(
+            user.budget.first().category.first()
+                .subcategory.first()
+                .transaction.first().name, "Spiderman")
