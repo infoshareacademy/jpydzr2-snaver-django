@@ -28,5 +28,5 @@ class SubcategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Transaction)
-class CategoryAdmin(admin.ModelAdmin):
+class TransactionAdmin(admin.ModelAdmin):
     pass
