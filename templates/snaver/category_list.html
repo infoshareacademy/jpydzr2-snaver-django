@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+</head>
+<body>
+<table>
+    <th>Category</th>
+    <th>Subcategory</th>
+    <th>Transaction</th>
+    <th>Amount</th>
+    <tbody>
+    {% for category in category_list %}
+        {% for subcategory in category.subcategory.all %}
+            {% for transaction in subcategory.transaction.all %}
+                <tr>
+                    <td>{{ category.name }}</td>
+                    <td>{{ subcategory.name }}</td>
+                    <td>{{ transaction.name }}</td>
+                    <td>{{ transaction.amount }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from snaver.views import CategoryListView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('category/', CategoryListView.as_view(), name="category"),
 ]
