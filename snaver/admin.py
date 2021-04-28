@@ -1,15 +1,19 @@
 from django.contrib import admin
 
-from snaver.models import Category, MockUser, Budget, Subcategory, Transaction
+from snaver.models import Budget
+from snaver.models import Category
+from snaver.models import MockUser
+from snaver.models import Subcategory
+from snaver.models import Transaction
 
 
 @admin.register(MockUser)
-class CategoryAdmin(admin.ModelAdmin):
+class MockUserAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(Budget)
-class CategoryAdmin(admin.ModelAdmin):
+class BudgetAdmin(admin.ModelAdmin):
     pass
 
 
@@ -19,7 +23,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Subcategory)
-class CategoryAdmin(admin.ModelAdmin):
+class SubcategoryAdmin(admin.ModelAdmin):
     pass
 
 

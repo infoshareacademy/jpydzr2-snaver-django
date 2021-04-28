@@ -8,6 +8,9 @@ from django.utils.translation import ugettext_lazy as _
 class MockUser(AbstractUser):
     name = models.CharField(_('User name'), max_length=255)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Budget(models.Model):
     name = models.CharField(
@@ -24,6 +27,9 @@ class Budget(models.Model):
 
     created_on = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Category(models.Model):
     name = models.CharField(_('Category name'), max_length=255)
@@ -34,6 +40,9 @@ class Category(models.Model):
     )
     created_on = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Subcategory(models.Model):
     name = models.CharField(_('Subcategory name'), max_length=255)
@@ -43,6 +52,9 @@ class Subcategory(models.Model):
         related_name='subcategory',
     )
     created_on = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Transaction(models.Model):
@@ -65,3 +77,6 @@ class Transaction(models.Model):
     )
 
     created_on = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.name}"
