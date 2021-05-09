@@ -4,6 +4,7 @@ from snaver.models import Budget
 from snaver.models import Category
 from snaver.models import MockUser
 from snaver.models import Subcategory
+from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
 
@@ -24,6 +25,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(SubcategoryDetails)
+class SubcategoryDetailsAdmin(admin.ModelAdmin):
     pass
 
 
