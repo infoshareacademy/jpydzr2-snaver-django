@@ -3,6 +3,15 @@ from django.views.generic import ListView
 
 from snaver.models import Category
 from snaver.models import SubcategoryDetails
+from django.http import HttpResponse
+from django.template import loader
+
+
+def index(request):
+    context = {'segment': 'index'}
+
+    html_template = loader.get_template('index.html')
+    return HttpResponse(html_template.render(context, request))
 
 
 class CategoryListView(ListView):
