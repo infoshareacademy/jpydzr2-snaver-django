@@ -5,4 +5,6 @@ urlpatterns = [
 
     # The home page
     path('', views.index, name='home'),
+    path('', views.index, name='logout'),
+
 ]
