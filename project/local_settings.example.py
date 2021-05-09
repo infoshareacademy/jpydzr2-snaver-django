@@ -9,5 +9,5 @@ DATABASES = {
     }
 }
 
-Some long random string
+# Some long random string
 SECRET_KEY = ""

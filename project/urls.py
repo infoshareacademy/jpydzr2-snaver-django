@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("snaver.urls"))             # UI Kits Html files
+    path("", include("snaver.urls"))
 ]
