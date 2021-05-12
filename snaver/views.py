@@ -34,6 +34,9 @@ class CategoryListView(ListView):
             subcategory__category__budget__user=self.request.user,
             start_date__lte=current_time,
             end_date__gte=current_time,
+        ).order_by(
+            "subcategory__category__name",
+            "subcategory__name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
                 Sum('subcategory__transaction__amount'),
