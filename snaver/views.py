@@ -1,8 +1,9 @@
-from django.utils import timezone
+from django.utils import timezone, dateformat
 from django.views.generic import ListView
 
 from snaver.models import Category
 from snaver.models import SubcategoryDetails
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.template import loader
 
@@ -22,15 +23,13 @@ class CategoryListView(ListView):
         if not self.request.user.is_authenticated:
             return None
 
-        detailed_list = []
-        current_time = timezone.now
-        categories = self.model.objects.filter(budget__user=self.request.user)
-        for subcategory in categories:
-            details = SubcategoryDetails.objects.filter(
-                subcategory=subcategory,
-                start_date__gte=current_time,  # TODO: str do porównania daty
-                end_date__lte=current_time,
-            )
-            # TODO: Create object that can hold detailed info
-            detailed_list.append(details)
-        return detailed_list
+        # date has to be string for filter
+        current_time = dateformat.format(timezone.now(), 'Y-m-d')
+
+        subcategory_details = SubcategoryDetails.objects.filter(
+            subcategory__category__budget__user=self.request.user,
+            start_date__lte=current_time,
+            end_date__gte=current_time,
+        ).annotate(activity=Sum('subcategory__transaction__amount'))
+
+        return subcategory_details
