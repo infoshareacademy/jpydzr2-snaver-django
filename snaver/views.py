@@ -1,11 +1,15 @@
-from django.utils import timezone, dateformat
+from decimal import Decimal
+
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.http import HttpResponse
+from django.template import loader
+from django.utils import dateformat
+from django.utils import timezone
 from django.views.generic import ListView
 
 from snaver.models import Category
 from snaver.models import SubcategoryDetails
-from django.db.models import Sum
-from django.http import HttpResponse
-from django.template import loader
 
 
 def index(request):
@@ -30,6 +34,11 @@ class CategoryListView(ListView):
             subcategory__category__budget__user=self.request.user,
             start_date__lte=current_time,
             end_date__gte=current_time,
-        ).annotate(activity=Sum('subcategory__transaction__amount'))
+        ).annotate(
+            activity=Coalesce(  # Coalesce picks first non-null value
+                Sum('subcategory__transaction__amount'),
+                Decimal(0.00)
+            )
+        )
 
         return subcategory_details
