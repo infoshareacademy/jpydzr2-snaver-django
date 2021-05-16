@@ -32,7 +32,12 @@
                                     <td>{{ details.subcategory.category.name }}</td>
                                     <td>{{ details.subcategory.name }}</td>
                                     <td>{{ details.budgeted_amount }}</td>
-                                    <td>{{ details.budgeted_amount|sub:details.activity }}</td>
+                                    {% if details.budgeted_amount|sub:details.activity < 0 %}
+                                        <td class="negative-activity">
+                                            {% else %}
+                                        <td class="positive-activity">
+                                    {% endif %}
+                                    {{ details.budgeted_amount|sub:details.activity }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

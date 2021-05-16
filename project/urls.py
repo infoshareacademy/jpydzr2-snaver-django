@@ -24,7 +24,6 @@ from snaver.views import CategoryListView
 
 urlpatterns = [
   path('admin/', admin.site.urls),
-  path('category/', CategoryListView.as_view(), name="category"),
   path('admin/logout/', django.contrib.auth.views.LogoutView, name="logout"),
   path("", include("snaver.urls"))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
