@@ -12,7 +12,7 @@
       <div class="card">
         <div class="card-header card-header-primary">
           <h4 class="card-title">
-            Create Account
+            Login
           </h4>
         </div>
         <div class="card-body">
@@ -21,83 +21,48 @@
               {% if msg %}
                 <span class="text-danger">{{ msg | safe }}</span>
               {% else %}
-                Add your credentials
-              {% endif %}  
+                  Add your credentials
+              {% endif %}
           </h6>
-          
+
           <br />
 
-          {% if success %}
+          <form role="form" method="post" action="">
 
-            <p class="">
-              Please <a href={% url 'login' %} class="text-black text-small">authenticate</a> using the new account.
-            </p>  
+            {% csrf_token %}
 
-          {% else %}
-            <form role="form" method="post" action="">
-                
-              {% csrf_token %} 
-
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Username</label>
-                    {{ form.username }}
-                  </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="bmd-label-floating">Username</label>
+                  {{ form.username }}
                 </div>
               </div>
-              <span class="text-danger">{{ form.username.errors }}</span>
+            </div>
 
-              <br />
+            <br />
 
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Email</label>
-                    {{ form.email }}
-                  </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="bmd-label-floating">Password</label>
+                  {{ form.password }}
                 </div>
               </div>
-              <span class="text-danger">{{ form.email.errors }}</span>
+            </div>
 
-              <br />
+            <br />
 
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Password</label>
-                    {{ form.password1 }}
-                  </div>
-                </div>
-              </div>
-              <span class="text-danger">{{ form.password1.errors }}</span>
+            <button type="submit" name="login" class="btn btn-primary pull-left">Login</button>
 
-              <br />
+            &nbsp; &nbsp;
+            <span class="pull-right">
+              Don't have an account? <a href="{% url 'register' %}" class="text-primary">Create</a>
+            </span>
 
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Password Check</label>
-                    {{ form.password2 }}
-                  </div>
-                </div>
-              </div>
-              <span class="text-danger">{{ form.password2.errors }}</span>
+            <div class="clearfix"></div>
 
-              <br />
-
-              <button type="submit" name="register" class="btn btn-primary pull-left">Register</button>
-
-              &nbsp; &nbsp; 
-              <span class="pull-right">
-                Have an account? <a href="{% url 'login' %}" class="text-primary">Login</a>
-              </span>
-
-              <div class="clearfix"></div>
-
-            </form>
-          {% endif %}
-
+          </form>
         </div>
       </div>
     </div>
