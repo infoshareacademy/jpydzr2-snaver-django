@@ -8,8 +8,8 @@ from django.utils import dateformat
 from django.utils import timezone
 from django.views.generic import ListView
 
-from snaver.models import Category
 from snaver.models import SubcategoryDetails
+from django.db.models import F
 
 
 def index(request):
@@ -20,7 +20,6 @@ def index(request):
 
 
 class CategoryListView(ListView):
-    model = Category
     template_name = "ui-tables.html"
 
     def get_queryset(self):
@@ -41,7 +40,8 @@ class CategoryListView(ListView):
             activity=Coalesce(  # Coalesce picks first non-null value
                 Sum('subcategory__transaction__amount'),
                 Decimal(0.00)
-            )
+            ),
+            available=(F("budgeted_amount") - Sum('subcategory__transaction__amount'))
         )
 
         return subcategory_details
