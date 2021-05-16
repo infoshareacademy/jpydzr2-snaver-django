@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.db.models import F
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -9,7 +10,6 @@ from django.utils import timezone
 from django.views.generic import ListView
 
 from snaver.models import SubcategoryDetails
-from django.db.models import F
 
 
 def index(request):
@@ -41,7 +41,10 @@ class CategoryListView(ListView):
                 Sum('subcategory__transaction__amount'),
                 Decimal(0.00)
             ),
-            available=(F("budgeted_amount") - Sum('subcategory__transaction__amount'))
+            available=(
+                    F("budgeted_amount")
+                    - Sum('subcategory__transaction__amount')
+            )
         )
 
         return subcategory_details

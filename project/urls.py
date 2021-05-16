@@ -20,8 +20,6 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
-from snaver.views import CategoryListView
-
 urlpatterns = [
   path('admin/', admin.site.urls),
   path('admin/logout/', django.contrib.auth.views.LogoutView, name="logout"),
