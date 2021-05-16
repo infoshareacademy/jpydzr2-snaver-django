@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from snaver.models import Budget
 from snaver.models import Category
-from snaver.models import MockUser
+from snaver.models import CustomUser
 from snaver.models import Subcategory
 from snaver.models import Transaction
 
@@ -13,7 +13,7 @@ from snaver.models import Transaction
 class BudgetTestCase(TestCase):
 
     def setUp(self):
-        user = MockUser.objects.create(name="Adam")
+        user = CustomUser.objects.create(name="Adam")
         Budget.objects.create(
             name="Home budget",
             user=user,
@@ -28,7 +28,7 @@ class BudgetTestCase(TestCase):
 class CategoryTestCase(TestCase):
 
     def setUp(self):
-        user = MockUser.objects.create(name="Krzysiek")
+        user = CustomUser.objects.create(name="Krzysiek")
         budget = Budget.objects.create(
             name="Work budget",
             user=user,
@@ -43,7 +43,7 @@ class CategoryTestCase(TestCase):
 class SubcategoryTestCase(TestCase):
 
     def setUp(self):
-        user = MockUser.objects.create(name="Mariola")
+        user = CustomUser.objects.create(name="Mariola")
         budget = Budget.objects.create(
             name="My budget",
             user=user,
@@ -58,7 +58,7 @@ class SubcategoryTestCase(TestCase):
 
 class TransactionTestCase(TestCase):
     def setUp(self):
-        user = MockUser.objects.create(name="Mariola")
+        user = CustomUser.objects.create(name="Mariola")
         budget = Budget.objects.create(
             name="My budget",
             user=user,
@@ -85,7 +85,7 @@ class TransactionTestCase(TestCase):
         self.assertEqual(transaction.amount, Decimal(30.00))
 
     def test_user_has_transaction(self):
-        user = MockUser.objects.get(name="Mariola")
+        user = CustomUser.objects.get(name="Mariola")
         self.assertEqual(
             user.budget.first().category.first()
                 .subcategory.first()

@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 
-class MockUser(AbstractUser):
+class CustomUser(AbstractUser):
     name = models.CharField(_('User name'), max_length=255)
 
     def __str__(self):
@@ -21,7 +21,7 @@ class Budget(models.Model):
         validators=[MinLengthValidator(1)],
     )
     user = models.ForeignKey(
-        MockUser,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='budget',
     )
