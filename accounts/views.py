@@ -1,21 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.forms.utils import ErrorList
-from django.http import HttpResponse
-from .forms import LoginForm, SignUpForm
+from accounts.forms import LoginForm, SignUpForm
 
 
-# Create your views here.
-
-# START EXAMPLE LOGIN #
 def login_view(request):
     form = LoginForm(request.POST or None)
-
     msg = None
 
     if request.method == "POST":
-
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
@@ -29,7 +21,6 @@ def login_view(request):
             msg = 'Error validating the form'
 
     return render(request, "accounts/login.html", {"form": form, "msg": msg})
-# END EXAMPLE LOGIN #
 
 
 def registration_view(request):
@@ -44,11 +35,8 @@ def registration_view(request):
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=raw_username, password=raw_password)
 
-            msg = 'User created - please <a href="/login">login</a>.'
+            msg = f'{user.username} - account has been created'
             success = True
-
-            # return redirect("/login/")
-
         else:
             msg = 'Form is not valid'
     else:
