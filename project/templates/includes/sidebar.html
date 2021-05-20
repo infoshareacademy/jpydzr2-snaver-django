@@ -1,10 +1,7 @@
+{% load static %}
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="/static/assets/img/sidebar-1.jpg">
     <div class="logo">
-        <a target="_blank" rel="noopener noreferrer"
-           target="_blank" rel="noopener noreferrer"
-           href="https://www.creative-tim.com/product/material-dashboard-django" class="simple-text logo-normal">
-            Material Django
-        </a>
+        <img src="{% static 'images/logo_sidebar.png' %}" width="260">
     </div>
     {% if user.is_authenticated %}
         <div class="sidebar-wrapper">
