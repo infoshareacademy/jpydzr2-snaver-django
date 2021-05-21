@@ -115,6 +115,8 @@ AUTH_USER_MODEL = "snaver.CustomUser"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+PASSWORD_RESET_TIMEOUT = 2
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
