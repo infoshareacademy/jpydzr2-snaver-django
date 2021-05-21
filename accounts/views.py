@@ -48,6 +48,7 @@ def registration_view(request):
                 'token': account_activation_token.make_token(user),
             })
             user.email_user(subject, message)
+            return redirect('account_activation_sent')
 
             msg = f'{user.username} - account has been created'
             success = True
