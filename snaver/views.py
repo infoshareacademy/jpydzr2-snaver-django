@@ -51,3 +51,10 @@ class CategoryListView(ListView):
         )
 
         return subcategory_details
+
+
+class ChartsListView(ListView):
+    template_name = 'charts.html'
+
+    def get_queryset(self):
+        pass
