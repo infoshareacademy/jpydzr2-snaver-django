@@ -7,14 +7,14 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-PRAWIDŁOWE WYKRESY BUDGETED
+    <h3>CHART FOR CATEGORIES AGAINST <b>BUDGETED AMOUNTS</b></h3>
     <div class="progress-container">
         {% for details in object_list.0 %}
             {% with a=details.budgeted_amount b=object_list.2 %} <!-- object_list.2 is total sum of budgeted amounts -->
                 {% with value=a|div:b|mul:100 %} <!-- calculating the percentage share in the total budget amount -->
                     <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
                     <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
+                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
                              aria-valuemax="100" style="width: {{ value }}%;">
                         </div>
                     </div>
@@ -26,12 +26,12 @@ PRAWIDŁOWE WYKRESY BUDGETED
     <br>
     <br>
     <br>
-PRAWIDŁOWE WYKRESY EXPENSES
+    <h3>CHART FOR CATEGORIES AGAINST <b>EXPENSES</b></h3>
     <div class="progress-container">
     {% for details in object_list.0 %}
         {% with a=details.activity b=object_list.1 %}
             {% with value=a|div:b|mul:100 %}
-                <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
+                <span class="progress-badge">{{ details.subcategory.name }}: {{ details.activity }}</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
                          aria-valuemax="100" style="width: {{ value }}%;">
