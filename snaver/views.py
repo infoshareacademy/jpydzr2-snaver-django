@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
@@ -12,11 +13,13 @@ from django.views.generic import ListView
 from snaver.models import SubcategoryDetails
 
 
+@login_required
 def index(request):
     context = {'segment': 'index'}
 
     html_template = loader.get_template('index.html')
     return HttpResponse(html_template.render(context, request))
+
 
 
 class CategoryListView(ListView):
