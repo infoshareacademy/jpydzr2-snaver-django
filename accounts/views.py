@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+
 from accounts.forms import LoginForm, SignUpForm
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
@@ -71,6 +72,8 @@ def registration_view(request):
 
     return render(request, "accounts/register.html", context=context)
 
+def account_activation_sent(request):
+    return render(request, 'account_activation_sent.html')
 
 def activate(request, uidb64, token):
     try:
