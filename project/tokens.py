@@ -1,5 +1,5 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils import six
+import six
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
