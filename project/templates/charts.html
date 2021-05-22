@@ -7,7 +7,9 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-    <h3>CHART FOR CATEGORIES AGAINST <b>BUDGETED AMOUNTS</b></h3>
+
+    <h3>CHART FOR SUBCATEGORIES AGAINST <b>BUDGETED AMOUNTS</b></h3>
+    <p>Total budgeted amount: {{ object_list.2 }}</p>
     <div class="progress-container">
         {% for details in object_list.0 %}
             {% with a=details.budgeted_amount b=object_list.2 %} <!-- object_list.2 is total sum of budgeted amounts -->
@@ -25,12 +27,13 @@
     <br>
     <br>
     <br>
-    <br>
-    <h3>CHART FOR CATEGORIES AGAINST <b>EXPENSES</b></h3>
+
+    <h3>CHART FOR SUBCATEGORIES AGAINST <b>EXPENSES</b></h3>
+    <p>Total expenses: {{ object_list.1 }}</p>
     <div class="progress-container">
     {% for details in object_list.0 %}
-        {% with a=details.activity b=object_list.1 %}
-            {% with value=a|div:b|mul:100 %}
+        {% with a=details.activity b=object_list.1 %} <!-- object_list.1 is total sum of expenses-->
+            {% with value=a|div:b|mul:100 %} <!-- calculating the percentage share in the total expenses -->
                 <span class="progress-badge">{{ details.subcategory.name }}: {{ details.activity }}</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
@@ -44,63 +47,6 @@
     <br>
     <br>
     <br>
-    <br>
-TEST-CONTAINER:
-    <div class="progress-container">
-        <span class="progress-badge">Default</span>
-        <div class="progress">
-            <div class="progress-bar" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 5%;">testowy</div>
-    </div>
-    <div class="progress-container progress-primary">
-        <span class="progress-badge">Primary</span>
-        <div class="progress">
-            <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: {{ 30|div:3 }}%;"><b>30%</b>
-            </div>
-        </div>
-    </div>
-    <br>
-THE GOOD ONE:
-    <div class="progress-container">
-    <div class="progress">
-        <div class="progress-bar" role="progressbar" style="width: 15%" style="height: 200px" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"><h3>hej</h3></div>
-      <div class="progress-bar bg-success" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">joł</div>
-      <div class="progress-bar bg-info" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    <div class="progress">
-      <div class="progress-bar" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-      <div class="progress-bar bg-success" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-      <div class="progress-bar bg-info" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-
-    </div>
-
-    <br>
-    <br>
-    Total expenses: {{ object_list.1 }}
-    <br>
-    Total budgeted: {{ object_list.2 }}
-    <br>
-    {{ object_list.2 |add:53.3}}
-    <br>
-    {{ object_list.3|sub:2 }}
-    <br>
-    <br>
-
-    <div class="progress-container">
-    {% for details in object_list.0 %}
-            <span class="progress-badge">
-                Subcategory name: {{ details.subcategory.name }}<br>
-                Budgeted: {{ details.budgeted_amount }}<br>
-                Expenses: {{ details.activity }}<br>
-            </span>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">25%
-                </div>
-            </div>
-            <br>
-    {% endfor %}
-    </div>
-
 
 {% endblock content %}
 

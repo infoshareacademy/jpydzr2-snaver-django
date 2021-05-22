@@ -10,7 +10,7 @@ from django.utils import dateformat
 from django.utils import timezone
 from django.views.generic import ListView
 
-from snaver.models import SubcategoryDetails, Budget
+from snaver.models import SubcategoryDetails
 
 
 @login_required
@@ -97,6 +97,4 @@ class ChartsListView(ListView):
             ).aggregate(Sum('budgeted_amount'))
         )
 
-        x = 10
-
-        return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted["budgeted_amount__sum"], x
+        return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted["budgeted_amount__sum"]
