@@ -10,16 +10,16 @@
 PRAWIDŁOWE WYKRESY BUDGETED
     <div class="progress-container">
         {% for details in object_list.0 %}
-            {% with a=details.budgeted_amount b=object_list.2 c=100 %}
-            {% with value=a|div:b|mul:c %}
-            <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
-            <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
-                         aria-valuemax="100" style="width: {{ value }}%;">
+            {% with a=details.budgeted_amount b=object_list.2 %} <!-- object_list.2 is total sum of budgeted amounts -->
+                {% with value=a|div:b|mul:100 %} <!-- calculating the percentage share in the total budget amount -->
+                    <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
+                             aria-valuemax="100" style="width: {{ value }}%;">
+                        </div>
                     </div>
+                {% endwith %}
             {% endwith %}
-            {% endwith %}
-            </div>
         {% endfor %}
     </div>
     <br>
@@ -27,6 +27,20 @@ PRAWIDŁOWE WYKRESY BUDGETED
     <br>
     <br>
 PRAWIDŁOWE WYKRESY EXPENSES
+    <div class="progress-container">
+    {% for details in object_list.0 %}
+        {% with a=details.activity b=object_list.1 %}
+            {% with value=a|div:b|mul:100 %}
+                <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
+                         aria-valuemax="100" style="width: {{ value }}%;">
+                    </div>
+                </div>
+            {% endwith %}
+        {% endwith %}
+    {% endfor %}
+    </div>
     <br>
     <br>
     <br>
