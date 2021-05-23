@@ -110,12 +110,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 AUTH_USER_MODEL = "snaver.CustomUser"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-PASSWORD_RESET_TIMEOUT = 2
+PASSWORD_RESET_TIMEOUT = 60*60*24*3  # 3 days in seconds
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
