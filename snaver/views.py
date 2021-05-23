@@ -9,6 +9,7 @@ from django.template import loader
 from django.utils import dateformat
 from django.utils import timezone
 from django.views.generic import ListView
+from django import template
 
 from snaver.models import SubcategoryDetails
 
@@ -98,3 +99,25 @@ class ChartsListView(ListView):
         )
 
         return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted["budgeted_amount__sum"]
+
+
+@login_required(login_url="/login/")
+def pages(request):
+    context = {}
+    try:
+
+        load_template = request.path.split('/')[-1]
+        context['segment'] = load_template
+
+        html_template = loader.get_template(load_template)
+        return HttpResponse(html_template.render(context, request))
+
+    except template.TemplateDoesNotExist:
+
+        html_template = loader.get_template('page-404.html')
+        return HttpResponse(html_template.render(context, request))
+
+    except:
+
+        html_template = loader.get_template('page-500.html')
+        return HttpResponse(html_template.render(context, request))
