@@ -16,6 +16,7 @@ from project.tokens import account_activation_token
 
 User = get_user_model()
 
+
 def login_view(request):
     form = LoginForm(request.POST or None)
     msg = None
@@ -49,12 +50,13 @@ def registration_view(request):
 
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
-            message = render_to_string('accounts/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
+            message = render_to_string(
+                'accounts/account_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
             user.email_user(subject, message)
 
             msg = f'{user.username} - account has been created'
@@ -73,8 +75,10 @@ def registration_view(request):
 
     return render(request, "accounts/register.html", context=context)
 
+
 def account_activation_sent(request):
     return render(request, 'accounts/account_activation_sent.html')
+
 
 def activate(request, uidb64, token):
     try:
