@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+{% load mathfilters %}
+
+{% block title %} Charts {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <h3>CHART FOR SUBCATEGORIES AGAINST <b>BUDGETED AMOUNTS</b></h3>
+    <p>Total budgeted amount: {{ object_list.2 }}</p>
+    <div class="progress-container">
+        {% for details in object_list.0 %}
+            {% with a=details.budgeted_amount b=object_list.2 %}
+                {% with value=a|div:b|mul:100 %} <!-- calculating the percentage value to the progress-bar -->
+                    <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
+                             aria-valuemax="100" style="width: {{ value }}%;">
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <h3>CHART FOR SUBCATEGORIES AGAINST <b>EXPENSES</b></h3>
+    <p>Total expenses: {{ object_list.1 }}</p>
+    <div class="progress-container">
+    {% for details in object_list.0 %}
+        {% with a=details.activity b=object_list.2 %}
+            {% with value=a|div:b|mul:100 %} <!-- calculating the percentage value to the progress-bar -->
+                <span class="progress-badge">{{ details.subcategory.name }}: {{ details.activity }}</span>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
+                         aria-valuemax="100" style="width: {{ value }}%;">
+                    </div>
+                </div>
+            {% endwith %}
+        {% endwith %}
+    {% endfor %}
+    </div>
+    <br>
+    <br>
+    <br>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+      // Javascript method's body can be found in assets/js/demos.js
+      md.initDashboardPageCharts();
+
+    });
+  </script>
+
+{% endblock javascripts %}
