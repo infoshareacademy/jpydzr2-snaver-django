@@ -22,7 +22,6 @@ def index(request):
     return HttpResponse(html_template.render(context, request))
 
 
-
 class CategoryListView(ListView):
     template_name = "ui-tables.html"
 
@@ -98,7 +97,8 @@ class ChartsListView(ListView):
             ).aggregate(Sum('budgeted_amount'))
         )
 
-        return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted["budgeted_amount__sum"]
+        return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted[
+            "budgeted_amount__sum"]
 
 
 @login_required(login_url="/login/")
