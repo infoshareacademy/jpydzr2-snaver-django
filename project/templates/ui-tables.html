@@ -23,6 +23,7 @@
                                 <th>Category name</th>
                                 <th>Subcategory name</th>
                                 <th>Budgeted</th>
+                                <th>Activity</th>
                                 <th>Available</th>
                             </tr>
                             </thead>
@@ -32,12 +33,17 @@
                                     <td>{{ details.subcategory.category.name }}</td>
                                     <td>{{ details.subcategory.name }}</td>
                                     <td>{{ details.budgeted_amount }}</td>
+                                    <td>{{ details.activity }}</td>
                                     {% if details.available < 0 %}
                                         <td class="negative-activity">
                                             {% else %}
                                         <td class="positive-activity">
                                     {% endif %}
-                                    {{ details.available }}</td>
+                                    {% if details.available == None %}
+                                        {{ details.budgeted_amount }}</td>
+                                            {% else %}
+                                        {{ details.available }}</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>

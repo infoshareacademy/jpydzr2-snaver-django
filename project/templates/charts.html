@@ -12,8 +12,8 @@
     <p>Total budgeted amount: {{ object_list.2 }}</p>
     <div class="progress-container">
         {% for details in object_list.0 %}
-            {% with a=details.budgeted_amount b=object_list.2 %} <!-- object_list.2 is total sum of budgeted amounts -->
-                {% with value=a|div:b|mul:100 %} <!-- calculating the percentage share in the total budget amount -->
+            {% with a=details.budgeted_amount b=object_list.2 %}
+                {% with value=a|div:b|mul:100 %} <!-- calculating the percentage value to the progress-bar -->
                     <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
                     <div class="progress">
                         <div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
@@ -32,8 +32,8 @@
     <p>Total expenses: {{ object_list.1 }}</p>
     <div class="progress-container">
     {% for details in object_list.0 %}
-        {% with a=details.activity b=object_list.1 %} <!-- object_list.1 is total sum of expenses-->
-            {% with value=a|div:b|mul:100 %} <!-- calculating the percentage share in the total expenses -->
+        {% with a=details.activity b=object_list.2 %}
+            {% with value=a|div:b|mul:100 %} <!-- calculating the percentage value to the progress-bar -->
                 <span class="progress-badge">{{ details.subcategory.name }}: {{ details.activity }}</span>
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
