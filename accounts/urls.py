@@ -1,8 +1,11 @@
-from django.urls import path
-from .views import login_view, registration_view, activate, account_activation_sent
-from django.contrib.auth.views import LogoutView
 from django.conf.urls import url
+from django.contrib.auth.views import LogoutView
+from django.urls import path
 
+from .views import account_activation_sent
+from .views import activate
+from .views import login_view
+from .views import registration_view
 
 urlpatterns = [
     path('login/', login_view, name="login"),

@@ -1,16 +1,18 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-
-from accounts.forms import LoginForm, SignUpForm
+from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
+from django.contrib.auth import login
+from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from project.tokens import account_activation_token
-from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode
 
-from django.contrib.auth import get_user_model
+from accounts.forms import LoginForm
+from accounts.forms import SignUpForm
+from project.tokens import account_activation_token
 
 User = get_user_model()
 
