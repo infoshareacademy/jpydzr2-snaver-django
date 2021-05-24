@@ -1,8 +1,6 @@
-import string
-import factory
+import factory, factory.django
 from faker import Faker
 from snaver.models import CustomUser, Budget
-import random
 
 faker = Faker()
 
@@ -10,11 +8,10 @@ class CustomUserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = CustomUser
-        django_get_or_create = ('username',)
 
     first_name = faker.first_name()
     last_name = faker.last_name()
-    username = faker.email() + str(random.randint(1, 9999))
+    username = factory.Sequence(lambda n: "User %03d" % n)
     password = faker.password(
         length=20,
         special_chars=True,
@@ -31,7 +28,7 @@ class BudgetFactory(factory.django.DjangoModelFactory):
         model = Budget
 
     name = faker.word() + " budget"
-    user = factory.SubFactory(CustomUserFactory)
+    user = factory.Iterator(CustomUser.objects.all())
     created_on = faker.date_time()
 #
 # class CategoryFactory(factory.django.DjangoModelFactory):
