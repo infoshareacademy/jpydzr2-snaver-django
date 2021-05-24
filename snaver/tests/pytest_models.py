@@ -51,6 +51,3 @@ def logged_in_user(client, create_test_user, strong_password):
 @pytest.fixture
 def strong_password():
     return "AdasKJj23!!!%sd"
-
-
-

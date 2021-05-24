@@ -1,8 +1,14 @@
-import factory, factory.django
+import factory.django
 from faker import Faker
-from snaver.models import *
+from snaver.models import CustomUser
+from snaver.models import Budget
+from snaver.models import Category
+from snaver.models import Subcategory
+from snaver.models import Transaction
+from snaver.models import SubcategoryDetails
 
 faker = Faker()
+
 
 class CustomUserFactory(factory.django.DjangoModelFactory):
 
@@ -25,6 +31,7 @@ class CustomUserFactory(factory.django.DjangoModelFactory):
     email_confirmed = True
     name = faker.name()
 
+
 class BudgetFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Budget
@@ -33,6 +40,7 @@ class BudgetFactory(factory.django.DjangoModelFactory):
     user = factory.Iterator(CustomUser.objects.all())
     created_on = faker.date_time()
 
+
 class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Category
@@ -40,6 +48,7 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     name = faker.word() + " category"
     budget = factory.Iterator(Budget.objects.all())
     created_on = faker.date_time()
+
 
 class SubcategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -60,6 +69,7 @@ class SubcategoryDetailsFactory(factory.django.DjangoModelFactory):
 
     subcategory = factory.Iterator(Subcategory.objects.all())
 
+
 class Transaction(factory.django.DjangoModelFactory):
     class Meta:
         model = Transaction
@@ -71,4 +81,3 @@ class Transaction(factory.django.DjangoModelFactory):
     subcategory = factory.Iterator(Subcategory.objects.all())
     created_on = faker.date_time()
     created_on = faker.date_time()
-

@@ -1,5 +1,10 @@
 from django.core.management.base import BaseCommand
-from snaver.models import CustomUser, Budget, Category, Subcategory, Transaction, SubcategoryDetails
+from snaver.models import CustomUser
+from snaver.models import Budget
+from snaver.models import Category
+from snaver.models import Subcategory
+from snaver.models import Transaction
+from snaver.models import SubcategoryDetails
 from django.db import transaction
 from django.contrib.auth.hashers import make_password
 from random import randint
@@ -9,7 +14,8 @@ from faker import Faker
 
 
 USERS = ["Krzysiek", "Mariola", "Andrzej"]
-CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie", "Odkładanie", "Rozrywki"]
+CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie",
+              "Odkładanie", "Rozrywki"]
 SUBCATEGORIES = [
     ["Prąd", "Internet", "Telefon", "Telewizja", "Woda", "Czynsz", "Gaz"],
     ["Kredyt studencki", "Kredyt w baku", "Kredyt hipoteczny", "Samochód"],
@@ -17,6 +23,7 @@ SUBCATEGORIES = [
     ["Na remont łazienki", "Na wakacje", "Skarbonka"],
     ["Restauracja", "Kino"]
 ]
+
 
 class Command(BaseCommand):
     help = "Command information"
