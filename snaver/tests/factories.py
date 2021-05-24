@@ -1,6 +1,6 @@
 import factory, factory.django
 from faker import Faker
-from snaver.models import CustomUser, Budget
+from snaver.models import *
 
 faker = Faker()
 
