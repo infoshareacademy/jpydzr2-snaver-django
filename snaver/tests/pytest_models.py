@@ -25,7 +25,7 @@ def test_if_homepage_is_200(client):
 @pytest.mark.django_db
 def test_authenticated_user_can_see_their_budget(logged_in_user):
     client, user = logged_in_user
-    assert b"This month's budget" in client.get("/").content
+    assert b"Current month categories" in client.get("/").content
 
 
 @pytest.mark.django_db
@@ -44,8 +44,7 @@ def create_test_user():
 def logged_in_user(client, create_test_user, strong_password):
     test_user = create_test_user
     if test_user is not None:
-        client.force_login(test_user)
-        # client.login(username=test_user.username, password=test_user.password) # For some reason that does not work
+        client.login(username=test_user.username, password=test_user.password)
         return client, test_user
 
 

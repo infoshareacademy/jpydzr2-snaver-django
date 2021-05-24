@@ -21,6 +21,8 @@ class CustomUserFactory(factory.django.DjangoModelFactory):
     )
     is_staff = False
     is_superuser = False
+    is_active = True
+    email_confirmed = True
     name = faker.name()
 
 class BudgetFactory(factory.django.DjangoModelFactory):
@@ -30,42 +32,43 @@ class BudgetFactory(factory.django.DjangoModelFactory):
     name = faker.word() + " budget"
     user = factory.Iterator(CustomUser.objects.all())
     created_on = faker.date_time()
-#
-# class CategoryFactory(factory.django.DjangoModelFactory):
-#     class Meta:
-#         model = Category
-#
-#     name = faker.word() + " category"
-#     budget = factory.SubFactory(BudgetFactory)
-#     created_on = faker.date_time()
-#
-# class SubcategoryFactory(factory.django.DjangoModelFactory):
-#     class Meta:
-#         model = Subcategory
-#
-#     name = faker.word() + " subcategory"
-#     category = factory.SubFactory(Category)
-#     created_on = faker.date_time()
-#
-#
-# class SubcategoryDetailsFactory(factory.django.DjangoModelFactory):
-#     class Meta:
-#         model = SubcategoryDetails
-#
-#     budgeted_amount = faker.decimal(2)
-#     start_date = faker.date
-#     end_date = faker.date
-#
-#     subcategory = factory.SubFactory(SubcategoryFactory)
-#
-# class Transaction(factory.django.DjangoModelFactory):
-#     class Meta:
-#         model = Transaction
-#
-#     name = faker.word() + " subcategory"
-#     payee_name = faker.word()
-#     amount = faker.decimal(2)
-#     receipt_date = faker.date_time()
-#     subcategory = factory.SubFactory(SubcategoryFactory)
-#     created_on = faker.date_time()
-#
+
+class CategoryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Category
+
+    name = faker.word() + " category"
+    budget = factory.Iterator(Budget.objects.all())
+    created_on = faker.date_time()
+
+class SubcategoryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Subcategory
+
+    name = faker.word() + " subcategory"
+    category = factory.Iterator(Category.objects.all())
+    created_on = faker.date_time()
+
+
+class SubcategoryDetailsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SubcategoryDetails
+
+    budgeted_amount = 100.00
+    start_date = faker.date
+    end_date = faker.date
+
+    subcategory = factory.Iterator(Subcategory.objects.all())
+
+class Transaction(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Transaction
+
+    name = faker.word() + " subcategory"
+    payee_name = faker.word()
+    amount = 100.00
+    receipt_date = faker.date_time()
+    subcategory = factory.Iterator(Subcategory.objects.all())
+    created_on = faker.date_time()
+    created_on = faker.date_time()
+

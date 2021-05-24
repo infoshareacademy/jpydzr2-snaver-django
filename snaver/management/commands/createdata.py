@@ -27,7 +27,7 @@ class Command(BaseCommand):
         # Initiate faker
         fake = Faker()
 
-        # Delete all users that ate not stuff
+        # Delete all users that are not stuff
         CustomUser.objects.filter(is_staff=False).all().delete()
 
         CustomUser.objects.bulk_create([
@@ -36,6 +36,8 @@ class Command(BaseCommand):
                 email=user.lower() + "@snaver.pl",
                 password=make_password('test'),
                 is_staff=False,
+                is_active=True,
+                email_confirmed=True
             ) for user in USERS
         ])
 
@@ -56,7 +58,6 @@ class Command(BaseCommand):
 
         for category in Category.objects.all():
             index = CATEGORIES.index(category.name)
-            print(index)
             Subcategory.objects.bulk_create([
                 Subcategory(
                     name=subcategory,
