@@ -1,0 +1,40 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Login {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title">
+                        Please confirm your email address to complete the registration.
+                    </h4>
+                </div>
+                <div class="card-body">
+
+
+
+                         <span class="pull-right">
+                Have an account? <a href="{% url 'login' %}" class="text-primary">Login</a>
+              </span>
+                        <span class="pull-right">
+              Don't have an account? <a href="{% url 'register' %}" class="text-primary">Create</a>
+            </span>
+
+                        <div class="clearfix"></div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
