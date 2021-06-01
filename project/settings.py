@@ -34,7 +34,7 @@ except KeyError as e:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://snaver.herokuapp.com/']
+ALLOWED_HOSTS = ['snaver.herokuapp.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
