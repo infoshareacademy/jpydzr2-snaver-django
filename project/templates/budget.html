@@ -7,9 +7,9 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-    <a href="{% url "budget_select" view.kwargs.year view.kwargs.month|sub:1|stringformat:"02d" %}"><button class="btn btn-primary btn-round"><</button></a>
+    <a href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}"><button class="btn btn-primary btn-round"><</button></a>
     {{ view.kwargs.year }}-{{ view.kwargs.month }}
-    <a href="{% url "budget_select" view.kwargs.year view.kwargs.month|add:1|stringformat:"02d" %}"><button class="btn btn-primary btn-round">></button></a>
+    <a href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}"><button class="btn btn-primary btn-round">></button></a>
 
     <div class="row">
         <div class="col-md-12">

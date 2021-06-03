@@ -1,10 +1,11 @@
-from django.urls import path, re_path
+from django.contrib.auth.decorators import login_required
+from django.urls import path
+from django.urls import re_path
 
 from snaver import views
-from snaver.views import CategoryListView, CategoryView
+from snaver.views import CategoryListView
+from snaver.views import CategoryView
 from snaver.views import ChartsListView
-
-from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     path('', login_required(CategoryListView.as_view()), name='home'),

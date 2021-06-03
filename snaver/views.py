@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
+from django import template
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.db.models import Sum
@@ -10,8 +11,9 @@ from django.template import loader
 from django.utils import dateformat
 from django.utils import timezone
 from django.views.generic import ListView
-from django import template
 
+from snaver.helpers import next_month
+from snaver.helpers import prev_month
 from snaver.models import SubcategoryDetails
 
 
@@ -56,6 +58,17 @@ class CategoryListView(ListView):
 
 class CategoryView(ListView):
     template_name = "budget.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_date = datetime(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"]),
+            day=1
+        )
+        context['prev_month'] = prev_month(selected_date)
+        context['next_month'] = next_month(selected_date)
+        return context
 
     def get_queryset(self, *args, **kwargs):
         selected_date = dateformat.format(

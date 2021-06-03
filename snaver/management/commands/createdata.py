@@ -1,17 +1,18 @@
+from calendar import monthrange
+from datetime import date
+from random import randint
+
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand
-from snaver.models import CustomUser
+from django.db import transaction
+from faker import Faker
+
 from snaver.models import Budget
 from snaver.models import Category
+from snaver.models import CustomUser
 from snaver.models import Subcategory
-from snaver.models import Transaction
 from snaver.models import SubcategoryDetails
-from django.db import transaction
-from django.contrib.auth.hashers import make_password
-from random import randint
-from datetime import date
-
-from faker import Faker
-from calendar import monthrange
+from snaver.models import Transaction
 
 USERS = ["Krzysiek", "Mariola", "Andrzej"]
 CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie",
@@ -36,9 +37,12 @@ class Command(BaseCommand):
         month_end = monthrange(today.year, today.month)[1]
         last_day = today.replace(day=month_end)
 
-        next_first_day = first_day.replace(month=first_day.month+1)
-        next_month_end = monthrange(today.year, today.month+1)[1]
-        next_last_day = last_day.replace(month=first_day.month+1, day=next_month_end)
+        next_first_day = first_day.replace(month=first_day.month + 1)
+        next_month_end = monthrange(today.year, today.month + 1)[1]
+        next_last_day = last_day.replace(
+            month=first_day.month + 1,
+            day=next_month_end
+        )
 
         # Initiate faker
         fake = Faker()
@@ -109,4 +113,3 @@ class Command(BaseCommand):
                     subcategory=subcategory,
                 )
             ])
-

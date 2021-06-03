@@ -1,11 +1,12 @@
 import factory.django
 from faker import Faker
-from snaver.models import CustomUser
+
 from snaver.models import Budget
 from snaver.models import Category
+from snaver.models import CustomUser
 from snaver.models import Subcategory
-from snaver.models import Transaction
 from snaver.models import SubcategoryDetails
+from snaver.models import Transaction
 
 faker = Faker()
 
