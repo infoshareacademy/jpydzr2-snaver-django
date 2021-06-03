@@ -11,7 +11,7 @@ from random import randint
 from datetime import date
 
 from faker import Faker
-
+from calendar import monthrange
 
 USERS = ["Krzysiek", "Mariola", "Andrzej"]
 CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie",
@@ -30,6 +30,11 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+
+        today = date.today()
+        first_day = today.replace(day=1)
+        month_end = monthrange(today.year, today.month)[1]
+        last_day = today.replace(day=month_end)
 
         # Initiate faker
         fake = Faker()
@@ -86,8 +91,8 @@ class Command(BaseCommand):
             SubcategoryDetails.objects.bulk_create([
                 SubcategoryDetails(
                     budgeted_amount=1000.00,
-                    start_date=date.today(),
-                    end_date=date.today(),
+                    start_date=first_day,
+                    end_date=last_day,
                     subcategory=subcategory,
                 )
             ])
