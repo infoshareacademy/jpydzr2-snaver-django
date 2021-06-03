@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+{% load mathfilters %}
+
+{% block title %} Budget {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <a href="{% url "budget_select" view.kwargs.year view.kwargs.month|sub:1|stringformat:"02d" %}"><button class="btn btn-primary btn-round"><</button></a>
+    {{ view.kwargs.year }}-{{ view.kwargs.month }}
+    <a href="{% url "budget_select" view.kwargs.year view.kwargs.month|add:1|stringformat:"02d" %}"><button class="btn btn-primary btn-round">></button></a>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title ">Your budget</h4>
+                    <p class="card-category"> A list of your activities
+                        in {{ view.kwargs.year }}-{{ view.kwargs.month }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class=" text-primary">
+                            <tr>
+                                <th>Category name</th>
+                                <th>Subcategory name</th>
+                                <th>Budgeted</th>
+                                <th>Activity</th>
+                                <th>Available</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for details in object_list %}
+                                <tr>
+                                    <td>{{ details.subcategory.category.name }}</td>
+                                    <td>{{ details.subcategory.name }}</td>
+                                    <td>{{ details.budgeted_amount }}</td>
+                                    <td>{{ details.activity }}</td>
+                                    {% if details.available < 0 %}
+                                        <td class="negative-activity">
+                                            {% else %}
+                                        <td class="positive-activity">
+                                    {% endif %}
+                                    {% if details.available == None %}
+                                        {{ details.budgeted_amount }}</td>
+                                    {% else %}
+                                        {{ details.available }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

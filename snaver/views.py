@@ -55,7 +55,7 @@ class CategoryListView(ListView):
 
 
 class CategoryView(ListView):
-    template_name = "ui-tables.html"
+    template_name = "budget.html"
 
     def get_queryset(self, *args, **kwargs):
         selected_date = dateformat.format(
