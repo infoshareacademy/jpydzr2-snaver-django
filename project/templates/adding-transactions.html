@@ -1,0 +1,133 @@
+{% extends "layouts/base.html" %}
+{% load mathfilters %}
+
+{% block title %} Budget {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                <button title="Add new transaction"
+                                        class="nav-item">
+                                    Add transaction
+                                </button>
+                            </th>
+                            <th>
+                                <button title="Edit transaction"
+                                        class="nav-item">
+                                    Edit transaction
+                                </button>
+                            </th>
+                            <th>
+                                <button title="Undo" disabled
+                                        class="nav-item">
+                                    Undo
+                                </button>
+                            </th>
+                            <th>
+                                <button title="Redo" disabled
+                                        class="nav-item">
+                                    Redo
+                                </button>
+                            </th>
+                            <th>
+                                <div class="input-group">
+                                    <input autocomplete="off"
+                                           title="Search transaction"
+                                           placeholder="Search"
+                                           type="text"
+                                           value class="form-control">
+                                </div>
+                            <th>
+                                <button type="submit" class="btn btn-white btn-round btn-just-icon">
+                                    <i class="material-icons"></i>
+                                    <div class="ripple-container"></div>
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </th>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class=" text-primary">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" data-column="checkbox" aria-checked="false"
+                                           aria-label="All transactions">
+
+                                </th>
+                                <th>
+                                    <div data-column="data" id="data" class="data-nagłówek">
+                                        <div class="sortowanie">
+                                            <i class="przycisk-sortowania"></i>Date
+                                        </div>
+
+                                    </div>
+                                </th>
+                                <th>
+                                    <div data-column="payeeName" id="kontrahent"
+                                         class="kontrahent nagłówek">
+                                        <div class="kontrahent nagłówek">
+                                            <i class="przycisk-sortowania"></i>Payee
+                                        </div>
+
+                                    </div>
+                                </th>
+                                <th>
+                                    <div data-column="subCategoryname" id="kategoria"
+                                         class="kateogoria nagłówek">
+                                        <div class="kategoria nagłówek">
+                                            <i class="przycisk-sortowania"></i>Category
+                                        </div>
+
+                                    </div>
+                                </th>
+                                <th>
+                                    <div data-column="memo" id="notatka" class="notatka nagłówek">
+                                        <div class="notatka nagłówek">
+                                            <i class="przycisk-sortowania"></i>Transaction
+                                        </div>
+
+                                    </div>
+                                </th>
+                                <th>
+                                    <div data-column="outflow" id="outflow"
+                                         class="outflow nagłówek">
+                                        <div class="outflow nagłówek">
+                                            <i class="przycisk-sortowania"></i>Outflow
+                                        </div>
+
+                                    </div>
+                                </th>
+                                <th>
+                                    <div data-column="inflow" id="inflow" class="inflow nagłówek">
+                                        <div class="kontrahent nagłówek">
+                                            <i class="przycisk-sortowania"></i>Inflow
+                                        </div>
+
+                                    </div>
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
