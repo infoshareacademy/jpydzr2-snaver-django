@@ -36,6 +36,10 @@ class Command(BaseCommand):
         month_end = monthrange(today.year, today.month)[1]
         last_day = today.replace(day=month_end)
 
+        next_first_day = first_day.replace(month=first_day.month+1)
+        next_month_end = monthrange(today.year, today.month+1)[1]
+        next_last_day = last_day.replace(month=first_day.month+1, day=next_month_end)
+
         # Initiate faker
         fake = Faker()
 
@@ -96,3 +100,13 @@ class Command(BaseCommand):
                     subcategory=subcategory,
                 )
             ])
+
+            SubcategoryDetails.objects.bulk_create([
+                SubcategoryDetails(
+                    budgeted_amount=800.00,
+                    start_date=next_first_day,
+                    end_date=next_last_day,
+                    subcategory=subcategory,
+                )
+            ])
+

@@ -80,7 +80,7 @@ class SubcategoryDetails(models.Model):
         super(SubcategoryDetails, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.start_date} - {self.end_date}"
+        return f"{self.subcategory.name} - {self.start_date}"
 
 
 class Transaction(models.Model):
