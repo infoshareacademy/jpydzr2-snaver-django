@@ -70,7 +70,7 @@ class SubcategoryDetailsFactory(factory.django.DjangoModelFactory):
     subcategory = factory.Iterator(Subcategory.objects.all())
 
 
-class Transaction(factory.django.DjangoModelFactory):
+class TransactionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Transaction
 
@@ -79,5 +79,4 @@ class Transaction(factory.django.DjangoModelFactory):
     amount = 100.00
     receipt_date = faker.date_time()
     subcategory = factory.Iterator(Subcategory.objects.all())
-    created_on = faker.date_time()
     created_on = faker.date_time()
