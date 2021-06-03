@@ -59,24 +59,32 @@ class CategoryListView(ListView):
 class CategoryView(ListView):
     template_name = "budget.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def _set_current_date(self):
+        if not self.kwargs.get("year", None):
+            self.kwargs["year"] = str(datetime.now().year)
+        if not self.kwargs.get("month", None):
+            self.kwargs["month"] = f"{datetime.now().month:02d}"
+
+    def _this_month(self):
         selected_date = datetime(
             year=int(self.kwargs["year"]),
             month=int(self.kwargs["month"]),
             day=1
         )
+        return selected_date
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self._set_current_date()
+        selected_date = self._this_month()
         context['prev_month'] = prev_month(selected_date)
         context['next_month'] = next_month(selected_date)
         return context
 
     def get_queryset(self, *args, **kwargs):
+        self._set_current_date()
         selected_date = dateformat.format(
-            datetime(
-                year=int(self.kwargs["year"]),
-                month=int(self.kwargs["month"]),
-                day=1
-            ),
+            self._this_month(),
             'Y-m-d')
 
         subcategory_details = SubcategoryDetails.objects.filter(
