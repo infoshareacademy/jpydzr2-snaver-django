@@ -16,28 +16,19 @@
                         <tr>
                             <th>
                                 <button title="Add new transaction"
-                                        class="nav-item">
+                                        class="btn btn-primary pull-center"
+                                        type="submit">
                                     Add transaction
                                 </button>
                             </th>
                             <th>
                                 <button title="Edit transaction"
-                                        class="nav-item">
+                                        class="btn btn-primary pull-center"
+                                        type="submit">
                                     Edit transaction
                                 </button>
                             </th>
-                            <th>
-                                <button title="Undo" disabled
-                                        class="nav-item">
-                                    Undo
-                                </button>
-                            </th>
-                            <th>
-                                <button title="Redo" disabled
-                                        class="nav-item">
-                                    Redo
-                                </button>
-                            </th>
+
                             <th>
                                 <div class="input-group">
                                     <input autocomplete="off"
@@ -48,7 +39,7 @@
                                 </div>
                             <th>
                                 <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                                    <i class="material-icons"></i>
+                                    <i class="material-icons">search</i>
                                     <div class="ripple-container"></div>
                                     <div class="ripple-container"></div>
                                 </button>
@@ -65,59 +56,13 @@
                                 <th>
                                     <input type="checkbox" data-column="checkbox" aria-checked="false"
                                            aria-label="All transactions">
-
                                 </th>
-                                <th>
-                                    <div data-column="data" id="data" class="data-nagłówek">
-                                        <div class="sortowanie">
-                                            <i class="przycisk-sortowania"></i>Date
-                                        </div>
-
-                                    </div>
-                                </th>
-                                <th>
-                                    <div data-column="payeeName" id="kontrahent"
-                                         class="kontrahent nagłówek">
-                                        <div class="kontrahent nagłówek">
-                                            <i class="przycisk-sortowania"></i>Payee
-                                        </div>
-
-                                    </div>
-                                </th>
-                                <th>
-                                    <div data-column="subCategoryname" id="kategoria"
-                                         class="kateogoria nagłówek">
-                                        <div class="kategoria nagłówek">
-                                            <i class="przycisk-sortowania"></i>Category
-                                        </div>
-
-                                    </div>
-                                </th>
-                                <th>
-                                    <div data-column="memo" id="notatka" class="notatka nagłówek">
-                                        <div class="notatka nagłówek">
-                                            <i class="przycisk-sortowania"></i>Transaction
-                                        </div>
-
-                                    </div>
-                                </th>
-                                <th>
-                                    <div data-column="outflow" id="outflow"
-                                         class="outflow nagłówek">
-                                        <div class="outflow nagłówek">
-                                            <i class="przycisk-sortowania"></i>Outflow
-                                        </div>
-
-                                    </div>
-                                </th>
-                                <th>
-                                    <div data-column="inflow" id="inflow" class="inflow nagłówek">
-                                        <div class="kontrahent nagłówek">
-                                            <i class="przycisk-sortowania"></i>Inflow
-                                        </div>
-
-                                    </div>
-                                </th>
+                                <th>Date</th>
+                                <th>Payee</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Outflow</th>
+                                <th>Inflow</th>
                             </tr>
                             </thead>
                         </table>
