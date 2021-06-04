@@ -16,6 +16,8 @@ from snaver.helpers import next_month
 from snaver.helpers import prev_month
 from snaver.models import SubcategoryDetails
 
+from collections import defaultdict
+
 
 @login_required
 def index(request):
@@ -74,7 +76,20 @@ class CategoryView(ListView):
             )
         )
 
-        return subcategory_details
+        # This is an awful hack, to add information if the element is the first
+        # one in its category. If it is, it's marked as True (for the template)
+        # then template checks for this value and adds extra row to the table.
+
+        new_list = []
+        cache = {}
+        for sub in subcategory_details:
+            if cache.get(sub.subcategory.category.name, None):
+                new_list.append((sub, False,))
+            else:
+                cache[sub.subcategory.category.name] = True
+                new_list.append((sub, True,))
+
+        return new_list
 
 
 class ChartsListView(ListView):
