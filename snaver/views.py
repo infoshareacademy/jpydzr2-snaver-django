@@ -39,6 +39,10 @@ class TransactionCreateView(CreateView):
     success_url = reverse_lazy('adding')
     template_name = 'add-new.html'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 class CategoryListView(ListView):
     template_name = "ui-tables.html"
