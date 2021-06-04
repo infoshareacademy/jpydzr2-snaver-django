@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load mathfilters %}
 
-{% block title %} Budget {% endblock %}
+{% block title %} Transactions {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -15,11 +15,11 @@
                     <table class="table">
                         <tr>
                             <th>
-                                <button title="Add new transaction"
-                                        class="btn btn-primary pull-center"
-                                        type="submit">
+                                <a href="/add-new" title="Add new transaction"
+                                   class="btn btn-primary pull-center"
+                                >
                                     Add transaction
-                                </button>
+                                </a>
                             </th>
                             <th>
                                 <button title="Edit transaction"
@@ -65,6 +65,16 @@
                                 <th>Inflow</th>
                             </tr>
                             </thead>
+                            <tbody>
+                            {% for transaction in object_list %}
+                                <tr>
+                                    <td>{{ transaction.receipt_date }}</td>
+                                    <td>{{ transaction.payee_name }}</td>
+                                    <td>{{ transaction.subcategory }}</td>
+                                    <td>{{ transaction.name }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>

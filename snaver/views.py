@@ -44,6 +44,24 @@ class TransactionCreateView(CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+
+class TransactionListView(ListView):
+    model = Transaction
+    template_name = 'adding-transactions.html'
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return None
+
+        transaction_details = self.model.objects.filter(
+            subcategory__category__budget__user=self.request.user)
+        return transaction_details
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 class CategoryListView(ListView):
     template_name = "ui-tables.html"
 
