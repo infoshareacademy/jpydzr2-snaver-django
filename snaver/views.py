@@ -74,12 +74,12 @@ class CategoryListView(ListView):
             "subcategory__name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__amount'),
+                Sum('subcategory__transaction__outflow'),
                 Decimal(0.00)
             ),
             available=(
                     F("budgeted_amount")
-                    - Sum('subcategory__transaction__amount')
+                    - Sum('subcategory__transaction__outflow')
             )
         )
 
@@ -105,12 +105,12 @@ class ChartsListView(ListView):
             "subcategory__name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__amount'),
+                Sum('subcategory__transaction__outflow'),
                 Decimal(0.00)
             ),
             available=(
                     F("budgeted_amount")
-                    - Sum('subcategory__transaction__amount')
+                    - Sum('subcategory__transaction__outflow')
             )
         )
 
@@ -119,7 +119,7 @@ class ChartsListView(ListView):
                 subcategory__category__budget__user=self.request.user,
                 start_date__lte=current_time,
                 end_date__gte=current_time,
-            ).aggregate(Sum('subcategory__transaction__amount'))
+            ).aggregate(Sum('subcategory__transaction__outflow'))
         )
 
         total_budgeted = (
@@ -130,7 +130,7 @@ class ChartsListView(ListView):
             ).aggregate(Sum('budgeted_amount'))
         )
 
-        return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted[
+        return subcategory_details, total_expenses['subcategory__transaction__outflow__sum'], total_budgeted[
             "budgeted_amount__sum"]
 
 
