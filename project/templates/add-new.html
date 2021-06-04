@@ -1,0 +1,26 @@
+{% extends "layouts/base.html" %}
+{% load mathfilters %}
+
+{% block title %} Budget {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+    <div class="card-body">
+        <form method="post">
+            <table>
+                {% csrf_token %}
+                {{ form.as_table }}
+            </table>
+            <input type="submit" value="Save">
+        </form>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
