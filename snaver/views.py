@@ -25,13 +25,6 @@ def index(request):
     return HttpResponse(html_template.render(context, request))
 
 
-def adding_page(request):
-    context = {'segment': 'adding'}
-
-    html_template = loader.get_template('adding-transactions.html')
-    return HttpResponse(html_template.render(context, request))
-
-
 class TransactionCreateView(CreateView):
     model = Transaction
     form_class = TransactionCreateForm

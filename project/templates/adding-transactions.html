@@ -25,7 +25,7 @@
                                 <button title="Edit transaction"
                                         class="btn btn-primary pull-center"
                                         type="submit">
-                                    Edit transaction
+                                    Edit transaction - not yet available
                                 </button>
                             </th>
 
@@ -33,7 +33,7 @@
                                 <div class="input-group">
                                     <input autocomplete="off"
                                            title="Search transaction"
-                                           placeholder="Search"
+                                           placeholder="Search - not yet available"
                                            type="text"
                                            value class="form-control">
                                 </div>
@@ -53,10 +53,7 @@
                         <table class="table">
                             <thead class=" text-primary">
                             <tr>
-                                <th>
-                                    <input type="checkbox" data-column="checkbox" aria-checked="false"
-                                           aria-label="All transactions">
-                                </th>
+                                <th></th>
                                 <th>Date</th>
                                 <th>Payee</th>
                                 <th>Category</th>
@@ -66,8 +63,9 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for transaction in object_list %}
+                            {% for transaction in transaction_list %}
                                 <tr>
+                                    <td><input type="checkbox"></td>
                                     <td>{{ transaction.receipt_date }}</td>
                                     <td>{{ transaction.payee_name }}</td>
                                     <td>{{ transaction.subcategory }}</td>
