@@ -47,15 +47,16 @@
                                     <td>{{ details.0.budgeted_amount }}</td>
                                     <td>{{ details.0.activity }}</td>
                                     {% if details.0.available < 0 %}
-                                        <td class="negative-activity">
+                                        <td style="color: red">
                                     {% else %}
-                                        <td class="positive-activity">
+                                        <td style="color: green">
                                     {% endif %}
                                     {% if details.0.available == None %}
                                         {{ details.0.budgeted_amount }}
                                         </td>
                                     {% else %}
-                                        {{ details.0.available }}</td>
+                                        {{ details.0.available }}
+                                        </td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
