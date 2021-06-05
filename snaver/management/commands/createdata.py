@@ -7,11 +7,10 @@ from snaver.models import Transaction
 from snaver.models import SubcategoryDetails
 from django.db import transaction
 from django.contrib.auth.hashers import make_password
-from random import randint
+from random import randint, randrange
 from datetime import date
 
 from faker import Faker
-
 
 USERS = ["Krzysiek", "Mariola", "Andrzej"]
 CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie",
@@ -77,7 +76,7 @@ class Command(BaseCommand):
                 Transaction(
                     name="Transakcja",
                     payee_name=fake.company(),
-                    amount=100.00,
+                    outflow=float(randrange(10, 10000)) / 100,
                     receipt_date=date.today(),
                     subcategory=subcategory,
                 ) for _ in range(randint(0, 10))
@@ -85,7 +84,7 @@ class Command(BaseCommand):
 
             SubcategoryDetails.objects.bulk_create([
                 SubcategoryDetails(
-                    budgeted_amount=1000.00,
+                    budgeted_amount=randint(500, 1000),
                     start_date=date.today(),
                     end_date=date.today(),
                     subcategory=subcategory,
