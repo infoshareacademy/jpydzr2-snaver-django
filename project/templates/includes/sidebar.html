@@ -12,6 +12,12 @@
                         <p>This month's budget</p>
                     </a>
                 </li>
+                <li class="nav-item {% if 'adding' in segment %} active {% endif %}">
+                    <a class="nav-link" href="{% url "adding" %}">
+                        <i class="material-icons">library_books</i>
+                        <p>Add new transaction</p>
+                    </a>
+                </li>
                 <li class="nav-item {% if 'charts' in segment %} active {% endif %}">
                     <a class="nav-link" href="{% url "charts" %}">
                         <i class="material-icons">equalizer</i>
