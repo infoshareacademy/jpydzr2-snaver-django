@@ -5,6 +5,8 @@ from django.urls import re_path
 from snaver import views
 from snaver.views import CategoryView
 from snaver.views import ChartsListView
+from snaver.views import TransactionCreateView
+from snaver.views import TransactionListView
 
 urlpatterns = [
     path('', login_required(CategoryView.as_view()), name='home'),
@@ -14,5 +16,7 @@ urlpatterns = [
             login_required(CategoryView.as_view()),
             name='budget_select'),
     path('charts', ChartsListView.as_view(), name='charts'),
-    path('page-user.html', views.pages)
+    path('page-user.html', views.pages),
+    path('adding-transaction', TransactionListView.as_view(), name='adding'),
+    path('add-new', TransactionCreateView.as_view(), name='add_new'),
 ]

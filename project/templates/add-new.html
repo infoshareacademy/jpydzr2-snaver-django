@@ -1,0 +1,26 @@
+{% extends "layouts/base.html" %}
+{% load mathfilters %}
+
+{% block title %} New transaction {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+    <div class="card-body">
+        <form method="post">
+            <table>
+                {% csrf_token %}
+                {{ form.as_table }}
+            </table><br>
+            <input type="submit" value="Save" class="btn btn-primary pull-center">
+        </form>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

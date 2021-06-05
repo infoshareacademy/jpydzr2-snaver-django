@@ -93,7 +93,21 @@ class Transaction(models.Model):
         null=True,
     )
 
-    amount = models.DecimalField(decimal_places=2, max_digits=11)
+    outflow = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+        blank=True,
+        null=True,
+        default=0.00
+    )
+    inflow = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+        blank=True,
+        null=True,
+        default=0.00
+    )
+
     receipt_date = models.DateField(_('Receipt date'))
 
     subcategory = models.ForeignKey(

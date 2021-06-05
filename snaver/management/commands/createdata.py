@@ -1,6 +1,7 @@
 from calendar import monthrange
 from datetime import date
 from random import randint
+from random import randrange
 
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand
@@ -90,7 +91,7 @@ class Command(BaseCommand):
                 Transaction(
                     name="Transakcja",
                     payee_name=fake.company(),
-                    amount=100.00,
+                    outflow=float(randrange(10, 10000)) / 100,
                     receipt_date=date.today(),
                     subcategory=subcategory,
                 ) for _ in range(randint(0, 10))
@@ -98,7 +99,7 @@ class Command(BaseCommand):
 
             SubcategoryDetails.objects.bulk_create([
                 SubcategoryDetails(
-                    budgeted_amount=1000.00,
+                    budgeted_amount=randint(500, 1000),
                     start_date=first_day,
                     end_date=last_day,
                     subcategory=subcategory,
@@ -107,9 +108,9 @@ class Command(BaseCommand):
 
             SubcategoryDetails.objects.bulk_create([
                 SubcategoryDetails(
-                    budgeted_amount=800.00,
                     start_date=next_first_day,
                     end_date=next_last_day,
+                    budgeted_amount=randint(400, 900),
                     subcategory=subcategory,
                 )
             ])

@@ -8,13 +8,17 @@ from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.template import loader
+from django.urls import reverse_lazy
 from django.utils import dateformat
 from django.utils import timezone
+from django.views.generic import CreateView
 from django.views.generic import ListView
 
+from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
 from snaver.models import SubcategoryDetails
+from snaver.models import Transaction
 
 
 @login_required
@@ -23,6 +27,36 @@ def index(request):
 
     html_template = loader.get_template('index.html')
     return HttpResponse(html_template.render(context, request))
+
+
+class TransactionCreateView(CreateView):
+    model = Transaction
+    form_class = TransactionCreateForm
+
+    success_url = reverse_lazy('adding')
+    template_name = 'add-new.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+class TransactionListView(ListView):
+    model = Transaction
+    template_name = 'adding-transactions.html'
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return None
+
+        transaction_details = self.model.objects.filter(
+            subcategory__category__budget__user=self.request.user)
+        return transaction_details
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 class CategoryView(ListView):
@@ -65,12 +99,12 @@ class CategoryView(ListView):
             "subcategory__name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__amount'),
+                Sum('subcategory__transaction__outflow'),
                 Decimal(0.00)
             ),
             available=(
                     F("budgeted_amount")
-                    - Sum('subcategory__transaction__amount')
+                    - Sum('subcategory__transaction__outflow')
             )
         )
 
@@ -96,12 +130,12 @@ class ChartsListView(ListView):
             "subcategory__name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__amount'),
+                Sum('subcategory__transaction__outflow'),
                 Decimal(0.00)
             ),
             available=(
                     F("budgeted_amount")
-                    - Sum('subcategory__transaction__amount')
+                    - Sum('subcategory__transaction__outflow')
             )
         )
 
@@ -110,7 +144,7 @@ class ChartsListView(ListView):
                 subcategory__category__budget__user=self.request.user,
                 start_date__lte=current_time,
                 end_date__gte=current_time,
-            ).aggregate(Sum('subcategory__transaction__amount'))
+            ).aggregate(Sum('subcategory__transaction__outflow'))
         )
 
         total_budgeted = (
@@ -121,8 +155,11 @@ class ChartsListView(ListView):
             ).aggregate(Sum('budgeted_amount'))
         )
 
-        return subcategory_details, total_expenses['subcategory__transaction__amount__sum'], total_budgeted[
-            "budgeted_amount__sum"]
+        return (
+            subcategory_details,
+            total_expenses['subcategory__transaction__outflow__sum'],
+            total_budgeted["budgeted_amount__sum"],
+        )
 
 
 @login_required(login_url="/login/")
@@ -137,11 +174,9 @@ def pages(request):
         return HttpResponse(html_template.render(context, request))
 
     except template.TemplateDoesNotExist:
-
         html_template = loader.get_template('page-404.html')
         return HttpResponse(html_template.render(context, request))
 
-    except:
-
+    except Exception:
         html_template = loader.get_template('page-500.html')
         return HttpResponse(html_template.render(context, request))
