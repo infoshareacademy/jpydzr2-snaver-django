@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
+from django.db.models import F, Q
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -99,13 +99,16 @@ class CategoryView(ListView):
             "subcategory__name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__outflow'),
-                Decimal(0.00)
-            ),
-            available=(
-                    F("budgeted_amount")
-                    - Sum('subcategory__transaction__outflow')
+                Sum('subcategory__transaction__outflow',
+                    filter=Q(
+                        subcategory__transaction__receipt_date__lte=F("end_date"),
+                        subcategory__transaction__receipt_date__gte=F("start_date")
+                    )
+                    ),
+                Decimal(0.00),
             )
+        ).annotate(
+            available=(F("budgeted_amount") - F("activity"))
         )
 
         return subcategory_details
