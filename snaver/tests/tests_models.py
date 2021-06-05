@@ -71,7 +71,7 @@ class TransactionTestCase(TestCase):
         Transaction.objects.create(
             name="Spiderman",
             payee_name="Cinema city",
-            amount=30.00,
+            outflow=30.00,
             receipt_date=datetime.date(year=2021, month=4, day=26),
             subcategory=subcategory,
         )
@@ -82,7 +82,7 @@ class TransactionTestCase(TestCase):
 
     def test_transaction_has_correct_amount(self):
         transaction = Transaction.objects.get(name="Spiderman")
-        self.assertEqual(transaction.amount, Decimal(30.00))
+        self.assertEqual(transaction.outflow, Decimal(30.00))
 
     def test_user_has_transaction(self):
         user = CustomUser.objects.get(name="Mariola")
