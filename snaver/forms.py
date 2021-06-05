@@ -36,7 +36,7 @@ class TransactionCreateForm(forms.ModelForm):
 		inflow = cleaned_data.get("inflow")
 
 		if not outflow and not inflow:
-			raise ValidationError({'outflow': 'Even one of outflow or inflow should have a value.'})
+			raise ValidationError({'outflow': 'At least one of outflow or inflow should have a value.'})
 
 		if outflow and inflow:
 			raise ValidationError({'outflow': 'Only one of outflow or inflow should have a value.'})
