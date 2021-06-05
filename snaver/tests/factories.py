@@ -76,7 +76,7 @@ class Transaction(factory.django.DjangoModelFactory):
 
     name = faker.word() + " subcategory"
     payee_name = faker.word()
-    amount = 100.00
+    outflow = 100.00
     receipt_date = faker.date_time()
     subcategory = factory.Iterator(Subcategory.objects.all())
     created_on = faker.date_time()
