@@ -71,7 +71,7 @@ class SubcategoryDetails(models.Model):
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
-        related_name='subcategory',
+        related_name='subcategory_details',
     )
 
     def save(self, *args, **kwargs):

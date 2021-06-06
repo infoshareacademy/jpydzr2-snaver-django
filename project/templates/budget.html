@@ -7,9 +7,13 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-    <a href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}"><button class="btn btn-primary btn-round"><</button></a>
+    <a href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+        <button class="btn btn-primary btn-round">&lt;</button>
+    </a>
     {{ view.kwargs.year }}-{{ view.kwargs.month }}
-    <a href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}"><button class="btn btn-primary btn-round">></button></a>
+    <a href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
+        <button class="btn btn-primary btn-round">&gt;</button>
+    </a>
 
     <div class="row">
         <div class="col-md-12">
@@ -22,10 +26,9 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
-                            <thead class=" text-primary">
+                            <thead class="text-primary">
                             <tr>
-                                <th>Category name</th>
-                                <th>Subcategory name</th>
+                                <th>Category</th>
                                 <th>Budgeted</th>
                                 <th>Activity</th>
                                 <th>Available</th>
@@ -33,20 +36,31 @@
                             </thead>
                             <tbody>
                             {% for details in object_list %}
+                                {% if details.1 %}
+                                    <tr>
+                                        <td class="h3 text-primary">{{ details.0.subcategory.category.name }}</td>
+                                        <!-- Empty tds to match column number -->
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                {% endif %}
                                 <tr>
-                                    <td>{{ details.subcategory.category.name }}</td>
-                                    <td>{{ details.subcategory.name }}</td>
-                                    <td>{{ details.budgeted_amount }}</td>
-                                    <td>{{ details.activity }}</td>
-                                    {% if details.available < 0 %}
-                                        <td class="negative-activity">
+
+                                    <td>{{ details.0.subcategory.name }}</td>
+                                    <td>{{ details.0.budgeted_amount }}</td>
+                                    <td>{{ details.0.activity }}</td>
+                                    {% if details.0.available < 0 %}
+                                        <td style="color: red">
                                             {% else %}
-                                        <td class="positive-activity">
+                                        <td style="color: green">
                                     {% endif %}
-                                    {% if details.available == None %}
-                                        {{ details.budgeted_amount }}</td>
+                                    {% if details.0.available == None %}
+                                        {{ details.0.budgeted_amount }}
+                                        </td>
                                     {% else %}
-                                        {{ details.available }}</td>
+                                        {{ details.0.available }}
+                                        </td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
