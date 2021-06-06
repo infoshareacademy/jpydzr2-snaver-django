@@ -80,7 +80,7 @@ class SubcategoryDetails(models.Model):
         super(SubcategoryDetails, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.start_date} - {self.end_date}"
+        return f"{self.subcategory.name} - {self.start_date}"
 
 
 class Transaction(models.Model):
@@ -93,8 +93,20 @@ class Transaction(models.Model):
         null=True,
     )
 
-    outflow = models.DecimalField(decimal_places=2, max_digits=11, blank=True, null=True, default=0.00)
-    inflow = models.DecimalField(decimal_places=2, max_digits=11, blank=True, null=True, default=0.00)
+    outflow = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+        blank=True,
+        null=True,
+        default=0.00
+    )
+    inflow = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+        blank=True,
+        null=True,
+        default=0.00
+    )
 
     receipt_date = models.DateField(_('Receipt date'))
 
@@ -108,4 +120,3 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-

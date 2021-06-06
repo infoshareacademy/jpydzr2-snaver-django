@@ -1,6 +1,9 @@
 import pytest
-from .factories import CustomUserFactory, BudgetFactory
+
 from snaver.models import CustomUser
+
+from .factories import BudgetFactory
+from .factories import CustomUserFactory
 
 
 @pytest.mark.django_db

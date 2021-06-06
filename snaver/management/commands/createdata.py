@@ -1,16 +1,19 @@
+from calendar import monthrange
+from datetime import date
+from random import randint
+from random import randrange
+
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand
-from snaver.models import CustomUser
+from django.db import transaction
+from faker import Faker
+
 from snaver.models import Budget
 from snaver.models import Category
+from snaver.models import CustomUser
 from snaver.models import Subcategory
-from snaver.models import Transaction
 from snaver.models import SubcategoryDetails
-from django.db import transaction
-from django.contrib.auth.hashers import make_password
-from random import randint, randrange
-from datetime import date
-
-from faker import Faker
+from snaver.models import Transaction
 
 USERS = ["Krzysiek", "Mariola", "Andrzej"]
 CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie",
@@ -29,6 +32,18 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+
+        today = date.today()
+        first_day = today.replace(day=1)
+        month_end = monthrange(today.year, today.month)[1]
+        last_day = today.replace(day=month_end)
+
+        next_first_day = first_day.replace(month=first_day.month + 1)
+        next_month_end = monthrange(today.year, today.month + 1)[1]
+        next_last_day = last_day.replace(
+            month=first_day.month + 1,
+            day=next_month_end
+        )
 
         # Initiate faker
         fake = Faker()
@@ -85,8 +100,17 @@ class Command(BaseCommand):
             SubcategoryDetails.objects.bulk_create([
                 SubcategoryDetails(
                     budgeted_amount=randint(500, 1000),
-                    start_date=date.today(),
-                    end_date=date.today(),
+                    start_date=first_day,
+                    end_date=last_day,
+                    subcategory=subcategory,
+                )
+            ])
+
+            SubcategoryDetails.objects.bulk_create([
+                SubcategoryDetails(
+                    start_date=next_first_day,
+                    end_date=next_last_day,
+                    budgeted_amount=randint(400, 900),
                     subcategory=subcategory,
                 )
             ])
