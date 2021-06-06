@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.db.models import F, Q
+from django.db.models import F, Q, Value, Subquery, OuterRef
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -20,7 +20,7 @@ from snaver.helpers import prev_month
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
-from collections import defaultdict
+from calendar import monthrange
 
 
 @login_required
@@ -71,10 +71,13 @@ class CategoryView(ListView):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
     def _this_month(self):
+        year = int(self.kwargs["year"])
+        month = int(self.kwargs["month"])
+        day = monthrange(year, month)[1]  # the last day of the month
         selected_date = datetime(
-            year=int(self.kwargs["year"]),
-            month=int(self.kwargs["month"]),
-            day=1
+            year=year,
+            month=month,
+            day=day
         )
         return selected_date
 
@@ -95,7 +98,7 @@ class CategoryView(ListView):
         subcategory_details = SubcategoryDetails.objects.filter(
             subcategory__category__budget__user=self.request.user,
             start_date__lte=selected_date,
-            end_date__gte=selected_date,
+            # end_date__gte=selected_date,
         ).order_by(
             "subcategory__category__name",
             "subcategory__name"
@@ -110,8 +113,17 @@ class CategoryView(ListView):
                 Decimal(0.00),
             )
         ).annotate(
-            available=(F("budgeted_amount") - F("activity"))
-        )
+            available=F('budgeted_amount') -  # TODO: This annotate has to be changed somehow. It doesn't add up all "budgeted_amounts" from previous months. Only the current one.
+            Coalesce(
+                # Coalesce picks first non-null value
+                Sum('subcategory__transaction__outflow',
+                    filter=Q(
+                        subcategory__transaction__receipt_date__lte=selected_date,
+                    )
+                    ),
+                Decimal(0.00),
+            )).filter(end_date__gte=selected_date,)
+
 
         # This is an awful hack, to add information if the element is the first
         # one in its category. If it is, it's marked as True (for the template)
