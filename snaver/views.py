@@ -1,10 +1,15 @@
+from calendar import monthrange
 from datetime import datetime
 from decimal import Decimal
 
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.db.models import F, Q, Value, Subquery, OuterRef
+from django.db.models import F
+from django.db.models import OuterRef
+from django.db.models import Q
+from django.db.models import Subquery
 from django.db.models import Sum
+from django.db.models import Value
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.template import loader
@@ -17,10 +22,9 @@ from django.views.generic import ListView
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
-from snaver.models import SubcategoryDetails, Subcategory
+from snaver.models import Subcategory
+from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
-
-from calendar import monthrange
 
 
 @login_required
@@ -98,11 +102,6 @@ class CategoryView(ListView):
         self._set_current_date()
         first_day, last_day = self._this_months_range()
 
-        budgeted_subquery = SubcategoryDetails.objects.filter(
-            subcategory_id=OuterRef('id'),
-            start_date=first_day,
-        )
-
         # https://stackoverflow.com/a/64902200/5947738
         # Dummy group by column forces Django to Sum values correctly
         past_budgeted_subquery = SubcategoryDetails.objects.filter(
@@ -116,6 +115,12 @@ class CategoryView(ListView):
             past_budgeted=Sum("budgeted_amount")
         ).values("past_budgeted")
 
+        budgeted_subquery = SubcategoryDetails.objects.filter(
+            subcategory_id=OuterRef('id'),
+            start_date=first_day,
+        )
+
+        # Main query
         subcategory_details = Subcategory.objects.filter(
             category__budget__user=self.request.user,
         ).order_by(
