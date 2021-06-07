@@ -38,7 +38,7 @@
                             {% for details in object_list %}
                                 {% if details.1 %}
                                     <tr>
-                                        <td class="h3 text-primary">{{ details.0.subcategory.category.name }}</td>
+                                        <td class="h3 text-primary">{{ details.0.category.name }}</td>
                                         <!-- Empty tds to match column number -->
                                         <td></td>
                                         <td></td>
@@ -47,7 +47,7 @@
                                 {% endif %}
                                 <tr>
 
-                                    <td>{{ details.0.subcategory.name }}</td>
+                                    <td>{{ details.0.name }}</td>
                                     <td>{{ details.0.budgeted_amount }}</td>
                                     <td>{{ details.0.activity }}</td>
                                     {% if details.0.available < 0 %}

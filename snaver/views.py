@@ -17,7 +17,7 @@ from django.views.generic import ListView
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
-from snaver.models import SubcategoryDetails
+from snaver.models import SubcategoryDetails, Subcategory
 from snaver.models import Transaction
 
 from calendar import monthrange
@@ -70,60 +70,76 @@ class CategoryView(ListView):
         if not self.kwargs.get("month", None):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
-    def _this_month(self):
+    def _this_months_range(self):
         year = int(self.kwargs["year"])
         month = int(self.kwargs["month"])
         day = monthrange(year, month)[1]  # the last day of the month
-        selected_date = datetime(
+        first_day = datetime(
             year=year,
             month=month,
-            day=day
+            day=1,
         )
-        return selected_date
+        last_day = datetime(
+            year=year,
+            month=month,
+            day=day,
+        )
+        return first_day, last_day
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self._set_current_date()
-        selected_date = self._this_month()
-        context['prev_month'] = prev_month(selected_date)
-        context['next_month'] = next_month(selected_date)
+        _, last_day = self._this_months_range()
+        context['prev_month'] = prev_month(last_day)
+        context['next_month'] = next_month(last_day)
         return context
 
     def get_queryset(self, *args, **kwargs):
         self._set_current_date()
-        selected_date = dateformat.format(
-            self._this_month(),
-            'Y-m-d')
+        first_day, last_day = self._this_months_range()
 
-        subcategory_details = SubcategoryDetails.objects.filter(
-            subcategory__category__budget__user=self.request.user,
-            start_date__lte=selected_date,
-            # end_date__gte=selected_date,
+        budgeted_subquery = SubcategoryDetails.objects.filter(
+            subcategory_id=OuterRef('id'),
+            start_date=first_day,
+        )
+
+        past_budgeted_subquery = SubcategoryDetails.objects.filter(
+            subcategory__id=OuterRef('id'),
+            start_date__lte=first_day,
+        ).annotate(
+            dummy_group_by=Value(1)
+        ).values(
+            'dummy_group_by'
+        ).annotate(
+            past_budgeted=Sum("budgeted_amount")
+        ).values("past_budgeted")
+
+        subcategory_details = Subcategory.objects.filter(
+            category__budget__user=self.request.user,
         ).order_by(
-            "subcategory__category__name",
-            "subcategory__name"
+            "category__name",
+            "name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__outflow',
+                Sum('transaction__outflow',
                     filter=Q(
-                        subcategory__transaction__receipt_date__lte=F("end_date"),
-                        subcategory__transaction__receipt_date__gte=F("start_date")
+                        transaction__receipt_date__range=(first_day, last_day),
                     )
                     ),
                 Decimal(0.00),
             )
         ).annotate(
-            available=F('budgeted_amount') -  # TODO: This annotate has to be changed somehow. It doesn't add up all "budgeted_amounts" from previous months. Only the current one.
-            Coalesce(
-                # Coalesce picks first non-null value
-                Sum('subcategory__transaction__outflow',
+            budgeted_amount=Subquery(budgeted_subquery.values("budgeted_amount"))
+        ).annotate(
+            available=Subquery(past_budgeted_subquery) - Coalesce(
+                Sum('transaction__outflow',
                     filter=Q(
-                        subcategory__transaction__receipt_date__lte=selected_date,
+                        transaction__receipt_date__lte=last_day,
                     )
                     ),
                 Decimal(0.00),
-            )).filter(end_date__gte=selected_date,)
-
+            )
+        )
 
         # This is an awful hack, to add information if the element is the first
         # one in its category. If it is, it's marked as True (for the template)
@@ -132,10 +148,10 @@ class CategoryView(ListView):
         new_list = []
         cache = {}
         for sub in subcategory_details:
-            if cache.get(sub.subcategory.category.name, None):
+            if cache.get(sub.category.name, None):
                 new_list.append((sub, False,))
             else:
-                cache[sub.subcategory.category.name] = True
+                cache[sub.category.name] = True
                 new_list.append((sub, True,))
 
         return new_list
