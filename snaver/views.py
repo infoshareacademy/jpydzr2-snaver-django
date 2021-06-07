@@ -129,7 +129,10 @@ class CategoryView(ListView):
                 Decimal(0.00),
             )
         ).annotate(
-            budgeted_amount=Subquery(budgeted_subquery.values("budgeted_amount"))
+            budgeted_amount=Coalesce(
+                Subquery(budgeted_subquery.values("budgeted_amount")),
+                Decimal(0.00)
+            )
         ).annotate(
             available=Subquery(past_budgeted_subquery) - Coalesce(
                 Sum('transaction__outflow',
