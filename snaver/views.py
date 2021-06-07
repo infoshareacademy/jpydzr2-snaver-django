@@ -103,6 +103,8 @@ class CategoryView(ListView):
             start_date=first_day,
         )
 
+        # https://stackoverflow.com/a/64902200/5947738
+        # Dummy group by column forces Django to Sum values correctly
         past_budgeted_subquery = SubcategoryDetails.objects.filter(
             subcategory__id=OuterRef('id'),
             start_date__lte=first_day,
