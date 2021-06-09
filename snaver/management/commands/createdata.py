@@ -79,7 +79,7 @@ class Command(BaseCommand):
                 subcategory_id=subcategory.id
             )
             for budget in budgets:
-                budget.budgeted_amount = Decimal(randrange(100, 600))
+                budget.budgeted_amount = Decimal(randrange(150, 650))
                 budget.save()
 
             Transaction.objects.bulk_create([
