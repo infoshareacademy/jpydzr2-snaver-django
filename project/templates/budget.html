@@ -11,15 +11,11 @@
     <div class="col-12 col-sm-6 col-xl-4 mb-4">
         <div class="card border-light shadow-sm">
             <div class="card-body">
-                <div class="row d-block d-xl-flex align-items-center">
-                    <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                        <div class="icon icon-shape icon-md icon-shape-secondary rounded mr-4"><span
-                                class="fas fa-money-check-alt"></span></div>
-                    </div>
+                <div class="row d-block d-xl-flex align-items-center ml-3">
                     <div class="col-12 col-xl-7 px-xl-0">
                         <div class="d-none d-sm-block">
                             <h2 class="h5">To be budgeted</h2>
-                            <h3 class="mb-1">$43,594</h3>
+                            <h3 class="mb-1 text-success">$43,594</h3>
                         </div>
                         <small>- $200 from previous month</small>
                     </div>
@@ -55,22 +51,22 @@
             <div class="card border-light shadow-sm">
                 <div class="card-body">
                     <div class="table-responsive">
-                    <table class="table table-centered table-nowrap mb-0 rounded table-hover">
-                        <thead class="thead-light">
+                    <table class="table table-centered table-nowrap mb-0 rounded table-hover" id="budget-table">
+                        <thead class="thead-light mb-5">
                             <tr>
-                                <th class="border-0">Category</th>
+                                <th class="border-0">Category&nbsp;&nbsp;<span class="new-category new-cat"><span class="fas fa-plus-circle"></span>&nbsp;&nbsp;new category</span></th>
                                 <th class="border-0">Budgeted</th>
                                 <th class="border-0">Activity</th>
                                 <th class="border-0">Available</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="mt-5">
                         {% for details in object_list %}
                             {% if details.1 %}
                                 <tr class="">
-                                    <td class="" colspan="4"><span class="h6">
-                                        {{ details.0.subcategory.category.name }}
-                                    </span></td>
+                                    <td class="" colspan="4" data-id="{{ details.0.subcategory.category.id }}">
+                                        {{ details.0.subcategory.category.name }} <span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
+                                    </td>
                                 </tr>
                             {% endif %}
                             <tr>
@@ -108,9 +104,53 @@
 {% block javascripts %}
     <script>
         $(document).ready(function() {
+
+            let chosen_row;
+
+            $(document).on("click", ".new-category", function () {
+                let markup = '<input type="text" tabindex="0" class="input-data-new-cat form-control m-3">';
+                let tableBody = $("#budget-table");
+                $(this).removeClass("new-category");
+                tableBody.prepend(markup);
+                $('.input-data-new-cat').focus();
+            });
+
+            $(document).on("blur", ".input-data-new-cat", function (){
+                 $(this).remove();
+                 $("#new-cat").addClass("new-category");
+            });
+
+            $(document).on("click", ".new-subcategory", function () {
+                let markup = '<input type="text" data-type="new-subcategory" tabindex="0" class="input-data-new-subcat form-control m-3">';
+                let row = $(this).closest("tr");
+                chosen_row = $(this).parent("td");
+                $(this).removeClass("new-subcategory");
+                $(this).addClass("selected");
+                $(markup).insertAfter(row);
+                $('.input-data-new-subcat').focus();
+            });
+
+            $(document).on("blur", ".input-data-new-subcat", function (){
+                let td = $(this).closest("td");
+                let id = chosen_row.data('id');
+                let type = $(this).data("type");
+                let value = $(this).val();
+                console.log(value);
+                 $(this).remove();
+                 $(".new-sub").addClass("new-subcategory");
+                 sendToServer(id, value, type);
+            });
+
             $(document).on("click", ".editable", function () {
                 let value = $(this).text()
-                let input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
+                let td = $(this).parent("td");
+                let type = td.data('type')
+                let input;
+                if (type === 'budgeted-amount') {
+                    input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
+                } else {
+                    input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
+               }
                 $(this).html(input);
                 $(this).removeClass("editable");
                 $('.input-data').focus();
@@ -118,7 +158,7 @@
 
             $(document).on("keypress", ".input-data", function (e){
                 let key= e.which;
-                if (key== 13) {
+                if (key === 13) {
                     console.log("lost focus");
                     let value = $(this).val();
                     let td = $(this).parent("td");
@@ -145,7 +185,7 @@
             function sendToServer(id, value, type) {
                 console.log(id);
                 console.log(value);
-                console.log(type);
+                console.log('type= ' + type);
 
                 $.ajax({
                     url: "update-category",

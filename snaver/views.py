@@ -21,6 +21,7 @@ from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
 from snaver.models import Subcategory
+from snaver.models import Category
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
@@ -222,6 +223,14 @@ def update_category(request):
         print("ok, tutaj tez jestem")
         subcategory = SubcategoryDetails.objects.get(id=id)
         subcategory.budgeted_amount = value
+        subcategory.save()
+
+    if type == 'new-subcategory':
+        print("jestem tutaj")
+        category = Category.objects.get(id=id)
+        print(category)
+        subcategory = Subcategory(name=value, category=category)
+        print(subcategory)
         subcategory.save()
 
     return JsonResponse({"success": "Object updated"})
