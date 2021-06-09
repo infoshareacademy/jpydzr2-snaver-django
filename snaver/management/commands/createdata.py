@@ -1,9 +1,6 @@
-from calendar import monthrange
 from datetime import date
 from datetime import timedelta
-
 from decimal import Decimal
-
 from random import randint
 from random import randrange
 
@@ -36,19 +33,6 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-
-        today = date.today()
-        first_day = today.replace(day=1)
-        month_end = monthrange(today.year, today.month)[1]
-        last_day = today.replace(day=month_end)
-
-        next_first_day = first_day.replace(month=first_day.month + 1)
-        next_month_end = monthrange(today.year, today.month + 1)[1]
-        next_last_day = last_day.replace(
-            month=first_day.month + 1,
-            day=next_month_end
-        )
-
         # Initiate faker
         fake = Faker()
 
@@ -91,7 +75,9 @@ class Command(BaseCommand):
                 ).save()
 
         for subcategory in Subcategory.objects.all():
-            budgets = SubcategoryDetails.objects.filter(subcategory_id=subcategory.id)
+            budgets = SubcategoryDetails.objects.filter(
+                subcategory_id=subcategory.id
+            )
             for budget in budgets:
                 budget.budgeted_amount = Decimal(randrange(100, 600))
                 budget.save()
