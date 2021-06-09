@@ -1,9 +1,13 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
+from snaver.helpers import next_month
 
 
 class CustomUser(AbstractUser):
@@ -55,6 +59,30 @@ class Subcategory(models.Model):
         related_name='subcategory',
     )
     created_on = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        is_new = False
+        if not self.pk:  # if Subcategory doesn't exist in the database
+            is_new = True
+
+        super(Subcategory, self).save(*args, **kwargs)  # create the object
+
+        if is_new:  # after object is created, create its children
+            first_day = datetime.date.today().replace(day=1)
+            new_subcat_details = []
+            for i in range(1, 13):
+                last_day = next_month(first_day) - datetime.timedelta(days=1)
+                new_subcat_details.append(
+                    SubcategoryDetails(
+                        budgeted_amount=0,
+                        start_date=first_day,
+                        end_date=last_day,
+                        subcategory_id=self.id
+                    )
+                )
+
+                first_day = next_month(first_day)
+            SubcategoryDetails.objects.bulk_create(new_subcat_details)
 
     def __str__(self):
         return f"{self.name}"
