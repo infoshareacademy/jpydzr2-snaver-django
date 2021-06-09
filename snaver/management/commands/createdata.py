@@ -1,5 +1,9 @@
 from calendar import monthrange
 from datetime import date
+from datetime import timedelta
+
+from decimal import Decimal
+
 from random import randint
 from random import randrange
 
@@ -79,38 +83,27 @@ class Command(BaseCommand):
 
         for category in Category.objects.all():
             index = CATEGORIES.index(category.name)
-            Subcategory.objects.bulk_create([
+            # Can't use bulk_create because it doesn't trigger save()
+            for subcategory in SUBCATEGORIES[index]:
                 Subcategory(
                     name=subcategory,
                     category=category,
-                ) for subcategory in SUBCATEGORIES[index]
-            ])
+                ).save()
 
         for subcategory in Subcategory.objects.all():
+            budgets = SubcategoryDetails.objects.filter(subcategory_id=subcategory.id)
+            for budget in budgets:
+                budget.budgeted_amount = Decimal(randrange(100, 600))
+                budget.save()
+
             Transaction.objects.bulk_create([
                 Transaction(
                     name="Transakcja",
                     payee_name=fake.company(),
                     outflow=float(randrange(10, 10000)) / 100,
-                    receipt_date=date.today(),
+                    receipt_date=date.today() + timedelta(
+                        days=randrange(0, 11 * 30)
+                    ),
                     subcategory=subcategory,
-                ) for _ in range(randint(0, 10))
-            ])
-
-            SubcategoryDetails.objects.bulk_create([
-                SubcategoryDetails(
-                    budgeted_amount=randint(500, 1000),
-                    start_date=first_day,
-                    end_date=last_day,
-                    subcategory=subcategory,
-                )
-            ])
-
-            SubcategoryDetails.objects.bulk_create([
-                SubcategoryDetails(
-                    start_date=next_first_day,
-                    end_date=next_last_day,
-                    budgeted_amount=randint(400, 900),
-                    subcategory=subcategory,
-                )
+                ) for _ in range(randint(50, 130))
             ])

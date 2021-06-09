@@ -70,7 +70,7 @@ class Subcategory(models.Model):
         if is_new:  # after object is created, create its children
             first_day = datetime.date.today().replace(day=1)
             new_subcat_details = []
-            for i in range(1, 13):
+            for _ in range(1, 13):
                 last_day = next_month(first_day) - datetime.timedelta(days=1)
                 new_subcat_details.append(
                     SubcategoryDetails(
