@@ -235,37 +235,32 @@ def update_transaction(request):
     print(value)
 
     if type == 'transaction_date':
-        print("ok, tutaj tez jestem")
         transaction = Transaction.objects.get(id=id)
         transaction.receipt_date = value
         transaction.save()
 
     if type == 'payee_name':
-        print("ok, tutaj tez jestem")
         transaction = Transaction.objects.get(id=id)
         transaction.payee_name = value
         transaction.save()
 
     if type == 'transaction_subcategory':
-        print("ok, tutaj tez jestem")
+        print("ok, kategoria")
         transaction = Transaction.objects.get(id=id)
         transaction.subcategory = value
         transaction.save()
 
     if type == 'transaction_name':
-        print("ok, tutaj tez jestem")
         transaction = Transaction.objects.get(id=id)
         transaction.name = value
         transaction.save()
 
     if type == 'outflow':
-        print("ok, tutaj tez jestem")
         transaction = Transaction.objects.get(id=id)
         transaction.outflow = value
         transaction.save()
 
     if type == 'inflow':
-        print("ok, tutaj tez jestem")
         transaction = Transaction.objects.get(id=id)
         transaction.inflow = value
         transaction.save()

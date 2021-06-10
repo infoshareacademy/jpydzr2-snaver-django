@@ -8,6 +8,7 @@ from snaver.views import ChartsListView
 from snaver.views import TransactionCreateView
 from snaver.views import TransactionListView
 from snaver.views import update_category
+from snaver.views import update_transaction
 
 urlpatterns = [
     path('', login_required(CategoryView.as_view()), name='home'),
@@ -20,5 +21,6 @@ urlpatterns = [
     path('page-user.html', views.pages),
     path('adding-transaction', TransactionListView.as_view(), name='adding'),
     path('add-new', TransactionCreateView.as_view(), name='add_new'),
-    path('update-category', views.update_category, name="update-category")
+    path('update-category', views.update_category, name="update-category"),
+    path('update-transaction', views.update_transaction, name="update-transaction"),
 ]
