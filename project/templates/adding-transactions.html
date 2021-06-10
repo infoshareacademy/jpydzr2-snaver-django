@@ -51,27 +51,27 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table">
-                            <thead class=" text-primary">
+                            <thead class="text-primary">
                             <tr>
-                                <th></th>
-                                <th>Date</th>
-                                <th>Payee</th>
-                                <th>Category</th>
-                                <th>Description</th>
-                                <th>Outflow</th>
-                                <th>Inflow</th>
+                                <th class="border-0"></th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Payee</th>
+                                <th class="border-0">Category</th>
+                                <th class="border-0">Description</th>
+                                <th class="border-0">Outflow</th>
+                                <th class="border-0">Inflow</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for transaction in transaction_list %}
                                 <tr>
                                     <td><input type="checkbox"></td>
-                                    <td>{{ transaction.receipt_date }}</td>
-                                    <td>{{ transaction.payee_name }}</td>
-                                    <td>{{ transaction.subcategory }}</td>
-                                    <td>{{ transaction.name }}</td>
-                                    <td>{{ transaction.outflow }}</td>
-                                    <td>{{ transaction.inflow }}</td>
+                                    <td class="border-0 editable" data-type="transaction_date">{{ transaction.receipt_date }}</td>
+                                    <td class="border-0 editable" data-type="payee_name">{{ transaction.payee_name }}</td>
+                                    <td class="border-0 editable" data-type="transaction_subcategory">{{ transaction.subcategory }}</td>
+                                    <td class="border-0 editable" data-type="transaction_name">{{ transaction.name }}</td>
+                                    <td class="border-0 editable" data-type="outflow">{{ transaction.outflow }}</td>
+                                    <td class="border-0 editable" data-type="inflow">{{ transaction.inflow }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -85,4 +85,62 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            $(document).on("click", ".editable", function () {
+                let value = $(this).text()
+                let input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
+                $(this).html(input);
+                $(this).removeClass("editable");
+                $('.input-data').focus();
+            });
+
+            $(document).on("keypress", ".input-data", function (e){
+                let key= e.which;
+                if (key== 13) {
+                    console.log("lost focus");
+                    let value = $(this).val();
+                    let td = $(this).parent("td");
+                    $(this).remove();
+                    td.html(value);
+                    td.addClass("editable");
+                    let type = td.data('type')
+                    sendToServer(td.data(id), value, type);
+                }
+            });
+
+            $(document).on("blur", ".input-data", function (){
+                console.log("lost focus");
+                let value = $(this).val();
+                let td = $(this).parent("td");
+                $(this).remove();
+                td.html(value);
+                td.addClass("editable");
+                let id = td.data('id')
+                let type = td.data('type')
+                sendToServer(id, value, type);
+            });
+
+            function sendToServer(id, value, type) {
+                console.log(id);
+                console.log(value);
+                console.log(type);
+
+                $.ajax({
+                    url: "update-category",
+                    type: "POST",
+                    data: {id:id, type:type, value:value}
+                })
+                .done(function(response){
+                    console.log(response);
+                    $('body').load("budget");
+                })
+                .fail(function(){
+                    console.log("Error occured")
+                });
+            }
+
+        });
+    </script>
+{% endblock javascripts %}
