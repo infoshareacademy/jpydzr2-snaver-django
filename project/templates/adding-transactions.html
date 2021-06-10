@@ -38,7 +38,6 @@
                     <table class="table">
                         <thead class="text-primary">
                         <tr>
-                            <th class="border-0"></th>
                             <th class="border-0">Date</th>
                             <th class="border-0">Payee</th>
                             <th class="border-0">Category</th>
@@ -50,14 +49,13 @@
                         <tbody id="transactions">
                         {% for transaction in transaction_list %}
                         <tr>
-                            <td><input type="checkbox"></td>
                             <td class="border-0 editable-date" data-id="{{transaction.id}}"
                                 data-type="transaction_date">{{ transaction.receipt_date }}
                             </td>
                             <td class="border-0 editable" data-id="{{transaction.id}}"
                                 data-type="payee_name">{{ transaction.payee_name }}
                             </td>
-                            <td class="border-0 editable-list" data-id="{{transaction.id}}"
+                            <td class="border-0 editable" id="cat_list" data-id="{{transaction.id}}"
                                 data-type="transaction_subcategory">{{ transaction.subcategory }}
                             </td>
                             <td class="border-0 editable" data-id="{{transaction.id}}"
@@ -98,13 +96,6 @@
             let input = '<input type="date" tabindex="0" class="input-data form-control" value="' + value + '">';
             $(this).html(input);
             $(this).removeClass("editable-date");
-            $('.input-data').focus();
-        });
-
-        $(document).on("click", ".editable-list", function () {
-            let input = '<select tabindex="0" class="nav-item-dropdown" >';
-            $(this).html(input);
-            $(this).removeClass("editable-list");
             $('.input-data').focus();
         });
 
