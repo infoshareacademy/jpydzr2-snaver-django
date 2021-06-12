@@ -10,13 +10,33 @@
 
 {% block content %}
 
-{# !!!>>> Chart number 0 #}
-    Chart number 0
-    <div id="donutchart" style="width: 900px; height: 500px;"></div>
-    <br>
-    <br>
+    <a href="{% url "reports_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+        <button class="btn btn-primary btn-round">&lt;</button>
+    </a>
+    {{ view.kwargs.year }}-{{ view.kwargs.month }}
+    <a href="{% url "reports_select" next_month.year next_month.month|stringformat:"02d" %}">
+        <button class="btn btn-primary btn-round">&gt;</button>
+    </a>
 
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title ">Charts for you budget</h4>
+                    <p class="card-category">in {{ view.kwargs.year }}-{{ view.kwargs.month }}</p>
+                </div>
+                <div class="card-body">
 
+                    {# !!!>>> Chart number 0 #}
+                    Chart number 0
+                    <div id="donutchart" style="width: 900px; height: 900px;"></div>
+                    <br>
+                    <br>
+
+                </div>
+            </div>
+        </div>
+    </div>
 
 {# !!!>>> Chart number 1 #}
     Chart number 1
@@ -81,15 +101,16 @@
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Hours per Day'],
-          ['Work',     11],
-          ['Sleep',    7]
+          {% for details in object_list.0 %}
+              ['{{ details.subcategory.name }}', {{ details.budgeted_amount }}],
+          {% endfor %}
         ]);
 
         var options = {
-          title: 'My Daily Activities',
+          title: 'CHART FOR SUBCATEGORIES AGAINST BUDGETED AMOUNTS',
           titleTextStyle: {fontSize: 20},
           backgroundColor: {fill: 'transparent'},
-          pieHole: 0.4,
+          pieHole: 0.3,
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('donutchart'));

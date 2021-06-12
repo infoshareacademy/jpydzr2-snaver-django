@@ -8,57 +8,84 @@
 
 {% block content %}
 
-    <h3>CHART FOR SUBCATEGORIES AGAINST <b>BUDGETED AMOUNTS</b></h3>
-    <p>Total budgeted amount: {{ object_list.2 }}</p>
-    <div class="progress-container">
-        {% for details in object_list.0 %}
-            {% with a=details.budgeted_amount b=object_list.2 %}
-                {% with value=a|div:b|mul:100 %} <!-- calculating the percentage value to the progress-bar -->
-                    <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
-                             aria-valuemax="100" style="width: {{ value }}%;">
-                        </div>
-                    </div>
-                {% endwith %}
-            {% endwith %}
-        {% endfor %}
-    </div>
-    <br>
-    <br>
-    <br>
+    <a href="{% url "charts_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+        <button class="btn btn-primary btn-round">&lt;</button>
+    </a>
+    {{ view.kwargs.year }}-{{ view.kwargs.month }}
+    <a href="{% url "charts_select" next_month.year next_month.month|stringformat:"02d" %}">
+        <button class="btn btn-primary btn-round">&gt;</button>
+    </a>
 
-    <h3>CHART FOR SUBCATEGORIES AGAINST <b>EXPENSES</b></h3>
-    <p>Total expenses: {{ object_list.1 }}</p>
-    <div class="progress-container">
-    {% for details in object_list.0 %}
-        {% with a=details.activity b=object_list.2 %}
-            {% with value=a|div:b|mul:100 %} <!-- calculating the percentage value to the progress-bar -->
-                <span class="progress-badge">{{ details.subcategory.name }}: {{ details.activity }}</span>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0"
-                         aria-valuemax="100" style="width: {{ value }}%;">
-                    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title ">Charts for you budget</h4>
+                    <p class="card-category">in {{ view.kwargs.year }}-{{ view.kwargs.month }}</p>
                 </div>
-            {% endwith %}
-        {% endwith %}
-    {% endfor %}
+                <div class="card-body">
+
+                    <h3>CHART FOR SUBCATEGORIES AGAINST <b>BUDGETED AMOUNTS</b></h3>
+                    <p>Total budgeted amount: {{ object_list.2 }}</p>
+                    <div class="progress-container">
+                        {% for details in object_list.0 %}
+                            {% with a=details.budgeted_amount b=object_list.2 %}
+                                {% with value=a|div:b|mul:100 %}
+                                    <!-- calculating the percentage value to the progress-bar -->
+                                    <span class="progress-badge">{{ details.subcategory.name }}: {{ details.budgeted_amount }}</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" role="progressbar"
+                                             aria-valuenow="{{ value }}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ value }}%;">
+                                        </div>
+                                    </div>
+                                {% endwith %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+
+                    <h3>CHART FOR SUBCATEGORIES AGAINST <b>EXPENSES</b></h3>
+                    <p>Total expenses: {{ object_list.1 }}</p>
+                    <div class="progress-container">
+                        {% for details in object_list.0 %}
+                            {% with a=details.activity b=object_list.2 %}
+                                {% with value=a|div:b|mul:100 %}
+                                    <!-- calculating the percentage value to the progress-bar -->
+                                    <span class="progress-badge">{{ details.subcategory.name }}: {{ details.activity }}</span>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ value }}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ value }}%;">
+                                        </div>
+                                    </div>
+                                {% endwith %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
     </div>
-    <br>
-    <br>
-    <br>
+
+
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-  <script>
-    $(document).ready(function() {
-      // Javascript method's body can be found in assets/js/demos.js
-      md.initDashboardPageCharts();
+    <script>
+        $(document).ready(function () {
+            // Javascript method's body can be found in assets/js/demos.js
+            md.initDashboardPageCharts();
 
-    });
-  </script>
+        });
+    </script>
 
 {% endblock javascripts %}
