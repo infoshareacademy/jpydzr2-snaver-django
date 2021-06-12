@@ -198,3 +198,54 @@ def pages(request):
     except Exception:
         html_template = loader.get_template('page-500.html')
         return HttpResponse(html_template.render(context, request))
+
+
+class ReportsListView(ListView):
+    template_name = 'reports.html'
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return None
+
+        # date has to be string for filter
+        current_time = dateformat.format(timezone.now(), 'Y-m-d')
+
+        subcategory_details = SubcategoryDetails.objects.filter(
+            subcategory__category__budget__user=self.request.user,
+            start_date__lte=current_time,
+            end_date__gte=current_time,
+        ).order_by(
+            "subcategory__category__name",
+            "subcategory__name"
+        ).annotate(
+            activity=Coalesce(  # Coalesce picks first non-null value
+                Sum('subcategory__transaction__outflow'),
+                Decimal(0.00)
+            ),
+            available=(
+                    F("budgeted_amount")
+                    - Sum('subcategory__transaction__outflow')
+            )
+        )
+
+        total_expenses = (
+            SubcategoryDetails.objects.filter(
+                subcategory__category__budget__user=self.request.user,
+                start_date__lte=current_time,
+                end_date__gte=current_time,
+            ).aggregate(Sum('subcategory__transaction__outflow'))
+        )
+
+        total_budgeted = (
+            SubcategoryDetails.objects.filter(
+                subcategory__category__budget__user=self.request.user,
+                start_date__lte=current_time,
+                end_date__gte=current_time,
+            ).aggregate(Sum('budgeted_amount'))
+        )
+
+        return (
+            subcategory_details,
+            total_expenses['subcategory__transaction__outflow__sum'],
+            total_budgeted["budgeted_amount__sum"],
+        )
