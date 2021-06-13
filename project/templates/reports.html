@@ -26,6 +26,30 @@
                     <h4 class="card-title ">Charts for your budget</h4>
                     <p class="card-category">in {{ view.kwargs.year }}-{{ view.kwargs.month }}</p>
                 </div>
+
+<!-- Some test below commented. It's temporary. -->
+{#                <div class="row">#}
+{#                    <div class="col-sm">#}
+{#                        <h3>TOTAL BUDGETED: <b>{{ object_list.2 }}</b></h3>#}
+{#                        <h3>TOTAL EXPENSES (ACTIVITY): <b>{{ object_list.1 }}</b></h3>#}
+{#                        <h3>TOTAL AVAILABLE: <b>{{ object_list.2|sub:object_list.1 }}</b></h3>#}
+{#                    </div>#}
+{#                    <div class="col-sm">#}
+{#                        <div id="chart_indicator"></div>#}
+{#                    </div>#}
+{#                </div>#}
+
+{#                    {% for details in object_list.0 %}#}
+{#                        {% with a=details.budgeted|sub:details.activity %}#}
+{#                            {% if a < 0 %}#}
+{#                                {{ details.subcategory.name }}#}
+{#                                {{ a }}#}
+{#                                <br>#}
+{#                            {% endif %}#}
+{#                        {% endwith %}#}
+{#                    {% endfor %}#}
+
+
                 <div class="card-body">
                     <div id="chart_div" style="height: 1000px"></div>
 
@@ -61,6 +85,32 @@
         });
     </script>
 
+<!-- Some test below commented. It's temporary. -->
+{#    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>#}
+{#    <script type="text/javascript">#}
+{#        google.charts.load('current', {'packages': ['gauge']});#}
+{#        google.charts.setOnLoadCallback(drawChart);#}
+{##}
+{#        function drawChart() {#}
+{##}
+{#            var data = google.visualization.arrayToDataTable([#}
+{#                ['Label', 'Value'],#}
+{#                ['Use of the budget', {{ object_list.1 }}],#}
+{#            ]);#}
+{##}
+{#            var options = {#}
+{#                width: 800, height: 240,#}
+{#                greenFrom: 0, greenTo: {{ object_list.2 }},#}
+{#                max: {{ object_list.2}},#}
+{#                redFrom: {{ object_list.2}}, redTo: {{ object_list.2|add:5000 }}#}
+{#            };#}
+{##}
+{#            var chart = new google.visualization.Gauge(document.getElementById('chart_indicator'));#}
+{##}
+{#            chart.draw(data, options);#}
+{#        }#}
+{#    </script>#}
+
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
@@ -78,7 +128,7 @@
             ]);
 
             var options = {
-                title: 'EXPENSES VERSUS BUDGETED AMOUNTS',
+                title: 'BUDGETED AMOUNTS VERSUS EXPENSES',
                 titleTextStyle: {fontSize: 20},
                 chartArea: {
                     width: '50%'
