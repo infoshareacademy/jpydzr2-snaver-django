@@ -2,7 +2,16 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from snaver.models import Subcategory
+from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
+
+
+class SubcategoryForm(forms.ModelForm):
+    class Meta:
+        model = Subcategory
+        fields = [
+            'name'
+        ]
 
 
 class TransactionCreateForm(forms.ModelForm):

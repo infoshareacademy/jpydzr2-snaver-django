@@ -2,6 +2,8 @@ from calendar import monthrange
 from datetime import datetime
 from decimal import Decimal
 
+from django.http import JsonResponse
+
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
@@ -18,11 +20,13 @@ from django.utils import dateformat
 from django.utils import timezone
 from django.views.generic import CreateView
 from django.views.generic import ListView
+from django.views.decorators.csrf import csrf_exempt
 
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
 from snaver.models import Subcategory
+from snaver.models import Category
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
@@ -236,3 +240,35 @@ def pages(request):
     except Exception:
         html_template = loader.get_template('page-500.html')
         return HttpResponse(html_template.render(context, request))
+
+
+@csrf_exempt
+def update_category(request):
+    print("doszedlem tutaj")
+    id = request.POST.get('id', '')
+    type = request.POST.get('type', '')
+    value = request.POST.get('value', '')
+    print(value)
+
+    if type == 'subcategory-name':
+        print("ok, tutaj tez jestem")
+        subcategory = Subcategory.objects.get(id=id)
+        subcategory.name = value
+        subcategory.save()
+
+    if type == 'budgeted-amount':
+        print("ok, tutaj tez jestem")
+        subcategory = SubcategoryDetails.objects.get(id=id)
+        subcategory.budgeted_amount = value
+        subcategory.save()
+
+    if type == 'new-subcategory':
+        print("jestem tutaj")
+        category = Category.objects.get(id=id)
+        print(category)
+        subcategory = Subcategory(name=value, category=category)
+        print(subcategory)
+        subcategory.save()
+
+    return JsonResponse({"success": "Object updated"})
+
