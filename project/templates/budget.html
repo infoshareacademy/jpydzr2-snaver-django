@@ -65,8 +65,8 @@
                         {% for details in object_list %}
                         {% if details.1 %}
                             <tr class="">
-                                <td class="" colspan="4" data-id="{{ details.0.subcategory.category.id }}">
-                                    {{ details.0.subcategory.category.name }} <span data-type="new-subcategory"
+                                <td class="" colspan="4" data-id="{{ details.0.category.id }}">
+                                    {{ details.0.category.name }} <span data-type="new-subcategory"
                                                                                     class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
                                 </td>
                                 <!-- Empty tds to match column number -->
@@ -93,9 +93,9 @@
                             {% endif %}
                         </tr>
                         <tr>
-                            <td class="border-0 editable" data-id="{{ details.0.subcategory.id }}"
-                                data-type="subcategory-name">{{ details.0.subcategory.name }}</td>
                             <td class="border-0 editable" data-id="{{ details.0.id }}"
+                                data-type="subcategory-name">{{ details.0.name }}</td>
+                            <td class="border-0 editable" data-id="{{ details.0.details_id }}"
                                 data-type="budgeted-amount">{{ details.0.budgeted_amount }}</td>
                             <td class="border-0">{{ details.0.activity }}</td>
                             {% if details.0.available < 0 %}
