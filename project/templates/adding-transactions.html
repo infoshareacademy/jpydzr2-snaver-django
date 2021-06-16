@@ -44,31 +44,46 @@
                             <th class="border-0">Description</th>
                             <th class="border-0">Outflow</th>
                             <th class="border-0">Inflow</th>
+
                         </tr>
                         </thead>
                         <tbody id="transactions">
-                        {% for transaction in transaction_list %}
-                        <tr>
-                            <td class="border-0 editable-date" data-id="{{transaction.id}}"
-                                data-type="transaction_date">{{ transaction.receipt_date }}
-                            </td>
-                            <td class="border-0 editable" data-id="{{transaction.id}}"
-                                data-type="payee_name">{{ transaction.payee_name }}
-                            </td>
-                            <td class="border-0 editable" data-id="{{transaction.id}}"
-                                data-type="transaction_subcategory">{{ transaction.subcategory }}
-                            </td>
-                            <td class="border-0 editable" data-id="{{transaction.id}}"
-                                data-type="transaction_name">{{ transaction.name }}
-                            </td>
-                            <td class="border-0 editable" data-id="{{transaction.id}}"
-                                data-type="outflow">{{ transaction.outflow }}
-                            </td>
-                            <td class="border-0 editable" data-id="{{transaction.id}}"
-                                data-type="inflow">{{ transaction.inflow }}
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if transactions %}
+                            {% for transaction in transactions.transaction_list %}
+                                <tr>
+                                    <td class="border-0 editable-date" data-id="{{ transaction.id }}"
+                                        data-type="transaction_date">{{ transaction.receipt_date }}
+                                    </td>
+                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                        data-type="payee_name">{{ transaction.payee_name }}
+                                    </td>
+                                    <td class="border-0" data-id="{{ transaction.id }}"
+                                        data-type="transaction_subcategory">
+                                        <select class="border-0" name="from[]" id="select">
+                                            <option selected="selected">{{ transaction.subcategory.name }}</option>
+
+                                            {% for transaction in transactions.subcategory_list %}
+                                                <option>{{ transaction.subcategory.name }}</option>
+                                            {% endfor %}
+
+
+
+                                            {#                                <option for id="nowe id kategorii", odwołać się do tego id></option>#}
+
+                                        </select>
+                                    </td>
+                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                        data-type="transaction_name">{{ transaction.name }}
+                                    </td>
+                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                        data-type="outflow">{{ transaction.outflow }}
+                                    </td>
+                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                        data-type="inflow">{{ transaction.inflow }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>
