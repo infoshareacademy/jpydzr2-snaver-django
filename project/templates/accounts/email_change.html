@@ -1,0 +1,50 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}- Email Change{% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header card-header-primary">
+                <h4 class="card-title">
+                    Change your email.
+                </h4>
+            </div>
+            <div class="card-body">
+
+                <h6 class="card-category">
+                    Please enter your new email.
+                </h6>
+                <br />
+
+                <form role="form" method="post" action="">
+
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ form.as_p }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <button type="submit" value="Update" class="btn btn-primary pull-left">Change my email</button>
+
+                    <div class="clearfix"></div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}{% endblock javascripts %}
