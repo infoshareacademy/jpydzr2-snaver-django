@@ -14,6 +14,9 @@
                     <table class="table" id="transactiontable">
                         <tr>
                             <th>
+
+{#TODO: add transaction using AJAX#}
+
                                 <a href="/add-new" title="Add new transaction"
                                    class="btn btn-primary pull-center">
                                     Add transaction
@@ -34,7 +37,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="transactions">
+                        <table class="table" id="transactionshead">
                             <thead class="text-primary">
                             <tr style="cursor:pointer">
                                 <th class="border-0" onclick="sortTable(0);">Date</th>
@@ -50,6 +53,9 @@
                             {% if transactions %}
                                 {% for transaction in transactions.transaction_list %}
                                     <tr>
+
+{#TODO: fix date field - date in another format, empty field when not filled with data #}
+
                                         <td class="border-0 editable-date date" data-id="{{ transaction.id }}"
                                             data-type="transaction_date">{{ transaction.receipt_date }}
                                         </td>
@@ -71,6 +77,9 @@
                                     <td class="border-0 editable" data-id="{{ transaction.id }}"
                                         data-type="transaction_name">{{ transaction.name }}
                                     </td>
+
+{#TODO:add inflow/outflow validation, add info about validation displayed to user#}
+
                                     <td class="border-0 editable" data-id="{{ transaction.id }}"
                                         data-type="outflow">{{ transaction.outflow }}
                                     </td>
@@ -109,6 +118,8 @@
                 $(this).removeClass("editable-date");
                 $('.input-data').focus();
             });
+
+{#TODO: find the way how to save selected value in database #}
 
             $(document).on("change", "#select", function () {
                 let value = $("#select option:selected").val();
@@ -178,14 +189,19 @@
         });
 
         // Search in transactions:
+
+{#TODO: it search also in list of transaction not only in selected one - needs to be fixed#}
+
         $(document).ready(function () {
             $("#search").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
+                let value = $(this).val().toLowerCase();
                 $("#transactions tr").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
             });
         });
+
+{#TODO: sort by date - it doesn't work#}
 
         //Sort on click by date, payee, category, transaction, outflow, inflow
         let asc = 0;
@@ -244,7 +260,7 @@
         }
 
         function sortTable(n) {
-            sort_table(document.getElementById("transactions"), n);
+            sort_table(document.getElementById("transactionshead"), n);
         }
 
     </script>
