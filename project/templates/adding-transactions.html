@@ -111,16 +111,21 @@
         });
 
         $(document).on("change", "#select", function () {
-            let value = $("#select option:selected").text()
-            alert(value);
+            let value = $("#select option:selected").val();
+
             $(this).select(value);
             $(this).removeClass("edtitable-list");
         });
 
-        $(document).on("click", ".editable-list", function () {
-            console.log("lost focus");
 
-            $(this).addClass("editable-list");
+        $(document).on("blur", "#select", function () {
+            console.log("lost focus");
+            let value = $("#select option:selected").val();
+            let td = $(this).parent("td");
+
+            let id = td.data('id');
+            let type = td.data('type');
+            sendToServer(id, value, type);
         });
 
 

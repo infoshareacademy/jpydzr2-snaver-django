@@ -229,11 +229,20 @@ def update_category(request):
 
 @csrf_exempt
 def update_transaction(request):
-    print("doszedlem tutaj")
+    print("1)doszedlem tutaj")
     id = request.POST.get('id', '')
     type = request.POST.get('type', '')
     value = request.POST.get('value', '')
+
+    print("-----------id:")
+    print(id)
+    print("-----------type:")
+    print(type)
+    print("-----------value:")
     print(value)
+    print("")
+    print("")
+
 
     if type == 'transaction_date':
         transaction = Transaction.objects.get(id=id)
@@ -242,14 +251,32 @@ def update_transaction(request):
 
     if type == 'payee_name':
         transaction = Transaction.objects.get(id=id)
+        print("-------transaction:")
+        print(transaction)
         transaction.payee_name = value
+        print("--------name:")
+        print(value)
         transaction.save()
 
     if type == 'transaction_subcategory':
-        print("ok, kategoria")
+        print("2)ok, kategoria")
         transaction = Transaction.objects.get(id=id)
-        transaction.subcategory = value
+        print(transaction)
+        print(transaction.id)
+        print("-------transaction")
+
+        transaction.subcategory.id = Subcategory.objects.get(id=value)
+        transaction.subcategory.name = Subcategory.objects.get(id=value)
+
+        print("--------nazwa kategorii po zmianie:")
+        print(transaction.subcategory.name)
+        print("----------id kategorii po zmianach:")
+        print(transaction.subcategory.id)
+
         transaction.save()
+
+        print("-----------transakcja")
+        print(transaction)
 
     if type == 'transaction_name':
         transaction = Transaction.objects.get(id=id)
