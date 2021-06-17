@@ -57,18 +57,14 @@
                                     <td class="border-0 editable" data-id="{{ transaction.id }}"
                                         data-type="payee_name">{{ transaction.payee_name }}
                                     </td>
-                                    <td class="border-0" data-id="{{ transaction.id }}"
+                                    <td class="border-0 " data-id="{{ transaction.id }}"
                                         data-type="transaction_subcategory">
-                                        <select class="border-0" name="from[]" id="select">
-                                            <option selected="selected">{{ transaction.subcategory.name }}</option>
+                                        <select class="border-0 editable-list" id="select" name="list_of_subcategories">
+                                            <option selected="">{{ transaction.subcategory.name }}</option>
 
                                             {% for transaction in transactions.subcategory_list %}
-                                                <option>{{ transaction.subcategory.name }}</option>
+                                                <option value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
                                             {% endfor %}
-
-
-
-                                            {#                                <option for id="nowe id kategorii", odwołać się do tego id></option>#}
 
                                         </select>
                                     </td>
@@ -114,14 +110,28 @@
             $('.input-data').focus();
         });
 
-        $(document).on("keypress", ".input-data", function (e) {
-            let key = e.which;
-            if (key == 13) {
-                console.log("lost focus");
-                let value = $(this).val();
-                let td = $(this).parent("td");
-                $(this).remove();
-                td.html(value);
+        $(document).on("change", "#select", function () {
+            let value = $("#select option:selected").text()
+            alert(value);
+            $(this).select(value);
+            $(this).removeClass("edtitable-list");
+        });
+
+        $(document).on("click", ".editable-list", function () {
+            console.log("lost focus");
+
+            $(this).addClass("editable-list");
+        });
+
+
+    $(document).on("keypress", ".input-data", function (e) {
+        let key = e.which;
+        if (key == 13) {
+            console.log("lost focus");
+            let value = $(this).val();
+            let td = $(this).parent("td");
+            $(this).remove();
+            td.html(value);
                 td.addClass("editable");
                 let type = td.data('type')
                 sendToServer(td.data(id), value, type);
@@ -140,7 +150,8 @@
             sendToServer(id, value, type);
         });
 
-        function sendToServer(id, value, type) {
+
+    function sendToServer(id, value, type) {
             console.log(id);
             console.log(value);
             console.log(type);
