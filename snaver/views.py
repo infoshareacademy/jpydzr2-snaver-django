@@ -284,12 +284,9 @@ def load_budget(request):
 class BudgetListView(ListView):
     model = Category
     template_name = 'budget3.html'
-
     current_time = dateformat.format(timezone.now(), 'Y-m-d')
 
-
     def get_queryset(self, current_time=current_time):
-        print(self.request.user.budget.first().id)
         return self.model.objects.filter(budget_id=self.request.user.budget.first().id).select_related(
 
         ).prefetch_related(
