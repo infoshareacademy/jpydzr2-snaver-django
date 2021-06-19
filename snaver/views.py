@@ -283,7 +283,7 @@ def load_budget(request):
 
 class BudgetView(ListView):
     model = Category
-    template_name = 'budget3.html'
+    template_name = 'budget.html'
     current_time = dateformat.format(timezone.now(), 'Y-m-d')
 
     def get_queryset(self, current_time=current_time):

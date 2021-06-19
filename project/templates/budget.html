@@ -75,13 +75,27 @@
                             {% for subcategory in category.subcategories.all %}
 
                                 <tr>
+
                                     <td class="border-0 editable" data-id="{{ subcategory.id }}"
                                     data-type="subcategory-name">{{ subcategory.name }}</td>
 
                                     <td class="border-0 editable" data-id="{{ subcategory.details.first.id }}"
-                                    data-type="budgeted-amount">{{ subcategory.details.first.budgeted_amount }}</td>
+                                    data-type="budgeted-amount">
+                                        {% if subcategory.details.first  %}
+                                            {{ subcategory.details.first.budgeted_amount }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </td>
 
-                                    <td class="border-0">{{ subcategory.details.first.activity }}</td>
+                                    <td class="border-0">
+                                        {% if subcategory.details.first.activity  %}
+                                            {{ subcategory.details.first.activity }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+
+                                    </td>
 
                                     {% if subcategory.details.first.available < 0 %}
                                         <td class="border-0" style="color: red">
@@ -96,7 +110,9 @@
                                         {{ subcategory.details.first.available }}
                                         </td>
                                     {% endif %}
+
                                  </tr>
+
                             {% endfor %}
 
 
