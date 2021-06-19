@@ -74,6 +74,9 @@ class SubcategoryDetails(models.Model):
         related_name='subcategory_details',
     )
 
+    def hello(self, str):
+        return str
+
     def save(self, *args, **kwargs):
         if self.start_date >= self.end_date:
             raise ValidationError(_("Start date must be before end date"))

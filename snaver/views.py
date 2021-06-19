@@ -6,7 +6,7 @@ from django.http import JsonResponse
 
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
+from django.db.models import F, Prefetch
 from django.db.models import OuterRef
 from django.db.models import Q
 from django.db.models import Subquery
@@ -25,7 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
-from snaver.models import Subcategory
+from snaver.models import Subcategory, Budget
 from snaver.models import Category
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
@@ -272,3 +272,42 @@ def update_category(request):
 
     return JsonResponse({"success": "Object updated"})
 
+
+def load_budget(request):
+    user = request.user
+    budget = user.budget.first()
+    queryset = budget.objects.prefetch_related('category')
+    print(queryset)
+    return JsonResponse({"success": "hej"})
+
+
+class BudgetListView(ListView):
+    model = Category
+    template_name = 'budget3.html'
+
+    current_time = dateformat.format(timezone.now(), 'Y-m-d')
+
+
+    def get_queryset(self, current_time=current_time):
+        print(self.request.user.budget.first().id)
+        return self.model.objects.filter(budget_id=self.request.user.budget.first().id).select_related(
+
+        ).prefetch_related(
+            'subcategory',
+            'subcategory__transaction',
+            Prefetch(
+                "subcategory__subcategory_details",
+                queryset=SubcategoryDetails.objects.filter(start_date__lte=current_time, end_date__gte=current_time)
+                    .annotate(
+                    activity=Coalesce(  # Coalesce picks first non-null value
+                        Sum('subcategory__transaction__outflow'),
+                        Decimal(0.00)
+                    ),
+                    available=(
+                            F("budgeted_amount")
+                            - Sum('subcategory__transaction__outflow')
+                    )
+                ),
+            ),
+            'subcategory__transaction',
+        )

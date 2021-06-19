@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for category in object_list %}
+      <tr>
+          <th>{{ category.name }}</th>
+     </tr>
+
+      {% for subcategory in category.subcategory.all  %}
+          <tr>
+            <th>{{ subcategory.name }}</th>
+          </tr>
+              {% for detail in subcategory.subcategory_details.all  %}
+              <tr>
+                <th>{{ detail }}</th>
+              </tr>
+
+          {% endfor %}
+
+      {% endfor %}
+
+  {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>
