@@ -243,7 +243,7 @@ def pages(request):
 
 
 @csrf_exempt
-def update_category(request):
+def ajax_update(request):
     print("doszedlem tutaj")
     id = request.POST.get('id', '')
     type = request.POST.get('type', '')

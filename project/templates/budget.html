@@ -17,7 +17,7 @@
                             <h2 class="h5">To be budgeted</h2>
                             <h3 class="mb-1 text-success">$43,594</h3>
                         </div>
-                        <small>- $200 from previous month</small>
+                        <small>- $200 from previous monthhhh</small>
                     </div>
                 </div>
             </div>
@@ -145,7 +145,21 @@
 
             $(document).on("blur", ".input-data-new-cat", function (){
                  $(this).remove();
-                 $("#new-cat").addClass("new-category");
+                 $(".new-cat").addClass("new-category");
+            });
+
+            $(document).on("keypress", ".input-data-new-cat", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    console.log('enterek');
+                    let id = 0;
+                    let type = $(this).data("type");
+                    let value = $(this).val();
+                    console.log(value);
+                     $(this).remove();
+                     $(".new-sub").addClass("new-category");
+                     sendToServer(id, value, type);
+                }
             });
 
             $(document).on("click", ".new-subcategory", function () {
@@ -159,7 +173,6 @@
             });
 
             $(document).on("blur", ".input-data-new-subcat", function (){
-                let td = $(this).closest("td");
                 let id = chosen_row.data('id');
                 let type = $(this).data("type");
                 let value = $(this).val();
@@ -167,6 +180,20 @@
                  $(this).remove();
                  $(".new-sub").addClass("new-subcategory");
                  sendToServer(id, value, type);
+            });
+
+            $(document).on("keypress", ".input-data-new-subcat", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    console.log('enterek');
+                    let id = chosen_row.data('id');
+                    let type = $(this).data("type");
+                    let value = $(this).val();
+                    console.log(value);
+                     $(this).remove();
+                     $(".new-sub").addClass("new-subcategory");
+                     sendToServer(id, value, type);
+                }
             });
 
             $(document).on("click", ".editable", function () {
@@ -216,7 +243,7 @@
                 console.log('type= ' + type);
 
                 $.ajax({
-                    url: "update-category",
+                    url: "ajax-update",
                     type: "POST",
                     data: {id:id, type:type, value:value}
                 })

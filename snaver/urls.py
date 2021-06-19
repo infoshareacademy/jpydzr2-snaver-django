@@ -10,7 +10,7 @@ from snaver.views import TransactionListView
 from snaver.views import BudgetView
 
 from snaver.views import load_budget
-from snaver.views import update_category
+from snaver.views import ajax_update
 
 urlpatterns = [
     path('', login_required(BudgetView.as_view()), name='home'),
@@ -24,5 +24,5 @@ urlpatterns = [
     path('page-user.html', views.pages),
     path('adding-transaction', TransactionListView.as_view(), name='adding'),
     path('add-new', TransactionCreateView.as_view(), name='add_new'),
-    path('update-category', views.update_category, name="update-category"),
+    path('ajax-update', views.ajax_update, name="update-category"),
 ]
