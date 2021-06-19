@@ -25,7 +25,7 @@ class Budget(models.Model):
     user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='budget',
+        related_name='budgets',
     )
 
     created_on = models.DateTimeField(default=timezone.now)
@@ -39,7 +39,7 @@ class Category(models.Model):
     budget = models.ForeignKey(
         Budget,
         on_delete=models.CASCADE,
-        related_name='category',
+        related_name='categories',
     )
     created_on = models.DateTimeField(default=timezone.now)
 
@@ -52,7 +52,7 @@ class Subcategory(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name='subcategory',
+        related_name='subcategories',
     )
     created_on = models.DateTimeField(default=timezone.now)
 
@@ -71,7 +71,7 @@ class SubcategoryDetails(models.Model):
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
-        related_name='subcategory_details',
+        related_name='details',
     )
 
     def hello(self, str):
@@ -116,7 +116,7 @@ class Transaction(models.Model):
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
-        related_name='transaction',
+        related_name='transactions',
     )
 
     created_on = models.DateTimeField(default=timezone.now)

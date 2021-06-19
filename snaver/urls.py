@@ -7,13 +7,13 @@ from snaver.views import CategoryView
 from snaver.views import ChartsListView
 from snaver.views import TransactionCreateView
 from snaver.views import TransactionListView
-from snaver.views import BudgetListView
+from snaver.views import BudgetView
 
 from snaver.views import load_budget
 from snaver.views import update_category
 
 urlpatterns = [
-    path('', login_required(CategoryView.as_view()), name='home'),
+    path('', login_required(BudgetView.as_view()), name='home'),
     path('', views.index, name='logout'),
     path('budget', login_required(CategoryView.as_view()), name='budget'),
     path('budget2', views.load_budget, name='budget2'),
@@ -25,5 +25,4 @@ urlpatterns = [
     path('adding-transaction', TransactionListView.as_view(), name='adding'),
     path('add-new', TransactionCreateView.as_view(), name='add_new'),
     path('update-category', views.update_category, name="update-category"),
-    path('budget3/', BudgetListView.as_view(), name='budget3'),
 ]

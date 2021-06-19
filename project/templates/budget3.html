@@ -35,7 +35,7 @@
 {#                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">#}
                                     <i class="fas fa-chevron-left"></i>
                                 </a>
-                                {#                                {{ view.kwargs.year }}-{{ view.kwargs.month }}#}
+                                                                {{ view.kwargs.year }}-{{ view.kwargs.month }}
                                 <p class="h3">&nbsp;&nbsp;June 2021&nbsp;&nbsp;</p>
 
                                 <a class="h3"
@@ -67,33 +67,33 @@
                         {% for category in object_list %}
 
                                 <tr class="">
-                                    <td class="" colspan="4" data-id="">
+                                    <td class="" colspan="4" data-id="{{ category.id }}">
                                         {{ category.name }} <span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
                                     </td>
                                 </tr>
 
-                            {% for subcategory in category.subcategory.all %}
+                            {% for subcategory in category.subcategories.all %}
 
                                 <tr>
-                                    <td class="border-0 editable" data-id=""
+                                    <td class="border-0 editable" data-id="{{ subcategory.id }}"
                                     data-type="subcategory-name">{{ subcategory.name }}</td>
 
-                                    <td class="border-0 editable" data-id=""
-                                    data-type="budgeted-amount">{{ subcategory.subcategory_details.first.budgeted_amount }}</td>
+                                    <td class="border-0 editable" data-id="{{ subcategory.details.first.id }}"
+                                    data-type="budgeted-amount">{{ subcategory.details.first.budgeted_amount }}</td>
 
-                                    <td class="border-0">{{ subcategory.subcategory_details.first.activity }}</td>
+                                    <td class="border-0">{{ subcategory.details.first.activity }}</td>
 
-                                    {% if subcategory.subcategory_details.first.available < 0 %}
+                                    {% if subcategory.details.first.available < 0 %}
                                         <td class="border-0" style="color: red">
                                             {% else %}
                                         <td class="border-0" style="color: green">
                                     {% endif %}
 
-                                    {% if subcategory.subcategory_details.first.available == None %}
-                                        {{ subcategory.subcategory_details.first.budgeted_amount }}
+                                    {% if subcategory.details.first.available == None %}
+                                        {{ subcategory.details.first.budgeted_amount }}
                                         </td>
                                     {% else %}
-                                        {{ subcategory.subcategory_details.first.available }}
+                                        {{ subcategory.details.first.available }}
                                         </td>
                                     {% endif %}
                                  </tr>

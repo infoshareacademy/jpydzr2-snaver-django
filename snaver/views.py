@@ -281,30 +281,30 @@ def load_budget(request):
     return JsonResponse({"success": "hej"})
 
 
-class BudgetListView(ListView):
+class BudgetView(ListView):
     model = Category
     template_name = 'budget3.html'
     current_time = dateformat.format(timezone.now(), 'Y-m-d')
 
     def get_queryset(self, current_time=current_time):
-        return self.model.objects.filter(budget_id=self.request.user.budget.first().id).select_related(
+        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).select_related(
 
         ).prefetch_related(
-            'subcategory',
-            'subcategory__transaction',
+            'subcategories',
+            'subcategories__transactions',
             Prefetch(
-                "subcategory__subcategory_details",
+                "subcategories__details",
                 queryset=SubcategoryDetails.objects.filter(start_date__lte=current_time, end_date__gte=current_time)
                     .annotate(
                     activity=Coalesce(  # Coalesce picks first non-null value
-                        Sum('subcategory__transaction__outflow'),
+                        Sum('subcategory__transactions__outflow'),
                         Decimal(0.00)
                     ),
                     available=(
                             F("budgeted_amount")
-                            - Sum('subcategory__transaction__outflow')
+                            - Sum('subcategory__transactions__outflow')
                     )
                 ),
             ),
-            'subcategory__transaction',
+            'subcategories__transactions',
         )

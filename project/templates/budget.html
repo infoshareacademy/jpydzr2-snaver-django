@@ -32,14 +32,14 @@
                         <div class="d-block">
                             <div class="d-flex ml-auto">
                                 <a class="h3 mr-2"
-                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+{#                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">#}
                                     <i class="fas fa-chevron-left"></i>
                                 </a>
-                                {#                                {{ view.kwargs.year }}-{{ view.kwargs.month }}#}
+                                                                {{ view.kwargs.year }}-{{ view.kwargs.month }}
                                 <p class="h3">&nbsp;&nbsp;June 2021&nbsp;&nbsp;</p>
 
                                 <a class="h3"
-                                   href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
+{#                                   href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">#}
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                             </div>
@@ -62,33 +62,44 @@
 
                         </thead>
                         <tbody class="mt-5">
-                        {% for details in object_list %}
-                            {% if details.1 %}
+
+
+                        {% for category in object_list %}
+
                                 <tr class="">
-                                    <td class="" colspan="4" data-id="{{ details.0.subcategory.category.id }}">
-                                        {{ details.0.subcategory.category.name }} <span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
+                                    <td class="" colspan="4" data-id="{{ category.id }}">
+                                        {{ category.name }} <span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
                                     </td>
                                 </tr>
-                            {% endif %}
-                            <tr>
-                                <td class="border-0 editable" data-id="{{ details.0.subcategory.id }}"
-                                data-type="subcategory-name">{{ details.0.name }}</td>
-                                <td class="border-0 editable" data-id="{{ details.0.id }}"
-                                data-type="budgeted-amount">{{ details.0.budgeted_amount }}</td>
-                                <td class="border-0">{{ details.0.activity }}</td>
-                                {% if details.0.available < 0 %}
-                                    <td class="border-0" style="color: red">
-                                        {% else %}
-                                    <td class="border-0" style="color: green">
-                                {% endif %}
-                                {% if details.0.available == None %}
-                                    {{ details.0.budgeted_amount }}
-                                    </td>
-                                {% else %}
-                                    {{ details.0.available }}
-                                    </td>
-                                {% endif %}
-                            </tr>
+
+                            {% for subcategory in category.subcategories.all %}
+
+                                <tr>
+                                    <td class="border-0 editable" data-id="{{ subcategory.id }}"
+                                    data-type="subcategory-name">{{ subcategory.name }}</td>
+
+                                    <td class="border-0 editable" data-id="{{ subcategory.details.first.id }}"
+                                    data-type="budgeted-amount">{{ subcategory.details.first.budgeted_amount }}</td>
+
+                                    <td class="border-0">{{ subcategory.details.first.activity }}</td>
+
+                                    {% if subcategory.details.first.available < 0 %}
+                                        <td class="border-0" style="color: red">
+                                            {% else %}
+                                        <td class="border-0" style="color: green">
+                                    {% endif %}
+
+                                    {% if subcategory.details.first.available == None %}
+                                        {{ subcategory.details.first.budgeted_amount }}
+                                        </td>
+                                    {% else %}
+                                        {{ subcategory.details.first.available }}
+                                        </td>
+                                    {% endif %}
+                                 </tr>
+                            {% endfor %}
+
+
                         {% endfor %}
                         </tbody>
                     </table>
