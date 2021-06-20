@@ -243,7 +243,7 @@ def pages(request):
 
 
 @csrf_exempt
-def ajax_update(request, date=""):
+def ajax_update(request, year="", month=""):
     user = request.user
     budget = user.budgets.first()
 
@@ -272,6 +272,14 @@ def ajax_update(request, date=""):
     if type == 'new-subcategory':
         subcategory = Subcategory(name=value, category_id=id)
         subcategory.save()
+
+    if type == 'new-budget':
+        subcategory = Subcategory.objects.get(id=id)
+        start = f'{year}-{month}-1'
+        end = f'{year}-{month}-27'
+        detail = SubcategoryDetails(budgeted_amount=value, start_date=start, end_date=end, subcategory=subcategory)
+        detail.save()
+        print('jol jol')
 
     return JsonResponse({"success": "Object updated"})
 
@@ -322,32 +330,24 @@ class BudgetView(ListView):
                 "subcategories",
                 queryset=Subcategory.objects.all()
                     .annotate(
-                    activity=Coalesce(  # Coalesce picks first non-null value
+                    activity=Coalesce(
                         Sum('transactions__outflow',
                             filter=Q(
                                 transactions__receipt_date__lte=last_day,
                                 transactions__receipt_date__gte=first_day,
-                            )),
-                        Decimal(0.00)
-                    ))
-                    .annotate(
-                    available=(
-                        Coalesce(  # Coalesce picks first non-null value
+                            ),distinct=True), Decimal(0.00)),
+                    available=Coalesce(
                             Sum('details__budgeted_amount',
                                 filter=Q(
                                     details__end_date__lte=last_day
-                                )),
-                            Decimal(0.00)
-                        )
+                                ),distinct=True), Decimal(0.00)
 
-                        - Coalesce(  # Coalesce picks first non-null value
-                    Sum('transactions__outflow',
-                        filter=Q(
-                            transactions__receipt_date__lte=last_day,
-                        )),
-                    Decimal(0.00)
-                ))
-                )),
+                            - Sum('transactions__outflow',
+                                filter=Q(
+                                    transactions__receipt_date__lte=last_day,
+                                ),distinct=True), Decimal(0.00)),
+                    )
+            ),
             Prefetch(
                 "subcategories__details",
                 queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)

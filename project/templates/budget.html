@@ -36,7 +36,6 @@
                                     <i class="fas fa-chevron-left"></i>
                                 </a>
                                                                 {{ view.kwargs.year }}-{{ view.kwargs.month }}
-                                <p class="h3">&nbsp;&nbsp;June 2021&nbsp;&nbsp;</p>
 
                                 <a class="h3"
                                    href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
@@ -85,7 +84,7 @@
                                             {{ subcategory.details.last.budgeted_amount }}{% endspaceless %}
                                         </td>
                                     {% else %}
-                                        <td class="border-0 editable" data-id="{{ subcategory.details.last.id }}"
+                                        <td class="border-0 new-budget" data-id="null" data-parent-id="{{ subcategory.id }}"
                                             data-type="budgeted-amount">0.00</td>
                                         </td>
                                     {% endif %}
@@ -99,8 +98,11 @@
                                     </td>
 
                                     <td class="border-0">
-                                        {{ subcategory.available }}
-
+                                        {% if subcategory.available == 0 %}
+                                           0.00
+                                        {% else %}
+                                             {{ subcategory.available }}
+                                        {% endif %}
                                     </td>
 
                                  </tr>
@@ -140,7 +142,7 @@
                 })
                 .done(function(response){
                     console.log(response);
-                    $('body').load("budget");
+                    $('body').load("");
                 })
                 .fail(function(){
                     console.log("Error occured")
@@ -237,6 +239,44 @@
                 let type = td.data('type')
                 sendToServer(id, value, type);
             });
+
+            $(document).on("click", ".new-budget", function () {
+                let value = $(this).text()
+                let td = $(this).parent("td");
+                let type = td.data('type')
+                let input;
+                input = '<input type="text" tabindex="0" class="input-new-budget form-control" value="'+value+'">';
+                $(this).html(input);
+                $('.input-new-budget').focus();
+                $(this).removeClass("editable");
+            });
+
+            $(document).on("keypress", ".input-new-budget", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    let value = $(this).val();
+                    let td = $(this).parent("td");
+                    $(this).remove();
+                    td.html(value);
+                    let type = 'new-budget';
+                    let id = td.data('parent-id');
+                    console.log(id);
+                    td.addClass("input-new-budget");
+                    sendToServer(id, value, type);
+                }
+            });
+            $(document).on("blur", ".input-new-budget", function (){
+                console.log("lost focus");
+                let value = $(this).val();
+                let td = $(this).parent("td");
+                $(this).remove();
+                td.html(value);
+                td.addClass("editable");
+                let id = td.data('id')
+                let type = td.data('type')
+                sendToServer(id, value, type);
+            });
+
 
         });
     </script>

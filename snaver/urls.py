@@ -23,5 +23,5 @@ urlpatterns = [
     path('adding-transaction', TransactionListView.as_view(), name='adding'),
     path('add-new', TransactionCreateView.as_view(), name='add_new'),
     path('ajax-update', views.ajax_update, name="update-category"),
-    path('budget/<date>/ajax-update', views.ajax_update, name="update-category")
+    re_path(r'^budget/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/ajax-update', views.ajax_update, name="update-category")
 ]
