@@ -51,13 +51,13 @@
                             </thead>
                             <tbody id="transactions">
                             {% if transactions %}
-                                {% for transaction in transactions.transaction_list %}
+                                {% for transaction in transactions.transaction_list|dictsort:'subcategory.name' %}
                                     <tr>
 
 {#TODO: fix date field - date in another format, empty field when not filled with data #}
 
                                         <td class="border-0 editable-date date" data-id="{{ transaction.id }}"
-                                            data-type="transaction_date">{{ transaction.receipt_date }}
+                                            data-type="transaction_date">{{ transaction.receipt_date|date:"c" }}
                                         </td>
                                         <td class="border-0 editable" data-id="{{ transaction.id }}"
                                             data-type="payee_name">{{ transaction.payee_name }}
@@ -112,8 +112,13 @@
             });
 
             $(document).on("click", ".editable-date", function () {
+                let x
                 let value = $(this).text()
                 let input = '<input type="date" tabindex="0" class="input-data form-control" value="' + value + '">';
+                if (!input){
+                    input = x;
+                };
+
                 $(this).html(input);
                 $(this).removeClass("editable-date");
                 $('.input-data').focus();
@@ -122,7 +127,7 @@
 {#TODO: find the way how to save selected value in database #}
 
             $(document).on("change", "#select", function () {
-                let value = $("#select option:selected").val();
+                let value = $("#select option:selected").attr('value');
 
                 $(this).select(value);
                 $(this).removeClass("edtitable-list");

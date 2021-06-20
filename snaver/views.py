@@ -259,24 +259,11 @@ def update_transaction(request):
         transaction.save()
 
     if type == 'transaction_subcategory':
-        print("2)ok, kategoria")
-        transaction = Transaction.objects.get(id=id)
-        print(transaction)
-        print(transaction.id)
-        print("-------transaction")
-
-        transaction.subcategory.id = Subcategory.objects.get(id=value)
-        transaction.subcategory.name = Subcategory.objects.get(id=value)
-
-        print("--------nazwa kategorii po zmianie:")
-        print(transaction.subcategory.name)
-        print("----------id kategorii po zmianach:")
-        print(transaction.subcategory.id)
+        transaction = Transaction.objects.get(id=int(id))
+        transaction.subcategory = Subcategory.objects.get(id=value)
 
         transaction.save()
 
-        print("-----------transakcja")
-        print(transaction)
 
     if type == 'transaction_name':
         transaction = Transaction.objects.get(id=id)
