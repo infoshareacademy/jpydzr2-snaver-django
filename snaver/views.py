@@ -244,41 +244,38 @@ def pages(request):
 
 @csrf_exempt
 def ajax_update(request):
-    print("doszedlem tutaj")
+    user = request.user
+    budget = user.budgets.first()
+
     id = request.POST.get('id', '')
     type = request.POST.get('type', '')
     value = request.POST.get('value', '')
     print(value)
 
+    # UPDATE SSUBCATEGORY NAME
     if type == 'subcategory-name':
         print("ok, tutaj tez jestem")
         subcategory = Subcategory.objects.get(id=id)
         subcategory.name = value
         subcategory.save()
 
+    # UPDATE BUDGETED AMOUNT
     if type == 'budgeted-amount':
         print("ok, tutaj tez jestem")
         subcategory = SubcategoryDetails.objects.get(id=id)
         subcategory.budgeted_amount = value
         subcategory.save()
 
+    # CREATE NEW SUBCATEGORY
+    if type == 'new-category':
+        category = Category(name=value, budget_id=budget.id)
+        category.save()
+
     if type == 'new-subcategory':
-        print("jestem tutaj")
-        category = Category.objects.get(id=id)
-        print(category)
-        subcategory = Subcategory(name=value, category=category)
-        print(subcategory)
+        subcategory = Subcategory(name=value, category_id=id)
         subcategory.save()
 
     return JsonResponse({"success": "Object updated"})
-
-
-def load_budget(request):
-    user = request.user
-    budget = user.budget.first()
-    queryset = budget.objects.prefetch_related('category')
-    print(queryset)
-    return JsonResponse({"success": "hej"})
 
 
 class BudgetView(ListView):

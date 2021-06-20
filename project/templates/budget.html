@@ -153,12 +153,12 @@
                 if (key === 13) {
                     console.log('enterek');
                     let id = 0;
-                    let type = $(this).data("type");
+                    let type = 'new-category';
                     let value = $(this).val();
-                    console.log(value);
+                    sendToServer(id, value, type);
+                    console.log("HEJ" + value);
                      $(this).remove();
                      $(".new-sub").addClass("new-category");
-                     sendToServer(id, value, type);
                 }
             });
 
@@ -173,13 +173,8 @@
             });
 
             $(document).on("blur", ".input-data-new-subcat", function (){
-                let id = chosen_row.data('id');
-                let type = $(this).data("type");
-                let value = $(this).val();
-                console.log(value);
                  $(this).remove();
                  $(".new-sub").addClass("new-subcategory");
-                 sendToServer(id, value, type);
             });
 
             $(document).on("keypress", ".input-data-new-subcat", function (e){
@@ -190,9 +185,9 @@
                     let type = $(this).data("type");
                     let value = $(this).val();
                     console.log(value);
+                     sendToServer(id, value, type);
                      $(this).remove();
                      $(".new-sub").addClass("new-subcategory");
-                     sendToServer(id, value, type);
                 }
             });
 
@@ -238,6 +233,7 @@
             });
 
             function sendToServer(id, value, type) {
+                console.log('dzień dobry')
                 console.log(id);
                 console.log(value);
                 console.log('type= ' + type);
