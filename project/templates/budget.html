@@ -32,14 +32,14 @@
                         <div class="d-block">
                             <div class="d-flex ml-auto">
                                 <a class="h3 mr-2"
-{#                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">#}
+                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
                                     <i class="fas fa-chevron-left"></i>
                                 </a>
                                                                 {{ view.kwargs.year }}-{{ view.kwargs.month }}
                                 <p class="h3">&nbsp;&nbsp;June 2021&nbsp;&nbsp;</p>
 
                                 <a class="h3"
-{#                                   href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">#}
+                                   href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                             </div>
@@ -79,40 +79,29 @@
                                     <td class="border-0 editable" data-id="{{ subcategory.id }}"
                                     data-type="subcategory-name">{{ subcategory.name }}</td>
 
-                                    <td class="border-0 editable" data-id="{{ subcategory.details.first.id }}"
-                                    data-type="budgeted-amount">{% spaceless %}
-                                        {% if subcategory.details.first  %}
-                                            {{ subcategory.details.first.budgeted_amount }}
-                                        {% else %}
-                                            0.00
-                                        {% endif %}{% endspaceless %}
-                                    </td>
+                                    {% if subcategory.details.last %}
+                                        <td class="border-0 editable" data-id="{{ subcategory.details.last.id }}"
+                                            data-type="budgeted-amount">{% spaceless %}
+                                            {{ subcategory.details.last.budgeted_amount }}{% endspaceless %}
+                                        </td>
+                                    {% else %}
+                                        <td class="border-0 editable" data-id="{{ subcategory.details.last.id }}"
+                                            data-type="budgeted-amount">0.00</td>
+                                        </td>
+                                    {% endif %}
 
                                     <td class="border-0">
-                                        {% if subcategory.details.first.activity  %}
-                                            {{ subcategory.details.first.activity }}
+                                        {% if subcategory.activity  %}
+                                            {{ subcategory.activity }}
                                         {% else %}
                                             0.00
                                         {% endif %}
-
                                     </td>
 
-                                    {% if subcategory.details.first.available < 0 %}
-                                        <td class="border-0" style="color: red">
-                                            {% else %}
-                                        <td class="border-0" style="color: green">
-                                    {% endif %}
+                                    <td class="border-0">
+                                        {{ subcategory.available }}
 
-                                    {% if not subcategory.details.first %}
-                                        0.00
-                                        </td>
-                                    {% elif subcategory.details.first.available == None %}
-                                        0.00
                                     </td>
-                                    {% else %}
-                                        {{ subcategory.details.first.available }}
-                                        </td>
-                                    {% endif %}
 
                                  </tr>
 
@@ -169,7 +158,7 @@
 
             $(document).on("blur", "#category", function (){
                 console.log('lost focus');
-                {#console.log($(this));#}
+                console.log($(this));
                 let id = 0;
                 let type = 'new-category';
                 let value = $(this).val();

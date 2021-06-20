@@ -243,7 +243,7 @@ def pages(request):
 
 
 @csrf_exempt
-def ajax_update(request):
+def ajax_update(request, date=""):
     user = request.user
     budget = user.budgets.first()
 
@@ -279,29 +279,77 @@ def ajax_update(request):
 class BudgetView(ListView):
     model = Category
     template_name = 'budget.html'
-    current_time = dateformat.format(timezone.now(), 'Y-m-d')
 
-    def get_queryset(self, current_time=current_time):
-        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on')\
-            .select_related()\
+    def _set_current_date(self):
+        if not self.kwargs.get("year", None):
+            self.kwargs["year"] = str(datetime.now().year)
+        if not self.kwargs.get("month", None):
+            self.kwargs["month"] = f"{datetime.now().month:02d}"
+
+    def _this_months_range(self):
+        year = int(self.kwargs["year"])
+        month = int(self.kwargs["month"])
+        day = monthrange(year, month)[1]  # the last day of the month
+        first_day = datetime(
+            year=year,
+            month=month,
+            day=1,
+        )
+        last_day = datetime(
+            year=year,
+            month=month,
+            day=day,
+        )
+        return first_day, last_day
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self._set_current_date()
+        _, last_day = self._this_months_range()
+        context['prev_month'] = prev_month(last_day)
+        context['next_month'] = next_month(last_day)
+        return context
+
+    def get_queryset(self):
+
+        self._set_current_date()
+        first_day, last_day = self._this_months_range()
+
+        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on') \
+            .select_related() \
             .prefetch_related(
-            'subcategories',
             Prefetch(
-                "subcategories__transactions",
-                queryset=Transaction.objects.filter(receipt_date__lte=current_time)
-            ),
-            Prefetch(
-                "subcategories__details",
-                queryset=SubcategoryDetails.objects.filter(start_date__lte=current_time, end_date__gte=current_time)
+                "subcategories",
+                queryset=Subcategory.objects.all()
                     .annotate(
                     activity=Coalesce(  # Coalesce picks first non-null value
-                        Sum('subcategory__transactions__outflow'),
+                        Sum('transactions__outflow',
+                            filter=Q(
+                                transactions__receipt_date__lte=last_day,
+                                transactions__receipt_date__gte=first_day,
+                            )),
                         Decimal(0.00)
-                    ),
+                    ))
+                    .annotate(
                     available=(
-                            F("budgeted_amount")
-                            - Sum('subcategory__transactions__outflow')
-                    )
-                ),
+                        Coalesce(  # Coalesce picks first non-null value
+                            Sum('details__budgeted_amount',
+                                filter=Q(
+                                    details__end_date__lte=last_day
+                                )),
+                            Decimal(0.00)
+                        )
+
+                        - Coalesce(  # Coalesce picks first non-null value
+                    Sum('transactions__outflow',
+                        filter=Q(
+                            transactions__receipt_date__lte=last_day,
+                        )),
+                    Decimal(0.00)
+                ))
+                )),
+            Prefetch(
+                "subcategories__details",
+                queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)
             ),
         )

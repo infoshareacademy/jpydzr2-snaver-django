@@ -4,6 +4,8 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from datetime import date
+
 
 
 class CustomUser(AbstractUser):
@@ -84,6 +86,9 @@ class SubcategoryDetails(models.Model):
 
     def __str__(self):
         return f"{self.subcategory.name} - {self.start_date}"
+
+    def is_past_due(self):
+        return date.today() > self.end_date
 
 
 class Transaction(models.Model):
