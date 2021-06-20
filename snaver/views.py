@@ -250,18 +250,15 @@ def ajax_update(request):
     id = request.POST.get('id', '')
     type = request.POST.get('type', '')
     value = request.POST.get('value', '')
-    print(value)
 
     # UPDATE SSUBCATEGORY NAME
     if type == 'subcategory-name':
-        print("ok, tutaj tez jestem")
         subcategory = Subcategory.objects.get(id=id)
         subcategory.name = value
         subcategory.save()
 
     # UPDATE BUDGETED AMOUNT
     if type == 'budgeted-amount':
-        print("ok, tutaj tez jestem")
         subcategory = SubcategoryDetails.objects.get(id=id)
         subcategory.budgeted_amount = value
         subcategory.save()
@@ -284,9 +281,9 @@ class BudgetView(ListView):
     current_time = dateformat.format(timezone.now(), 'Y-m-d')
 
     def get_queryset(self, current_time=current_time):
-        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on').select_related(
-
-        ).prefetch_related(
+        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on')\
+            .select_related()\
+            .prefetch_related(
             'subcategories',
             'subcategories__transactions',
             Prefetch(

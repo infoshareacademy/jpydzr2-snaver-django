@@ -106,6 +106,9 @@
                                     {% if not subcategory.details.first %}
                                         0.00
                                         </td>
+                                    {% elif subcategory.details.first.available == None %}
+                                        0.00
+                                    </td>
                                     {% else %}
                                         {{ subcategory.details.first.available }}
                                         </td>
@@ -151,7 +154,6 @@
             $(document).on("keypress", ".input-data-new-cat", function (e){
                 let key= e.which;
                 if (key === 13) {
-                    console.log('enterek');
                     let id = 0;
                     let type = 'new-category';
                     let value = $(this).val();
@@ -229,7 +231,6 @@
             });
 
             function sendToServer(id, value, type) {
-                console.log('dzień dobry')
                 console.log(id);
                 console.log(value);
                 console.log('type= ' + type);
