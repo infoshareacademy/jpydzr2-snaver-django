@@ -284,7 +284,7 @@ class BudgetView(ListView):
     current_time = dateformat.format(timezone.now(), 'Y-m-d')
 
     def get_queryset(self, current_time=current_time):
-        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).select_related(
+        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on').select_related(
 
         ).prefetch_related(
             'subcategories',
