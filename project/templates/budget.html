@@ -52,9 +52,9 @@
                 <div class="card-body">
                     <div class="table-responsive">
                     <table class="table table-centered table-nowrap mb-0 rounded table-hover" id="budget-table">
-                        <thead class="thead-light mb-5">
+                        <thead class="table-dark mb-5">
                             <tr>
-                                <th class="border-0">Category&nbsp;&nbsp;<span class="new-category new-cat"><span class="fas fa-plus-circle"></span>&nbsp;&nbsp;new category</span></th>
+                                <th class="border-0">Category&nbsp;&nbsp;&nbsp;&nbsp;<span class="new-category new-cat"><span class="fas fa-plus-circle"></span>&nbsp;&nbsp;new category</span></th>
                                 <th class="border-0">Budgeted</th>
                                 <th class="border-0">Activity</th>
                                 <th class="border-0">Available</th>
@@ -66,9 +66,9 @@
 
                         {% for category in object_list %}
 
-                                <tr class="">
+                                <tr class="table-primary">
                                     <td class="" colspan="4" data-id="{{ category.id }}">
-                                        {{ category.name }} <span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
+                                        {{ category.name }}&nbsp;&nbsp;&nbsp;&nbsp;<span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
                                     </td>
                                 </tr>
 
