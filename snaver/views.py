@@ -286,7 +286,10 @@ class BudgetView(ListView):
             .select_related()\
             .prefetch_related(
             'subcategories',
-            'subcategories__transactions',
+            Prefetch(
+                "subcategories__transactions",
+                queryset=Transaction.objects.filter(receipt_date__lte=current_time)
+            ),
             Prefetch(
                 "subcategories__details",
                 queryset=SubcategoryDetails.objects.filter(start_date__lte=current_time, end_date__gte=current_time)
@@ -301,5 +304,4 @@ class BudgetView(ListView):
                     )
                 ),
             ),
-            'subcategories__transactions',
         )
