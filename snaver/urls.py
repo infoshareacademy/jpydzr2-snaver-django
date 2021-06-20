@@ -16,7 +16,6 @@ urlpatterns = [
             login_required(CategoryView.as_view()),
             name='budget_select'),
     path('charts', ChartsListView.as_view(), name='charts'),
-    path('page-user.html', views.pages),
     path('adding-transaction', TransactionListView.as_view(), name='adding'),
     path('add-new', TransactionCreateView.as_view(), name='add_new'),
 ]
