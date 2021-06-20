@@ -80,12 +80,12 @@
                                     data-type="subcategory-name">{{ subcategory.name }}</td>
 
                                     <td class="border-0 editable" data-id="{{ subcategory.details.first.id }}"
-                                    data-type="budgeted-amount">
+                                    data-type="budgeted-amount">{% spaceless %}
                                         {% if subcategory.details.first  %}
                                             {{ subcategory.details.first.budgeted_amount }}
                                         {% else %}
                                             0
-                                        {% endif %}
+                                        {% endif %}{% endspaceless %}
                                     </td>
 
                                     <td class="border-0">
@@ -196,11 +196,7 @@
                 let td = $(this).parent("td");
                 let type = td.data('type')
                 let input;
-                if (type === 'budgeted-amount') {
-                    input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
-                } else {
-                    input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
-               }
+                input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
                 $(this).html(input);
                 $(this).removeClass("editable");
                 $('.input-data').focus();
