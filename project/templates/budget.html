@@ -138,29 +138,53 @@
 
             let chosen_row;
 
+            function sendToServer(id, value, type) {
+                console.log('serwer');
+                console.log(id);
+                console.log(value);
+                console.log('type= ' + type);
+
+                $.ajax({
+                    url: "ajax-update",
+                    type: "POST",
+                    data: {id:id, type:type, value:value}
+                })
+                .done(function(response){
+                    console.log(response);
+                    $('body').load("budget");
+                })
+                .fail(function(){
+                    console.log("Error occured")
+                });
+            }
+
             $(document).on("click", ".new-category", function () {
-                let markup = '<input type="text" tabindex="0" class="input-data-new-cat form-control m-3">';
+                $('#category').remove();
+                let markup = '<input type="text" tabindex="0" id="category" class="form-control m-3">';
                 let tableBody = $("#budget-table");
                 $(this).removeClass("new-category");
                 tableBody.prepend(markup);
-                $('.input-data-new-cat').focus();
+                $('#category').focus();
             });
 
-            $(document).on("blur", ".input-data-new-cat", function (){
-                 $(this).remove();
+            $(document).on("blur", "#category", function (){
+                console.log('lost focus');
+                {#console.log($(this));#}
+                 $('#category').remove();
                  $(".new-cat").addClass("new-category");
             });
 
-            $(document).on("keypress", ".input-data-new-cat", function (e){
+            $(document).on("keypress", "#category", function (e){
                 let key= e.which;
                 if (key === 13) {
                     let id = 0;
                     let type = 'new-category';
                     let value = $(this).val();
+                    {#$('#category').remove();#}
                     sendToServer(id, value, type);
-                    console.log("HEJ" + value);
-                     $(this).remove();
-                     $(".new-sub").addClass("new-category");
+                    {#$(".new-cat").addClass("new-category");#}
+                    console.log(value);
+
                 }
             });
 
@@ -182,11 +206,9 @@
             $(document).on("keypress", ".input-data-new-subcat", function (e){
                 let key= e.which;
                 if (key === 13) {
-                    console.log('enterek');
                     let id = chosen_row.data('id');
-                    let type = $(this).data("type");
+                    let type = 'new-subcategory'
                     let value = $(this).val();
-                    console.log(value);
                      sendToServer(id, value, type);
                      $(this).remove();
                      $(".new-sub").addClass("new-subcategory");
@@ -229,25 +251,6 @@
                 let type = td.data('type')
                 sendToServer(id, value, type);
             });
-
-            function sendToServer(id, value, type) {
-                console.log(id);
-                console.log(value);
-                console.log('type= ' + type);
-
-                $.ajax({
-                    url: "ajax-update",
-                    type: "POST",
-                    data: {id:id, type:type, value:value}
-                })
-                .done(function(response){
-                    console.log(response);
-                    $('body').load("budget");
-                })
-                .fail(function(){
-                    console.log("Error occured")
-                });
-            }
 
         });
     </script>

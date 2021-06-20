@@ -266,6 +266,7 @@ def ajax_update(request):
     # CREATE NEW SUBCATEGORY
     if type == 'new-category':
         category = Category(name=value, budget_id=budget.id)
+        print(category)
         category.save()
 
     if type == 'new-subcategory':
