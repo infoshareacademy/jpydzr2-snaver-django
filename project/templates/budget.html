@@ -84,7 +84,7 @@
                                         {% if subcategory.details.first  %}
                                             {{ subcategory.details.first.budgeted_amount }}
                                         {% else %}
-                                            0
+                                            0.00
                                         {% endif %}{% endspaceless %}
                                     </td>
 
@@ -92,7 +92,7 @@
                                         {% if subcategory.details.first.activity  %}
                                             {{ subcategory.details.first.activity }}
                                         {% else %}
-                                            0
+                                            0.00
                                         {% endif %}
 
                                     </td>
@@ -103,8 +103,8 @@
                                         <td class="border-0" style="color: green">
                                     {% endif %}
 
-                                    {% if subcategory.details.first.available == None %}
-                                        {{ subcategory.details.first.budgeted_amount }}
+                                    {% if not subcategory.details.first %}
+                                        0.00
                                         </td>
                                     {% else %}
                                         {{ subcategory.details.first.available }}
