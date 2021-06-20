@@ -162,7 +162,7 @@
                 $('#category').remove();
                 let markup = '<input type="text" tabindex="0" id="category" class="form-control m-3">';
                 let tableBody = $("#budget-table");
-                $(this).removeClass("new-category");
+                $(".new-cat").removeClass("new-category");
                 tableBody.prepend(markup);
                 $('#category').focus();
             });
@@ -170,6 +170,10 @@
             $(document).on("blur", "#category", function (){
                 console.log('lost focus');
                 {#console.log($(this));#}
+                let id = 0;
+                let type = 'new-category';
+                let value = $(this).val();
+                sendToServer(id, value, type);
                  $('#category').remove();
                  $(".new-cat").addClass("new-category");
             });
@@ -177,14 +181,7 @@
             $(document).on("keypress", "#category", function (e){
                 let key= e.which;
                 if (key === 13) {
-                    let id = 0;
-                    let type = 'new-category';
-                    let value = $(this).val();
-                    {#$('#category').remove();#}
-                    sendToServer(id, value, type);
-                    {#$(".new-cat").addClass("new-category");#}
-                    console.log(value);
-
+                    $('#category').remove();
                 }
             });
 
