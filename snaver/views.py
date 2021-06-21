@@ -243,13 +243,39 @@ def pages(request):
 
 
 @csrf_exempt
-def ajax_update(request, year="", month=""):
+def ajax_update(request, year=None, month=None):
     user = request.user
     budget = user.budgets.first()
 
-    id = request.POST.get('id', '')
-    type = request.POST.get('type', '')
-    value = request.POST.get('value', '')
+    id = request.POST.get('id')
+    type = request.POST.get('type')
+    value = request.POST.get('value')
+
+    def _set_current_date(year, month):
+        if year is None:
+            year = str(datetime.now().year)
+        if month is None:
+            month = f"{datetime.now().month:02d}"
+
+        return year, month
+
+    def _this_months_range(year, month):
+        day = monthrange(year, month)[1]  # the last day of the month
+        first_day = datetime(
+            year=year,
+            month=month,
+            day=1,
+        )
+        last_day = datetime(
+            year=year,
+            month=month,
+            day=day,
+        )
+        return first_day, last_day
+
+    year, month = _set_current_date(year, month)
+    first_day, last_day = _this_months_range(int(year), int(month))
+
 
     # UPDATE SSUBCATEGORY NAME
     if type == 'subcategory-name':
@@ -275,11 +301,8 @@ def ajax_update(request, year="", month=""):
 
     if type == 'new-budget':
         subcategory = Subcategory.objects.get(id=id)
-        start = f'{year}-{month}-1'
-        end = f'{year}-{month}-27'
-        detail = SubcategoryDetails(budgeted_amount=value, start_date=start, end_date=end, subcategory=subcategory)
+        detail = SubcategoryDetails(budgeted_amount=value, start_date=first_day, end_date=last_day, subcategory=subcategory)
         detail.save()
-        print('jol jol')
 
     return JsonResponse({"success": "Object updated"})
 

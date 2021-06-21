@@ -84,7 +84,7 @@
                                             {{ subcategory.details.last.budgeted_amount }}{% endspaceless %}
                                         </td>
                                     {% else %}
-                                        <td class="border-0 new-budget" data-id="null" data-parent-id="{{ subcategory.id }}"
+                                        <td class="border-0 new-budget" data-parent-id="{{ subcategory.id }}"
                                             data-type="budgeted-amount">0.00</td>
                                         </td>
                                     {% endif %}
@@ -242,13 +242,11 @@
 
             $(document).on("click", ".new-budget", function () {
                 let value = $(this).text()
-                let td = $(this).parent("td");
-                let type = td.data('type')
                 let input;
                 input = '<input type="text" tabindex="0" class="input-new-budget form-control" value="'+value+'">';
                 $(this).html(input);
                 $('.input-new-budget').focus();
-                $(this).removeClass("editable");
+                $(this).removeClass("new-budget");
             });
 
             $(document).on("keypress", ".input-new-budget", function (e){
@@ -256,11 +254,9 @@
                 if (key === 13) {
                     let value = $(this).val();
                     let td = $(this).parent("td");
-                    $(this).remove();
-                    td.html(value);
                     let type = 'new-budget';
                     let id = td.data('parent-id');
-                    console.log(id);
+                    console.log('id to: ' + id);
                     td.addClass("input-new-budget");
                     sendToServer(id, value, type);
                 }
@@ -271,10 +267,7 @@
                 let td = $(this).parent("td");
                 $(this).remove();
                 td.html(value);
-                td.addClass("editable");
-                let id = td.data('id')
-                let type = td.data('type')
-                sendToServer(id, value, type);
+                td.addClass("new-budget");
             });
 
 
