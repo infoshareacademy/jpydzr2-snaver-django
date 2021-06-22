@@ -12,6 +12,7 @@ from django.template import loader
 from django.urls import reverse_lazy
 from django.utils import dateformat
 from django.utils import timezone
+from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 from django.views.generic import ListView
@@ -45,7 +46,7 @@ class TransactionCreateView(CreateView):
         return kwargs
 
 
-class TransactionListView(ListView):
+class TransactionListView(generic.ListView):
     model = Transaction
     template_name = 'adding-transactions.html'
     context_object_name = 'transactions'
@@ -57,13 +58,15 @@ class TransactionListView(ListView):
         transaction_details = {
             'transaction_list': self.model.objects.filter(
                 subcategory__category__budget__user=self.request.user),
-            'subcategory_list': self.model.objects.filter(
-                subcategory__category__budget__user=self.request.user).distinct("subcategory__name")
         }
         return transaction_details
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(TransactionListView, self).get_context_data(**kwargs)
+        context.update({
+            'subcategory_list': Subcategory.objects.filter(
+                category__budget__user=self.request.user)
+        })
         return context
 
 class CategoryView(ListView):

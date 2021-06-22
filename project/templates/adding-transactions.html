@@ -66,8 +66,8 @@
                                                     name="list_of_subcategories">
                                                 <option selected value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
 
-                                                {% for transaction in transactions.subcategory_list %}
-                                                <option value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
+                                                {% for subcategory in subcategory_list %}
+                                                <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
                                             {% endfor %}
 
                                         </select>
