@@ -64,7 +64,7 @@
                                             data-type="transaction_subcategory">
                                             <select class="border-0 editable-list" id="select"
                                                     name="list_of_subcategories">
-                                                <option value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
+                                                <option selected value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
 
                                                 {% for transaction in transactions.subcategory_list %}
                                                 <option value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
@@ -122,18 +122,9 @@
                 $('.input-data').focus();
             });
 
-{#TODO: find the way how to save selected value in database #}
-
-            {#$(document).on("change", "#select", function () {#}
-            {#    let value = $(this).attr('value');#}
-            {#    $(this).select(value);#}
-            {#    $(this).removeClass("edtitable-list");#}
-
-
-
             $(document).on("blur", "#select", function () {
                 console.log("lost focus");
-                let value = $("#select option:selected").attr('value');
+                let value = $(this).find("option:selected").attr('value');
                 let td = $(this).parent("td");
                 let id = td.data('id');
                 let type = td.data('type');
