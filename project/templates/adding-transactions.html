@@ -51,7 +51,7 @@
                             </thead>
                             <tbody id="transactions">
                             {% if transactions %}
-                                {% for transaction in transactions.transaction_list|dictsort:'subcategory.name' %}
+                                {% for transaction in transactions.transaction_list|dictsort:'receipt_date' %}
                                     <tr>
 
 {#TODO: fix date field - date in another format, empty field when not filled with data #}
