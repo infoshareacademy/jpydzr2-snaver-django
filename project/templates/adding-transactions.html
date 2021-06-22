@@ -128,7 +128,6 @@
 
             $(document).on("change", "#select", function () {
                 let value = $("#select option:selected").attr('value');
-
                 $(this).select(value);
                 $(this).removeClass("edtitable-list");
             });
@@ -136,9 +135,8 @@
 
             $(document).on("blur", "#select", function () {
                 console.log("lost focus");
-                let value = $("#select option:selected").val();
+                let value = $("#select option:selected").attr('value');
                 let td = $(this).parent("td");
-
                 let id = td.data('id');
                 let type = td.data('type');
                 sendToServer(id, value, type);

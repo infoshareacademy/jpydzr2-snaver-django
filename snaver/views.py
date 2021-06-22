@@ -251,16 +251,14 @@ def update_transaction(request):
 
     if type == 'payee_name':
         transaction = Transaction.objects.get(id=id)
-        print("-------transaction:")
-        print(transaction)
         transaction.payee_name = value
-        print("--------name:")
-        print(value)
         transaction.save()
 
     if type == 'transaction_subcategory':
-        transaction = Transaction.objects.get(id=int(id))
+        transaction = Transaction.objects.get(id=id)
+        print(f'transakcja={transaction}')
         transaction.subcategory = Subcategory.objects.get(id=value)
+        print(f'id subkategorii {transaction.subcategory.id}')
 
         transaction.save()
 
