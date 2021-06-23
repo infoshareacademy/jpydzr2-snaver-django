@@ -276,7 +276,6 @@ def ajax_update(request, year=None, month=None):
     year, month = _set_current_date(year, month)
     first_day, last_day = _this_months_range(int(year), int(month))
 
-
     # UPDATE SSUBCATEGORY NAME
     if type == 'subcategory-name':
         subcategory = Subcategory.objects.get(id=id)
@@ -301,7 +300,8 @@ def ajax_update(request, year=None, month=None):
 
     if type == 'new-budget':
         subcategory = Subcategory.objects.get(id=id)
-        detail = SubcategoryDetails(budgeted_amount=value, start_date=first_day, end_date=last_day, subcategory=subcategory)
+        detail = SubcategoryDetails(budgeted_amount=value, start_date=first_day, end_date=last_day,
+                                    subcategory=subcategory)
         detail.save()
 
     return JsonResponse({"success": "Object updated"})
@@ -360,16 +360,16 @@ class BudgetView(ListView):
                                 transactions__receipt_date__gte=first_day,
                             )), Decimal(0.00)),
                     available=
-                            Sum('details__budgeted_amount',
-                                filter=Q(
-                                    details__end_date__lte=last_day
-                                ),distinct=True)
+                    Coalesce(Sum('details__budgeted_amount',
+                                 filter=Q(
+                                     details__end_date__lte=last_day
+                                 ), distinct=True), Decimal(0.00))
 
-                            - Sum('transactions__outflow',
-                                filter=Q(
-                                    transactions__receipt_date__lte=last_day,
-                                )),
-                    )
+                    - Coalesce(Sum('transactions__outflow',
+                                   filter=Q(
+                                       transactions__receipt_date__lte=last_day,
+                                   )), Decimal(0.00)),
+                )
             ),
             Prefetch(
                 "subcategories__details",
