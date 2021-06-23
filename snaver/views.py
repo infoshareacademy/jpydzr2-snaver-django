@@ -299,9 +299,10 @@ def ajax_update(request, year=None, month=None):
         subcategory.save()
 
     if type == 'new-budget':
-        subcategory = Subcategory.objects.get(id=id)
+        subcategory_obj = Subcategory.objects.get(id=id)
+        print(subcategory_obj)
         detail = SubcategoryDetails(budgeted_amount=value, start_date=first_day, end_date=last_day,
-                                    subcategory=subcategory)
+                                    subcategory=subcategory_obj)
         detail.save()
 
     return JsonResponse({"success": "Object updated"})
@@ -358,7 +359,7 @@ class BudgetView(ListView):
                             filter=Q(
                                 transactions__receipt_date__lte=last_day,
                                 transactions__receipt_date__gte=first_day,
-                            )), Decimal(0.00)),
+                            ), distinct=True), Decimal(0.00)),
                     available=
                     Coalesce(Sum('details__budgeted_amount',
                                  filter=Q(
@@ -368,7 +369,7 @@ class BudgetView(ListView):
                     - Coalesce(Sum('transactions__outflow',
                                    filter=Q(
                                        transactions__receipt_date__lte=last_day,
-                                   )), Decimal(0.00)),
+                                   ), distinct=True), Decimal(0.00))
                 )
             ),
             Prefetch(
