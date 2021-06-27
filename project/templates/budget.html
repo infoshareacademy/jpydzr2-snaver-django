@@ -75,7 +75,7 @@
 
                             {% for subcategory in category.subcategories.all %}
 
-                                <tr>
+                                <tr class="subcategory-row" data-id="{{ subcategory.id }}">
 
                                     <td class="border-0 editable" data-id="{{ subcategory.id }}"
                                     data-type="subcategory-name">{{ subcategory.name }}</td>
@@ -99,9 +99,13 @@
                                         {% endif %}
                                     </td>
 
-                                    {% if subcategory.available >= 0 %}
+                                    {% if subcategory.available > 0 %}
                                         <td class="border-0" style="color: green;">
                                         {{ subcategory.available }}
+                                        </td>
+                                    {% elif subcategory.available == 0 %}
+                                        <td class="border-0" style="color: green;">
+                                        0.00
                                         </td>
                                     {% else %}
                                         <td class="border-0" style="color: red;">
@@ -131,44 +135,63 @@
 {% block javascripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
     <script>
-        let budgetTable = document.getElementById('budgets-table');
-           let sortable = Sortable.create(budgetTable, {
-               onEnd: () => {
-                saveOrdering();
-                }
-        });
-
-
-       function saveOrdering() {
-            let rows = document.getElementById("budgets-table").querySelectorAll('tr.category-row');
-            let ids = [];
-            for (let row of rows) {
-                ids.push(row.dataset.id);
-            }
-            value = ids.join(',');
-            console.log(value);
-
-           function SendOrdering(value) {
-               $.ajax({
-                    url: "save-ordering",
-                    type: "POST",
-                    data: {value:value}
-                })
-                .done(function(response){
-                    console.log(response);
-                    $('.budget').load(" .budget");
-                })
-                .fail(function(){
-                    console.log("Error occured")
-                });
-            }
-
-           SendOrdering(value);
-        }
-
-
 
         $(document).ready(function() {
+            console.log('załadowano');
+            let budgetTable = document.getElementById('budgets-table');
+            let sortable = Sortable.create(budgetTable, {
+               onEnd: () => {
+                saveOrdering();
+                    }
+            });
+
+            function reinitSortable() {
+                console.log('odświeżonko');
+                let budgetTable = document.getElementById('budgets-table');
+                let sortable = Sortable.create(budgetTable, {
+                   onEnd: () => {
+                    saveOrdering();
+                        }
+                });
+                console.log(sortable);
+            }
+
+
+           function saveOrdering() {
+                let rows = document.getElementById("budgets-table").querySelectorAll('tr.category-row');
+                let catIds = [];
+                for (let row of rows) {
+                    catIds.push(row.dataset.id);
+                }
+                categories = catIds.join(',');
+
+                let rows2 = document.getElementById("budgets-table").querySelectorAll('tr.subcategory-row');
+                let subcatIds = [];
+                for (let row of rows2) {
+                    subcatIds.push(row.dataset.id);
+                }
+                subcategories = subcatIds.join(',');
+
+               function SendOrdering(categories, subcategories) {
+                   $.ajax({
+                        url: "save-ordering",
+                        type: "POST",
+                        data: {categories:categories, subcategories:subcategories}
+                    })
+                    .done(function(response){
+                        console.log(response);
+                        $('.budget').load(" .budget", function() {
+                             reinitSortable();
+                        });
+                    })
+                    .fail(function(){
+                        console.log("Error occured")
+                    });
+                }
+
+               SendOrdering(categories, subcategories);
+            }
+
 
             let chosen_row;
 
@@ -179,8 +202,11 @@
                     data: {id:id, type:type, value:value}
                 })
                 .done(function(response){
+                    console.log('oki');
                     console.log(response);
-                    $('.budget').load(" .budget");
+                    $('.budget').load(" .budget",  function() {
+                         reinitSortable();
+                    });
                 })
                 .fail(function(){
                     console.log("Error occured")
@@ -197,7 +223,9 @@
             });
 
             $(document).on("blur", "#category", function (){
-                $('.budget').load(" .budget");
+                $('.budget').load(" .budget", function() {
+                         reinitSortable();
+                    });
             });
 
             $(document).on("keypress", "#category", function (e){
