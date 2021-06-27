@@ -352,7 +352,7 @@ class BudgetView(ListView):
             .prefetch_related(
             Prefetch(
                 "subcategories",
-                queryset=Subcategory.objects.all()
+                queryset=Subcategory.objects.all().order_by('-created_on')
                     .annotate(
                     activity=Coalesce(
                         Sum('transactions__outflow',

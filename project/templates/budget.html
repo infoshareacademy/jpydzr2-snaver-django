@@ -135,11 +135,6 @@
             let chosen_row;
 
             function sendToServer(id, value, type) {
-                console.log('serwer');
-                console.log(id);
-                console.log(value);
-                console.log('type= ' + type);
-
                 $.ajax({
                     url: "ajax-update",
                     type: "POST",
@@ -164,20 +159,16 @@
             });
 
             $(document).on("blur", "#category", function (){
-                console.log('lost focus');
-                console.log($(this));
-                let id = 0;
-                let type = 'new-category';
-                let value = $(this).val();
-                sendToServer(id, value, type);
-                 $('#category').remove();
-                 $(".new-cat").addClass("new-category");
+                $('.budget').load(" .budget");
             });
 
             $(document).on("keypress", "#category", function (e){
                 let key= e.which;
                 if (key === 13) {
-                    $('#category').remove();
+                    let id = 0;
+                    let type = 'new-category';
+                    let value = $(this).val();
+                    sendToServer(id, value, type);
                 }
             });
 
@@ -215,27 +206,16 @@
             $(document).on("keypress", ".input-data", function (e){
                 let key= e.which;
                 if (key === 13) {
-                    console.log("lost focus");
                     let value = $(this).val();
-                    let td = $(this).parent("td");
-                    $(this).remove();
-                    td.html(value);
-                    td.addClass("editable");
-                    let type = td.data('type')
-                    sendToServer(td.data(id), value, type);
+                let td = $(this).parent("td");
+                let id = td.data('id')
+                let type = td.data('type')
+                sendToServer(id, value, type);
                 }
             });
 
             $(document).on("blur", ".input-data", function (){
-                console.log("lost focus");
-                let value = $(this).val();
-                let td = $(this).parent("td");
-                $(this).remove();
-                td.html(value);
-                td.addClass("editable");
-                let id = td.data('id')
-                let type = td.data('type')
-                sendToServer(id, value, type);
+                $('.budget').load(" .budget");
             });
 
             $(document).on("click", ".new-budget", function () {
@@ -255,9 +235,11 @@
                     let type = 'new-budget';
                     let id = td.data('parent-id');
                     sendToServer(id, value, type);
-                    td.addClass("new-budget");
-                    $(this).remove();
                 }
+            });
+
+            $(document).on("blur", "#input-new-budget", function (e){
+                $('.budget').load(" .budget");
             });
 
 
