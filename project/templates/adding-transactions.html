@@ -18,18 +18,8 @@
 
                                 <a href="/add-new" title="Add new transaction"
                                    class="btn btn-primary pull-center">
-                                    Add transaction
+                                    Add new transaction
                                 </a>
-                            </th>
-                            <th>
-                                <div class="input-group">
-                                    <input autocomplete="off"
-                                           id="search"
-                                           title="Search transaction"
-                                           placeholder="Search"
-                                           type="text"
-                                           value class="form-control">
-                                </div>
                             </th>
                         </tr>
                     </table>
@@ -39,12 +29,12 @@
                         <table class="table" id="transactions">
                             <thead class="text-primary">
                             <tr style="cursor:pointer">
-                                <th class="border-0" onclick="sortTable(0);">Date</th>
-                                <th class="border-0" onclick="sortTable(1);">Payee</th>
-                                <th class="border-0" onclick="sortTable(2);">Category</th>
-                                <th class="border-0" onclick="sortTable(3);">Description</th>
-                                <th class="border-0" onclick="sortTable(4);">Outflow</th>
-                                <th class="border-0" onclick="sortTable(5);">Inflow</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Description</th>
+                                <th class="border-0">Payee</th>
+                                <th class="border-0">Category</th>
+                                <th class="border-0">Outflow</th>
+                                <th class="border-0">Inflow</th>
 
                             </tr>
                             </thead>
@@ -52,11 +42,11 @@
                             {% if transactions %}
                                 {% for transaction in transactions.transaction_list|dictsortreversed:'receipt_date' %}
                                     <tr>
-
-{#TODO: fix date field - date in another format, empty field when not filled with data #}
-
                                         <td class="border-0 editable-date date" data-id="{{ transaction.id }}"
                                             data-type="transaction_date">{{ transaction.receipt_date|date:"c" }}
+                                        </td>
+                                        <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                            data-type="transaction_name">{{ transaction.name }}
                                         </td>
                                         <td class="border-0 editable" data-id="{{ transaction.id }}"
                                             data-type="payee_name">{{ transaction.payee_name }}
@@ -65,29 +55,28 @@
                                             data-type="transaction_subcategory">
                                             <select class="border-0 editable-list" id="select"
                                                     name="list_of_subcategories">
-                                                <option selected value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
+                                                <option selected
+                                                        value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
 
                                                 {% for subcategory in subcategory_list %}
-                                                <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
-                                            {% endfor %}
+                                                    <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+                                                {% endfor %}
 
-                                        </select>
-                                    </td>
-                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
-                                        data-type="transaction_name">{{ transaction.name }}
-                                    </td>
+                                            </select>
+                                        </td>
 
-{#TODO:add inflow/outflow validation, add info about validation displayed to user#}
 
-                                    <td class="border-0 editable" id="outflow"  data-id="{{ transaction.id }}"
-                                        data-type="outflow">{{ transaction.outflow }}
-                                    </td>
-                                    <td class="border-0 editable" id="inflow" data-id="{{ transaction.id }}"
-                                        data-type="inflow">{{ transaction.inflow }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% endif %}
+                                        {#TODO:add inflow/outflow validation, add info about validation displayed to user#}
+
+                                        <td class="border-0 editable" id="outflow" data-id="{{ transaction.id }}"
+                                            data-type="outflow">{{ transaction.outflow }}
+                                        </td>
+                                        <td class="border-0 editable" id="inflow" data-id="{{ transaction.id }}"
+                                            data-type="inflow">{{ transaction.inflow }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -110,7 +99,7 @@
                 {"searchable": false, "targets": 2}
             ],
             language: {
-                searchPlaceholder: "Search in: date, payee, description, outflow, inflow"
+                searchPlaceholder: "in transactions"
             }
         });
 
