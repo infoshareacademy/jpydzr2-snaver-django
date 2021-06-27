@@ -9,6 +9,9 @@ from django.utils.encoding import force_bytes
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import UpdateView
+from django.urls import reverse, reverse_lazy
 
 from accounts.forms import LoginForm
 from accounts.forms import SignUpForm
@@ -95,3 +98,17 @@ def activate(request, uidb64, token):
         return redirect('home')
     else:
         return render(request, 'accounts/account_activation_invalid.html')
+
+class ProfileView(TemplateView):
+    template_name = 'page-user.html'
+
+
+class EmailChangeView(UpdateView):
+    model = User
+    fields = ['email']
+    template_name = 'accounts/email_change.html'
+    success_url = reverse_lazy('email_change_done')
+
+
+class EmailChangeDoneView(TemplateView):
+    template_name = 'accounts/email_change_done.html'
