@@ -28,7 +28,7 @@ class TransactionCreateForm(forms.ModelForm):
         widgets = {
             'receipt_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'payee_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'subcategory': forms.Select(attrs={'class': 'nav-item-dropdown'}),
+            'subcategory': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'outflow': forms.NumberInput(attrs={'class': 'form-control'}),
             'inflow': forms.NumberInput(attrs={'class': 'form-control'}),

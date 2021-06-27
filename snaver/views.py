@@ -3,7 +3,6 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.db import transaction
-from django.http import JsonResponse
 
 from django import template
 from django.contrib.auth.decorators import login_required
@@ -15,13 +14,15 @@ from django.db.models import Sum
 from django.db.models import Value
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.template import loader
 from django.urls import reverse_lazy
 from django.utils import dateformat
 from django.utils import timezone
+from django.views import generic
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 from django.views.generic import ListView
-from django.views.decorators.csrf import csrf_exempt
 
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
@@ -53,22 +54,28 @@ class TransactionCreateView(CreateView):
         return kwargs
 
 
-class TransactionListView(ListView):
+class TransactionListView(generic.ListView):
     model = Transaction
     template_name = 'adding-transactions.html'
+    context_object_name = 'transactions'
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return None
 
-        transaction_details = self.model.objects.filter(
-            subcategory__category__budget__user=self.request.user)
+        transaction_details = {
+            'transaction_list': self.model.objects.filter(
+                subcategory__category__budget__user=self.request.user),
+        }
         return transaction_details
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(TransactionListView, self).get_context_data(**kwargs)
+        context.update({
+            'subcategory_list': Subcategory.objects.filter(
+                category__budget__user=self.request.user)
+        })
         return context
-
 
 class CategoryView(ListView):
     template_name = "budget.html"
@@ -308,6 +315,58 @@ def ajax_update(request, year=None, month=None):
 
     return JsonResponse({"success": "Object updated"})
 
+@csrf_exempt
+def update_transaction(request):
+    print("1)doszedlem tutaj")
+    id = request.POST.get('id', '')
+    type = request.POST.get('type', '')
+    value = request.POST.get('value', '')
+
+    print("-----------id:")
+    print(id)
+    print("-----------type:")
+    print(type)
+    print("-----------value:")
+    print(value)
+    print("")
+    print("")
+
+
+    if type == 'transaction_date':
+        transaction = Transaction.objects.get(id=id)
+        transaction.receipt_date = value
+        transaction.save()
+
+    if type == 'payee_name':
+        transaction = Transaction.objects.get(id=id)
+        transaction.payee_name = value
+        transaction.save()
+
+    if type == 'transaction_subcategory':
+        transaction = Transaction.objects.get(id=id)
+        print(f'transakcja={transaction}')
+        transaction.subcategory = Subcategory.objects.get(id=value)
+        print(f'id subkategorii {transaction.subcategory.id}')
+
+        transaction.save()
+
+
+    if type == 'transaction_name':
+        transaction = Transaction.objects.get(id=id)
+        transaction.name = value
+        transaction.save()
+
+    if type == 'outflow':
+        transaction = Transaction.objects.get(id=id)
+        transaction.outflow = value
+        transaction.save()
+
+    if type == 'inflow':
+        transaction = Transaction.objects.get(id=id)
+        transaction.inflow = value
+        transaction.save()
+
+    return JsonResponse({"success": "Object updated"})
 
 class BudgetView(ListView):
     model = Category
