@@ -91,10 +91,7 @@
 {% block javascripts %}
     <script>
         $(document).ready(function () {
-            $('#transactions').DataTable();
-        });
-
-        $('#transactions').DataTable({
+            $('#transactions').DataTable({
             "columnDefs": [
                 {"searchable": false, "targets": 2}
             ],
@@ -102,6 +99,9 @@
                 searchPlaceholder: "in transactions"
             }
         });
+        });
+
+
 
         $(document).ready(function () {
             $(document).on("click", ".editable", function () {
