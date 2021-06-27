@@ -65,7 +65,7 @@ class TransactionListView(generic.ListView):
 
         transaction_details = {
             'transaction_list': self.model.objects.filter(
-                subcategory__category__budget__user=self.request.user),
+                subcategory__category__budget__user=self.request.user).order_by("-receipt_date"),
         }
         return transaction_details
 

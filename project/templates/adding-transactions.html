@@ -49,7 +49,7 @@
                             </thead>
                             <tbody id="transactions">
                             {% if transactions %}
-                                {% for transaction in transactions.transaction_list|dictsort:'receipt_date' %}
+                                {% for transaction in transactions.transaction_list|dictsortreversed:'receipt_date' %}
                                     <tr>
 
 {#TODO: fix date field - date in another format, empty field when not filled with data #}
@@ -78,10 +78,10 @@
 
 {#TODO:add inflow/outflow validation, add info about validation displayed to user#}
 
-                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                    <td class="border-0 editable" id="outflow"  data-id="{{ transaction.id }}"
                                         data-type="outflow">{{ transaction.outflow }}
                                     </td>
-                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                    <td class="border-0 editable" id="inflow" data-id="{{ transaction.id }}"
                                         data-type="inflow">{{ transaction.inflow }}
                                     </td>
                                 </tr>
@@ -112,7 +112,7 @@
             $(document).on("click", ".editable-date", function () {
                 let x
                 let value = $(this).text()
-                let input = '<input type="date" tabindex="0" class="input-data form-control" value="' + value + '">';
+                let input = '<input type="date" tabindex="0" class="input-data form-control" value='+value+'>';
                 if (!input){
                     input = x;
                 };
@@ -138,9 +138,6 @@
                     console.log("lost focus");
                     let value = $(this).val();
                     let td = $(this).parent("td");
-                    $(this).remove();
-                    td.html(value);
-                    td.addClass("editable");
                     let type = td.data('type')
                     sendToServer(td.data(id), value, type);
                 }
@@ -150,9 +147,6 @@
             console.log("lost focus");
             let value = $(this).val();
             let td = $(this).parent("td");
-            $(this).remove();
-            td.html(value);
-            td.addClass("editable");
             let id = td.data('id')
             let type = td.data('type')
             sendToServer(id, value, type);
@@ -171,7 +165,7 @@
             })
                 .done(function (response) {
                     console.log(response);
-                    $('adding-transaction').load("budget");
+                    $('body').load("");
                 })
                 .fail(function () {
                     console.log("Error occured")
