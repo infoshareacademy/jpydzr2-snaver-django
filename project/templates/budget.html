@@ -8,6 +8,8 @@
 
 {% block content %}
 
+    <div class="budget">
+
     <div class="col-12 col-sm-6 col-xl-4 mb-4">
         <div class="card border-light shadow-sm">
             <div class="card-body">
@@ -97,13 +99,15 @@
                                         {% endif %}
                                     </td>
 
-                                    <td class="border-0">
-                                        {% if subcategory.available == 0 %}
-                                           0.00
-                                        {% else %}
-                                             {{ subcategory.available }}
-                                        {% endif %}
-                                    </td>
+                                    {% if subcategory.available >= 0 %}
+                                        <td class="border-0" style="color: green;">
+                                        {{ subcategory.available }}
+                                        </td>
+                                    {% else %}
+                                        <td class="border-0" style="color: red;">
+                                        {{ subcategory.available }}
+                                        </td>
+                                    {% endif %}
 
                                  </tr>
 
@@ -118,6 +122,7 @@
             </div>
 
         </div>
+    </div>
     </div>
 
 {% endblock content %}
@@ -142,7 +147,7 @@
                 })
                 .done(function(response){
                     console.log(response);
-                    $('body').load("");
+                    $('.budget').load(" .budget");
                 })
                 .fail(function(){
                     console.log("Error occured")
@@ -177,7 +182,7 @@
             });
 
             $(document).on("click", ".new-subcategory", function () {
-                let markup = '<input type="text" data-type="new-subcategory" tabindex="0" class="input-data-new-subcat form-control m-3">';
+                let markup = '<input type="text" data-type="new-subcategory" tabindex="0" id="new-subcat" class="input-data-new-subcat form-control m-3">';
                 let row = $(this).closest("tr");
                 chosen_row = $(this).parent("td");
                 $(this).removeClass("new-subcategory");
@@ -186,20 +191,13 @@
                 $('.input-data-new-subcat').focus();
             });
 
-            $(document).on("blur", ".input-data-new-subcat", function (){
-                 $(this).remove();
-                 $(".new-sub").addClass("new-subcategory");
-            });
-
-            $(document).on("keypress", ".input-data-new-subcat", function (e){
+            $(document).on("keypress", "#new-subcat", function (e){
                 let key= e.which;
                 if (key === 13) {
                     let id = chosen_row.data('id');
                     let type = 'new-subcategory'
                     let value = $(this).val();
-                     sendToServer(id, value, type);
-                     $(this).remove();
-                     $(".new-sub").addClass("new-subcategory");
+                    sendToServer(id, value, type);
                 }
             });
 
@@ -245,7 +243,7 @@
                 let input;
                 input = '<input type="text" tabindex="0" id="input-new-budget" class="form-control" value="'+value+'">';
                 $(this).html(input);
-                $('.input-new-budget').focus();
+                $('#input-new-budget').focus();
                 $(this).removeClass("new-budget");
             });
 
@@ -256,21 +254,11 @@
                     let td = $(this).parent("td");
                     let type = 'new-budget';
                     let id = td.data('parent-id');
-                    console.log('id to: ' + id);
                     sendToServer(id, value, type);
                     td.addClass("new-budget");
                     $(this).remove();
-
                 }
             });
-            {#$(document).on("blur", "#input-new-budget", function (){#}
-            {#    console.log("lost focus");#}
-            {#    let value = $(this).val();#}
-            {#    let td = $(this).parent("td");#}
-            {#    $(this).remove();#}
-            {#    td.html(value);#}
-            {#    td.addClass("new-budget");#}
-            {#});#}
 
 
         });
