@@ -4,6 +4,8 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from datetime import date
+
 
 
 class CustomUser(AbstractUser):
@@ -25,7 +27,7 @@ class Budget(models.Model):
     user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='budget',
+        related_name='budgets',
     )
 
     created_on = models.DateTimeField(default=timezone.now)
@@ -39,9 +41,10 @@ class Category(models.Model):
     budget = models.ForeignKey(
         Budget,
         on_delete=models.CASCADE,
-        related_name='category',
+        related_name='categories',
     )
     created_on = models.DateTimeField(default=timezone.now)
+    order = models.IntegerField(blank=False, default=100_000)
 
     def __str__(self):
         return f"{self.name}"
@@ -52,7 +55,7 @@ class Subcategory(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name='subcategory',
+        related_name='subcategories',
     )
     created_on = models.DateTimeField(default=timezone.now)
 
@@ -71,8 +74,11 @@ class SubcategoryDetails(models.Model):
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
-        related_name='subcategory_details',
+        related_name='details',
     )
+
+    def hello(self, str):
+        return str
 
     def save(self, *args, **kwargs):
         if self.start_date >= self.end_date:
@@ -81,6 +87,9 @@ class SubcategoryDetails(models.Model):
 
     def __str__(self):
         return f"{self.subcategory.name} - {self.start_date}"
+
+    def is_past_due(self):
+        return date.today() > self.end_date
 
 
 class Transaction(models.Model):
@@ -113,7 +122,7 @@ class Transaction(models.Model):
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
-        related_name='transaction',
+        related_name='transactions',
     )
 
     created_on = models.DateTimeField(default=timezone.now)

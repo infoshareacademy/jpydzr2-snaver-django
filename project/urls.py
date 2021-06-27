@@ -21,8 +21,9 @@ from django.urls import include
 from django.urls import path
 
 urlpatterns = [
-  path('admin/', admin.site.urls),
-  path('admin/logout/', django.contrib.auth.views.LogoutView, name="logout"),
-  path("", include("snaver.urls")),
-  path("", include("accounts.urls")),
+    path('admin/', admin.site.urls),
+    path('admin/logout/', django.contrib.auth.views.LogoutView, name="logout"),
+    path("", include("snaver.urls")),
+    path("", include("accounts.urls")),
+    path("", include('django.contrib.auth.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

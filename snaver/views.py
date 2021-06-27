@@ -1,10 +1,17 @@
+from calendar import monthrange
 from datetime import datetime
 from decimal import Decimal
 
+from django.db import transaction
+
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.db.models import F, Q
+from django.db.models import F, Prefetch
+from django.db.models import OuterRef
+from django.db.models import Q
+from django.db.models import Subquery
 from django.db.models import Sum
+from django.db.models import Value
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -20,7 +27,8 @@ from django.views.generic import ListView
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
-from snaver.models import Subcategory
+from snaver.models import Subcategory, Budget
+from snaver.models import Category
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
@@ -78,47 +86,81 @@ class CategoryView(ListView):
         if not self.kwargs.get("month", None):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
-    def _this_month(self):
-        selected_date = datetime(
-            year=int(self.kwargs["year"]),
-            month=int(self.kwargs["month"]),
-            day=1
+    def _this_months_range(self):
+        year = int(self.kwargs["year"])
+        month = int(self.kwargs["month"])
+        day = monthrange(year, month)[1]  # the last day of the month
+        first_day = datetime(
+            year=year,
+            month=month,
+            day=1,
         )
-        return selected_date
+        last_day = datetime(
+            year=year,
+            month=month,
+            day=day,
+        )
+        return first_day, last_day
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self._set_current_date()
-        selected_date = self._this_month()
-        context['prev_month'] = prev_month(selected_date)
-        context['next_month'] = next_month(selected_date)
+        _, last_day = self._this_months_range()
+        context['prev_month'] = prev_month(last_day)
+        context['next_month'] = next_month(last_day)
         return context
 
     def get_queryset(self, *args, **kwargs):
         self._set_current_date()
-        selected_date = dateformat.format(
-            self._this_month(),
-            'Y-m-d')
+        first_day, last_day = self._this_months_range()
 
-        subcategory_details = SubcategoryDetails.objects.filter(
-            subcategory__category__budget__user=self.request.user,
-            start_date__lte=selected_date,
-            end_date__gte=selected_date,
+        # https://stackoverflow.com/a/64902200/5947738
+        # Dummy group by column forces Django to Sum values correctly
+        past_budgeted_subquery = SubcategoryDetails.objects.filter(
+            subcategory__id=OuterRef('id'),
+            start_date__lte=first_day,
+        ).annotate(
+            dummy_group_by=Value(1)
+        ).values(
+            'dummy_group_by'
+        ).annotate(
+            past_budgeted=Sum("budgeted_amount")
+        ).values("past_budgeted")
+
+        budgeted_subquery = SubcategoryDetails.objects.filter(
+            subcategory_id=OuterRef('id'),
+            start_date=first_day,
+        )
+
+        # Main query
+        subcategory_details = Subcategory.objects.filter(
+            category__budget__user=self.request.user,
         ).order_by(
-            "subcategory__category__name",
-            "subcategory__name"
+            "category__name",
+            "name"
         ).annotate(
             activity=Coalesce(  # Coalesce picks first non-null value
-                Sum('subcategory__transaction__outflow',
+                Sum('transaction__outflow',
                     filter=Q(
-                        subcategory__transaction__receipt_date__lte=F("end_date"),
-                        subcategory__transaction__receipt_date__gte=F("start_date")
+                        transaction__receipt_date__range=(first_day, last_day),
                     )
                     ),
                 Decimal(0.00),
             )
         ).annotate(
-            available=(F("budgeted_amount") - F("activity"))
+            budgeted_amount=Coalesce(
+                Subquery(budgeted_subquery.values("budgeted_amount")),
+                Decimal(0.00)
+            )
+        ).annotate(
+            available=Subquery(past_budgeted_subquery) - Coalesce(
+                Sum('transaction__outflow',
+                    filter=Q(
+                        transaction__receipt_date__lte=last_day,
+                    )
+                    ),
+                Decimal(0.00),
+            )
         )
 
         # This is an awful hack, to add information if the element is the first
@@ -128,10 +170,10 @@ class CategoryView(ListView):
         new_list = []
         cache = {}
         for sub in subcategory_details:
-            if cache.get(sub.subcategory.category.name, None):
+            if cache.get(sub.category.name, None):
                 new_list.append((sub, False,))
             else:
-                cache[sub.subcategory.category.name] = True
+                cache[sub.category.name] = True
                 new_list.append((sub, True,))
 
         return new_list
@@ -209,24 +251,67 @@ def pages(request):
 
 
 @csrf_exempt
-def update_category(request):
-    print("doszedlem tutaj")
-    id = request.POST.get('id', '')
-    type = request.POST.get('type', '')
-    value = request.POST.get('value', '')
-    print(value)
+def ajax_update(request, year=None, month=None):
+    user = request.user
+    budget = user.budgets.first()
 
+    id = request.POST.get('id')
+    type = request.POST.get('type')
+    value = request.POST.get('value')
+
+    def _set_current_date(year, month):
+        if year is None:
+            year = str(datetime.now().year)
+        if month is None:
+            month = f"{datetime.now().month:02d}"
+
+        return year, month
+
+    def _this_months_range(year, month):
+        day = monthrange(year, month)[1]  # the last day of the month
+        first_day = datetime(
+            year=year,
+            month=month,
+            day=1,
+        )
+        last_day = datetime(
+            year=year,
+            month=month,
+            day=day,
+        )
+        return first_day, last_day
+
+    year, month = _set_current_date(year, month)
+    first_day, last_day = _this_months_range(int(year), int(month))
+
+    # UPDATE SSUBCATEGORY NAME
     if type == 'subcategory-name':
-        print("ok, tutaj tez jestem")
         subcategory = Subcategory.objects.get(id=id)
         subcategory.name = value
         subcategory.save()
 
+    # UPDATE BUDGETED AMOUNT
     if type == 'budgeted-amount':
-        print("ok, tutaj tez jestem")
         subcategory = SubcategoryDetails.objects.get(id=id)
         subcategory.budgeted_amount = value
         subcategory.save()
+
+    # CREATE NEW SUBCATEGORY
+    if type == 'new-category':
+        category = Category(name=value, budget_id=budget.id)
+        print(category)
+        category.save()
+
+    if type == 'new-subcategory':
+        subcategory = Subcategory(name=value, category_id=id)
+        subcategory.save()
+
+    if type == 'new-budget':
+        subcategory_obj = Subcategory.objects.get(id=id)
+        print(subcategory_obj)
+        detail = SubcategoryDetails(budgeted_amount=value, start_date=first_day, end_date=last_day,
+                                    subcategory=subcategory_obj)
+        detail.save()
 
     return JsonResponse({"success": "Object updated"})
 
@@ -283,3 +368,90 @@ def update_transaction(request):
 
     return JsonResponse({"success": "Object updated"})
 
+class BudgetView(ListView):
+    model = Category
+    template_name = 'budget.html'
+
+    def _set_current_date(self):
+        if not self.kwargs.get("year", None):
+            self.kwargs["year"] = str(datetime.now().year)
+        if not self.kwargs.get("month", None):
+            self.kwargs["month"] = f"{datetime.now().month:02d}"
+
+    def _this_months_range(self):
+        year = int(self.kwargs["year"])
+        month = int(self.kwargs["month"])
+        day = monthrange(year, month)[1]  # the last day of the month
+        first_day = datetime(
+            year=year,
+            month=month,
+            day=1,
+        )
+        last_day = datetime(
+            year=year,
+            month=month,
+            day=day,
+        )
+        return first_day, last_day
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self._set_current_date()
+        _, last_day = self._this_months_range()
+        context['prev_month'] = prev_month(last_day)
+        context['next_month'] = next_month(last_day)
+        return context
+
+    def get_queryset(self):
+
+        self._set_current_date()
+        first_day, last_day = self._this_months_range()
+
+        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on') \
+            .select_related() \
+            .prefetch_related(
+            Prefetch(
+                "subcategories",
+                queryset=Subcategory.objects.all().order_by('-created_on')
+                    .annotate(
+                    activity=Coalesce(
+                        Sum('transactions__outflow',
+                            filter=Q(
+                                transactions__receipt_date__lte=last_day,
+                                transactions__receipt_date__gte=first_day,
+                            ), distinct=True), Decimal(0.00)),
+                    available=
+                        Coalesce(Sum('details__budgeted_amount',
+                                     filter=Q(
+                                         details__end_date__lte=last_day
+                                     ), distinct=True), Decimal(0.00))
+
+                        - Coalesce(Sum('transactions__outflow',
+                                       filter=Q(
+                                           transactions__receipt_date__lte=last_day,
+                                       ), distinct=True), Decimal(0.00))
+                        )
+            ),
+            Prefetch(
+                "subcategories__details",
+                queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)
+            ),
+        )
+
+@csrf_exempt
+def save_ordering(request):
+    print('hello')
+    value = request.POST.get('value')
+    print(value)
+
+    ordered_ids = value.split(',')
+
+    with transaction.atomic():
+        current_order = 1
+        for lookup_id in ordered_ids:
+            category = Category.objects.get(id=lookup_id)
+            category.order = current_order
+            category.save()
+            print(category.order)
+            current_order += 1
+    return JsonResponse({"success": "Order updated"})
