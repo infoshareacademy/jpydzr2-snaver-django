@@ -93,15 +93,13 @@
         $(document).ready(function () {
             $('#transactions').DataTable({
             "columnDefs": [
-                {"searchable": false, "targets": 2}
+                {"searchable": false, "targets": 3}
             ],
             language: {
                 searchPlaceholder: "in transactions"
             }
         });
         });
-
-
 
         $(document).ready(function () {
             $(document).on("click", ".editable", function () {
