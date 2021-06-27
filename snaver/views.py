@@ -335,7 +335,6 @@ def update_transaction(request):
         transaction.subcategory = Subcategory.objects.get(id=value)
         transaction.save()
 
-
     if type == 'transaction_name':
         transaction = Transaction.objects.get(id=id)
         transaction.name = value

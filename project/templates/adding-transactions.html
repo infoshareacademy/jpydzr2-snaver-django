@@ -15,7 +15,6 @@
                     <table class="table" id="transactiontable">
                         <tr>
                             <th>
-
                                 <a href="/add-new" title="Add new transaction"
                                    class="btn btn-primary pull-center">
                                     Add new transaction
@@ -35,7 +34,6 @@
                                 <th class="border-0">Category</th>
                                 <th class="border-0">Outflow</th>
                                 <th class="border-0">Inflow</th>
-
                             </tr>
                             </thead>
                             <tbody id="transactions">
@@ -61,13 +59,9 @@
                                                 {% for subcategory in subcategory_list %}
                                                     <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
                                                 {% endfor %}
-
                                             </select>
                                         </td>
-
-
                                         {#TODO:add inflow/outflow validation, add info about validation displayed to user#}
-
                                         <td class="border-0 editable" id="outflow" data-id="{{ transaction.id }}"
                                             data-type="outflow">{{ transaction.outflow }}
                                         </td>
