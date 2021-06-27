@@ -10,11 +10,11 @@ from snaver.views import TransactionListView
 from snaver.views import BudgetView
 
 from snaver.views import ajax_update
+from snaver.views import save_ordering
 
 urlpatterns = [
     path('', login_required(BudgetView.as_view()), name='home'),
     path('', views.index, name='logout'),
-    path('budget', login_required(BudgetView.as_view()), name='budget'),
     re_path(r'^budget/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/$',
             login_required(BudgetView.as_view()),
             name='budget_select'),
@@ -23,5 +23,6 @@ urlpatterns = [
     path('adding-transaction', TransactionListView.as_view(), name='adding'),
     path('add-new', TransactionCreateView.as_view(), name='add_new'),
     path('ajax-update', views.ajax_update, name="update-category"),
+    path('save-ordering', views.save_ordering, name="update-order"),
     re_path(r'^budget/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/ajax-update', views.ajax_update, name="update-category")
 ]

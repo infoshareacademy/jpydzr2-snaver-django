@@ -62,12 +62,12 @@
                             </tr>
 
                         </thead>
-                        <tbody class="mt-5">
+                        <tbody class="mt-5" id="budgets-table">
 
 
                         {% for category in object_list %}
 
-                                <tr class="table-primary">
+                                <tr class="table-primary category-row" data-id="{{ category.id }}">
                                     <td class="" colspan="4" data-id="{{ category.id }}">
                                         {{ category.name }}&nbsp;&nbsp;&nbsp;&nbsp;<span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
                                     </td>
@@ -129,7 +129,45 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
     <script>
+        let budgetTable = document.getElementById('budgets-table');
+           let sortable = Sortable.create(budgetTable, {
+               onEnd: () => {
+                saveOrdering();
+                }
+        });
+
+
+       function saveOrdering() {
+            let rows = document.getElementById("budgets-table").querySelectorAll('tr.category-row');
+            let ids = [];
+            for (let row of rows) {
+                ids.push(row.dataset.id);
+            }
+            value = ids.join(',');
+            console.log(value);
+
+           function SendOrdering(value) {
+               $.ajax({
+                    url: "save-ordering",
+                    type: "POST",
+                    data: {value:value}
+                })
+                .done(function(response){
+                    console.log(response);
+                    $('.budget').load(" .budget");
+                })
+                .fail(function(){
+                    console.log("Error occured")
+                });
+            }
+
+           SendOrdering(value);
+        }
+
+
+
         $(document).ready(function() {
 
             let chosen_row;

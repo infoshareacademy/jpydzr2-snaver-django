@@ -2,6 +2,7 @@ from calendar import monthrange
 from datetime import datetime
 from decimal import Decimal
 
+from django.db import transaction
 from django.http import JsonResponse
 
 from django import template
@@ -377,3 +378,21 @@ class BudgetView(ListView):
                 queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)
             ),
         )
+
+@csrf_exempt
+def save_ordering(request):
+    print('hello')
+    value = request.POST.get('value')
+    print(value)
+
+    ordered_ids = value.split(',')
+
+    with transaction.atomic():
+        current_order = 1
+        for lookup_id in ordered_ids:
+            category = Category.objects.get(id=lookup_id)
+            category.order = current_order
+            category.save()
+            print(category.order)
+            current_order += 1
+    return JsonResponse({"success": "Order updated"})
