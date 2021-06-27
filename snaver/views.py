@@ -2,10 +2,9 @@ from calendar import monthrange
 from datetime import datetime
 from decimal import Decimal
 
-from django.db import transaction
-
 from django import template
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import F, Prefetch
 from django.db.models import OuterRef
 from django.db.models import Q
@@ -27,8 +26,8 @@ from django.views.generic import ListView
 from snaver.forms import TransactionCreateForm
 from snaver.helpers import next_month
 from snaver.helpers import prev_month
-from snaver.models import Subcategory, Budget
 from snaver.models import Category
+from snaver.models import Subcategory
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
@@ -317,20 +316,9 @@ def ajax_update(request, year=None, month=None):
 
 @csrf_exempt
 def update_transaction(request):
-    print("1)doszedlem tutaj")
     id = request.POST.get('id', '')
     type = request.POST.get('type', '')
     value = request.POST.get('value', '')
-
-    print("-----------id:")
-    print(id)
-    print("-----------type:")
-    print(type)
-    print("-----------value:")
-    print(value)
-    print("")
-    print("")
-
 
     if type == 'transaction_date':
         transaction = Transaction.objects.get(id=id)
@@ -344,10 +332,7 @@ def update_transaction(request):
 
     if type == 'transaction_subcategory':
         transaction = Transaction.objects.get(id=id)
-        print(f'transakcja={transaction}')
         transaction.subcategory = Subcategory.objects.get(id=value)
-        print(f'id subkategorii {transaction.subcategory.id}')
-
         transaction.save()
 
 

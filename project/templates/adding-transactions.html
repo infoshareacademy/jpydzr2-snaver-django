@@ -7,6 +7,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -35,7 +36,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="transactionshead">
+                        <table class="table" id="transactions">
                             <thead class="text-primary">
                             <tr style="cursor:pointer">
                                 <th class="border-0" onclick="sortTable(0);">Date</th>
@@ -101,6 +102,19 @@
 {% block javascripts %}
     <script>
         $(document).ready(function () {
+            $('#transactions').DataTable();
+        });
+
+        $('#transactions').DataTable({
+            "columnDefs": [
+                {"searchable": false, "targets": 2}
+            ],
+            language: {
+                searchPlaceholder: "Search in: date, payee, description, outflow, inflow"
+            }
+        });
+
+        $(document).ready(function () {
             $(document).on("click", ".editable", function () {
                 let value = $(this).text()
                 let input = '<input type="text" tabindex="0" class="input-data form-control" value="' + value + '">';
@@ -110,13 +124,8 @@
             });
 
             $(document).on("click", ".editable-date", function () {
-                let x
                 let value = $(this).text()
                 let input = '<input type="date" tabindex="0" class="input-data form-control" value='+value+'>';
-                if (!input){
-                    input = x;
-                };
-
                 $(this).html(input);
                 $(this).removeClass("editable-date");
                 $('.input-data').focus();
@@ -173,79 +182,5 @@
     }
 
         });
-
-        // Search in transactions:
-
-{#TODO: it search also in list of transaction not only in selected one - needs to be fixed#}
-
-        $(document).ready(function () {
-            $("#search").on("keyup", function () {
-                let value = $(this).val().toLowerCase();
-                $("#transactions tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-
-        //Sort on click by date, payee, category, transaction, outflow, inflow
-        let asc = 0;
-
-        function sort_table(table, col) {
-            $('.sortorder').remove();
-            if (asc == 2) {
-                asc = -1;
-            } else {
-                asc = 2;
-            }
-
-
-            let rows = table.tBodies[0].rows;
-            let rlen = rows.length;
-            let arr = new Array();
-            let i, j, cells, clen;
-
-
-            for (i = 0; i < rlen; i++) {
-                cells = rows[i].cells;
-                clen = cells.length;
-                arr[i] = new Array();
-                for (j = 0; j < clen; j++) {
-                    arr[i][j] = cells[j].innerHTML;
-                }
-            }
-
-            arr.sort(function (a, b) {
-                let retval = 0;
-                let col1 = a[col].toLowerCase().replace(',', '').replace('$', '').replace(' usd', '')
-                let col2 = b[col].toLowerCase().replace(',', '').replace('$', '').replace(' usd', '')
-                let fA = parseFloat(col1);
-                let fB = parseFloat(col2);
-                if (col1 != col2) {
-                    if ((fA == col1) && (fB == col2)) {
-                        retval = (fA > fB) ? asc : -1 * asc;
-                    } else {
-                        retval = (col1 > col2) ? asc : -1 * asc;
-                    }
-                }
-                return retval;
-            });
-            for (let rowidx = 0; rowidx < rlen; rowidx++) {
-                for (let colidx = 0; colidx < arr[rowidx].length; colidx++) {
-                    table.tBodies[0].rows[rowidx].cells[colidx].innerHTML = arr[rowidx][colidx];
-                }
-            }
-
-            hdr = table.rows[0].cells[col];
-            if (asc == -1) {
-                $(hdr).html($(hdr).html() + '<span class="sortorder">▲</span>');
-            } else {
-                $(hdr).html($(hdr).html() + '<span class="sortorder">▼</span>');
-            }
-        }
-
-        function sortTable(n) {
-            sort_table(document.getElementById("transactionshead"), n);
-        }
-
     </script>
 {% endblock javascripts %}
