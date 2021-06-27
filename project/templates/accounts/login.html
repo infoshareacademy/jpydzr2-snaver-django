@@ -1,72 +1,105 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/base-fullscreen.html" %}
 
 {% block title %} Login {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
 
+{% block body_class %} bg-soft {% endblock body_class %}
+
 {% block content %}
 
-    <div class="row">
-        <div class="col-md-5">
-            <div class="card">
-                <div class="card-header card-header-primary">
-                    <h4 class="card-title">
-                        Login
-                    </h4>
-                </div>
-                <div class="card-body">
+    <main>
 
-                    <h6 class="card-category">
-                        {% if msg %}
-                            <span class="text-danger">{{ msg | safe }}</span>
-                        {% else %}
-                            Add your credentials
-                        {% endif %}
-                    </h6>
+        <!-- Section -->
+        <section class="vh-lg-100 d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image"
+                     data-background="/static/assets/img/illustrations/signin.svg">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
 
-                    <br/>
-
-                    <form role="form" method="post" action="">
-
-                        {% csrf_token %}
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Username</label>
-                                    {{ form.username }}
-                                </div>
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3">
+                                    <a target="_blank"
+                                       href="https://appseed.us/admin-dashboards/django-dashboard-volt">Sign in to
+                                        Snaver</a>
+                                </h1>
+                                <br/>
+                                <p>
+                                    {% if msg %}
+                                        {{ msg | safe }}
+                                    {% endif %}
+                                </p>
                             </div>
-                        </div>
 
-                        <br/>
+                            <form method="post" action="" class="mt-4">
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Password</label>
-                                    {{ form.password }}
+                                {% csrf_token %}
+
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <label for="email">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"><span
+                                                class="fas fa-user-circle"></span></span>
+                                        {{ form.username }}
+                                    </div>
                                 </div>
+                                <!-- End of Form -->
+                                <div class="form-group">
+                                    <!-- Form -->
+                                    <div class="form-group mb-4">
+                                        <label for="password">Your Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="basic-addon2"><span
+                                                    class="fas fa-unlock-alt"></span></span>
+                                            {{ form.password }}
+                                        </div>
+                                    </div>
+                                    <!-- End of Form -->
+
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                   id="defaultCheck5">
+                                            <label class="form-check-label" for="defaultCheck5">
+                                                Remember me
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <a href="{% url 'register' %}" class="small text-right">Register</a>
+                                        </div>
+                                        <div class="form-check">
+                                            <a href="{% url 'register' %}" class="small text-right">Forgot
+                                                password?</a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <button type="submit" name="login" class="btn btn-primary pull-left">Login</button>
+                                <span class="pull-right">
+                                    <br>
+                                    Don't have an account? <a href="{% url 'register' %}" class="text-primary">Create</a>
+                                    <br>
+                                    Forgot the password? <a href="{% url 'password_reset' %}" class="text-primary">Reset my password</a>
+                                </span>
+                            </form>
+
+
+                            <div class="d-flex justify-content-center align-items-center mt-4">
+                                <span class="font-weight-normal">
+                                    &copy; <a href="https://themesberg.com" target="_blank">Snaver 2021</a>
+                                </span>
                             </div>
+
                         </div>
-
-                        <br/>
-
-                        <button type="submit" name="login" class="btn btn-primary pull-left">Login</button>
-                        <span class="pull-right">
-              Don't have an account? <a href="{% url 'register' %}" class="text-primary">Create</a>
-              <br>
-              Forgot the password? <a href="{% url 'password_reset' %}" class="text-primary">Reset my password</a>
-            </span>
-
-                        <div class="clearfix"></div>
-
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+
+    </main>
 
 {% endblock content %}
 

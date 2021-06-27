@@ -7,72 +7,281 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-    <a href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
-        <button class="btn btn-primary btn-round">&lt;</button>
-    </a>
-    {{ view.kwargs.year }}-{{ view.kwargs.month }}
-    <a href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
-        <button class="btn btn-primary btn-round">&gt;</button>
-    </a>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header card-header-primary">
-                    <h4 class="card-title ">Your budget</h4>
-                    <p class="card-category"> A list of your activities
-                        in {{ view.kwargs.year }}-{{ view.kwargs.month }}</p>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead class="text-primary">
-                            <tr>
-                                <th>Category</th>
-                                <th>Budgeted</th>
-                                <th>Activity</th>
-                                <th>Available</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for details in object_list %}
-                                {% if details.1 %}
-                                    <tr>
-                                        <td class="h3 text-primary">{{ details.0.subcategory.category.name }}</td>
-                                        <!-- Empty tds to match column number -->
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                {% endif %}
-                                <tr>
+    <div class="budget">
 
-                                    <td>{{ details.0.subcategory.name }}</td>
-                                    <td>{{ details.0.budgeted_amount }}</td>
-                                    <td>{{ details.0.activity }}</td>
-                                    {% if details.0.available < 0 %}
-                                        <td style="color: red">
-                                            {% else %}
-                                        <td style="color: green">
-                                    {% endif %}
-                                    {% if details.0.available == None %}
-                                        {{ details.0.budgeted_amount }}
-                                        </td>
-                                    {% else %}
-                                        {{ details.0.available }}
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+    <div class="col-12 col-sm-6 col-xl-4 mb-4">
+        <div class="card border-light shadow-sm">
+            <div class="card-body">
+                <div class="row d-block d-xl-flex align-items-center ml-3">
+                    <div class="col-12 col-xl-7 px-xl-0">
+                        <div class="d-none d-sm-block">
+                            <h2 class="h5">To be budgeted</h2>
+                            <h3 class="mb-1 text-success">$43,594</h3>
+                        </div>
+                        <small>- $200 from previous monthhhh</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card bg-yellow-alt shadow-sm">
+                    <div class="card-header d-flex flex-row align-items-center flex-0">
+                        <div class="d-block">
+                            <div class="d-flex ml-auto">
+                                <a class="h3 mr-2"
+                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                                                {{ view.kwargs.year }}-{{ view.kwargs.month }}
+
+                                <a class="h3"
+                                   href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded table-hover" id="budget-table">
+                        <thead class="table-dark mb-5">
+                            <tr>
+                                <th class="border-0">Category&nbsp;&nbsp;&nbsp;&nbsp;<span class="new-category new-cat"><span class="fas fa-plus-circle"></span>&nbsp;&nbsp;new category</span></th>
+                                <th class="border-0">Budgeted</th>
+                                <th class="border-0">Activity</th>
+                                <th class="border-0">Available</th>
+                            </tr>
+
+                        </thead>
+                        <tbody class="mt-5" id="budgets-table">
+
+
+                        {% for category in object_list %}
+
+                                <tr class="table-primary category-row" data-id="{{ category.id }}">
+                                    <td class="" colspan="4" data-id="{{ category.id }}">
+                                        {{ category.name }}&nbsp;&nbsp;&nbsp;&nbsp;<span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
+                                    </td>
+                                </tr>
+
+                            {% for subcategory in category.subcategories.all %}
+
+                                <tr>
+
+                                    <td class="border-0 editable" data-id="{{ subcategory.id }}"
+                                    data-type="subcategory-name">{{ subcategory.name }}</td>
+
+                                    {% if subcategory.details.last %}
+                                        <td class="border-0 editable" data-id="{{ subcategory.details.last.id }}"
+                                            data-type="budgeted-amount">{% spaceless %}
+                                            {{ subcategory.details.last.budgeted_amount }}{% endspaceless %}
+                                        </td>
+                                    {% else %}
+                                        <td class="border-0 new-budget" data-parent-id="{{ subcategory.id }}"
+                                            data-type="budgeted-amount">0.00</td>
+                                        </td>
+                                    {% endif %}
+
+                                    <td class="border-0">
+                                        {% if subcategory.activity  %}
+                                            {{ subcategory.activity }}
+                                        {% else %}
+                                            0.00
+                                        {% endif %}
+                                    </td>
+
+                                    {% if subcategory.available >= 0 %}
+                                        <td class="border-0" style="color: green;">
+                                        {{ subcategory.available }}
+                                        </td>
+                                    {% else %}
+                                        <td class="border-0" style="color: red;">
+                                        {{ subcategory.available }}
+                                        </td>
+                                    {% endif %}
+
+                                 </tr>
+
+                            {% endfor %}
+
+
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
+    <script>
+        let budgetTable = document.getElementById('budgets-table');
+           let sortable = Sortable.create(budgetTable, {
+               onEnd: () => {
+                saveOrdering();
+                }
+        });
+
+
+       function saveOrdering() {
+            let rows = document.getElementById("budgets-table").querySelectorAll('tr.category-row');
+            let ids = [];
+            for (let row of rows) {
+                ids.push(row.dataset.id);
+            }
+            value = ids.join(',');
+            console.log(value);
+
+           function SendOrdering(value) {
+               $.ajax({
+                    url: "save-ordering",
+                    type: "POST",
+                    data: {value:value}
+                })
+                .done(function(response){
+                    console.log(response);
+                    $('.budget').load(" .budget");
+                })
+                .fail(function(){
+                    console.log("Error occured")
+                });
+            }
+
+           SendOrdering(value);
+        }
+
+
+
+        $(document).ready(function() {
+
+            let chosen_row;
+
+            function sendToServer(id, value, type) {
+                $.ajax({
+                    url: "ajax-update",
+                    type: "POST",
+                    data: {id:id, type:type, value:value}
+                })
+                .done(function(response){
+                    console.log(response);
+                    $('.budget').load(" .budget");
+                })
+                .fail(function(){
+                    console.log("Error occured")
+                });
+            }
+
+            $(document).on("click", ".new-category", function () {
+                $('#category').remove();
+                let markup = '<input type="text" tabindex="0" id="category" class="form-control m-3">';
+                let tableBody = $("#budget-table");
+                $(".new-cat").removeClass("new-category");
+                tableBody.prepend(markup);
+                $('#category').focus();
+            });
+
+            $(document).on("blur", "#category", function (){
+                $('.budget').load(" .budget");
+            });
+
+            $(document).on("keypress", "#category", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    let id = 0;
+                    let type = 'new-category';
+                    let value = $(this).val();
+                    sendToServer(id, value, type);
+                }
+            });
+
+            $(document).on("click", ".new-subcategory", function () {
+                let markup = '<input type="text" data-type="new-subcategory" tabindex="0" id="new-subcat" class="input-data-new-subcat form-control m-3">';
+                let row = $(this).closest("tr");
+                chosen_row = $(this).parent("td");
+                $(this).removeClass("new-subcategory");
+                $(this).addClass("selected");
+                $(markup).insertAfter(row);
+                $('.input-data-new-subcat').focus();
+            });
+
+            $(document).on("keypress", "#new-subcat", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    let id = chosen_row.data('id');
+                    let type = 'new-subcategory'
+                    let value = $(this).val();
+                    sendToServer(id, value, type);
+                }
+            });
+
+            $(document).on("click", ".editable", function () {
+                let value = $(this).text()
+                let td = $(this).parent("td");
+                let type = td.data('type')
+                let input;
+                input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
+                $(this).html(input);
+                $(this).removeClass("editable");
+                $('.input-data').focus();
+            });
+
+            $(document).on("keypress", ".input-data", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    let value = $(this).val();
+                let td = $(this).parent("td");
+                let id = td.data('id')
+                let type = td.data('type')
+                sendToServer(id, value, type);
+                }
+            });
+
+            $(document).on("blur", ".input-data", function (){
+                $('.budget').load(" .budget");
+            });
+
+            $(document).on("click", ".new-budget", function () {
+                let value = $(this).text()
+                let input;
+                input = '<input type="text" tabindex="0" id="input-new-budget" class="form-control" value="'+value+'">';
+                $(this).html(input);
+                $('#input-new-budget').focus();
+                $(this).removeClass("new-budget");
+            });
+
+            $(document).on("keypress", "#input-new-budget", function (e){
+                let key= e.which;
+                if (key === 13) {
+                    let value = $(this).val();
+                    let td = $(this).parent("td");
+                    let type = 'new-budget';
+                    let id = td.data('parent-id');
+                    sendToServer(id, value, type);
+                }
+            });
+
+            $(document).on("blur", "#input-new-budget", function (e){
+                $('.budget').load(" .budget");
+            });
+
+
+        });
+    </script>
+
+{% endblock javascripts %}

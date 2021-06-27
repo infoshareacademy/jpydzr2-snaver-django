@@ -15,7 +15,7 @@ from snaver.models import Subcategory
 from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
-USERS = ["Krzysiek", "Mariola", "Andrzej"]
+USERS = ["Krzysiek"]
 CATEGORIES = ["Rachunki", "Kredyty", "Wydatki na życie",
               "Odkładanie", "Rozrywki"]
 SUBCATEGORIES = [
@@ -91,26 +91,19 @@ class Command(BaseCommand):
                 Transaction(
                     name="Transakcja",
                     payee_name=fake.company(),
-                    outflow=float(randrange(10, 10000)) / 100,
+                    outflow=10.00,
                     receipt_date=date.today(),
                     subcategory=subcategory,
-                ) for _ in range(randint(0, 10))
+                ) for _ in range(5)
             ])
 
+        for subcategory in Subcategory.objects.all():
             SubcategoryDetails.objects.bulk_create([
                 SubcategoryDetails(
-                    budgeted_amount=randint(500, 1000),
+                    budgeted_amount=100,
                     start_date=first_day,
                     end_date=last_day,
                     subcategory=subcategory,
                 )
             ])
 
-            SubcategoryDetails.objects.bulk_create([
-                SubcategoryDetails(
-                    start_date=next_first_day,
-                    end_date=next_last_day,
-                    budgeted_amount=randint(400, 900),
-                    subcategory=subcategory,
-                )
-            ])
