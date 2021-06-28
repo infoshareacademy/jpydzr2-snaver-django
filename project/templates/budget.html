@@ -19,7 +19,7 @@
                             <h2 class="h5">To be budgeted</h2>
                             <h3 class="mb-1 text-success">$43,594</h3>
                         </div>
-                        <small>- $200 from previous monthhhh</small>
+                        <small>- $200 from previous month</small>
                     </div>
                 </div>
             </div>
@@ -137,7 +137,6 @@
     <script>
 
         $(document).ready(function() {
-            console.log('załadowano');
             let budgetTable = document.getElementById('budgets-table');
             let sortable = Sortable.create(budgetTable, {
                onEnd: () => {
@@ -146,7 +145,6 @@
             });
 
             function reinitSortable() {
-                console.log('odświeżonko');
                 let budgetTable = document.getElementById('budgets-table');
                 let sortable = Sortable.create(budgetTable, {
                    onEnd: () => {
@@ -170,7 +168,7 @@
                 for (let row of rows2) {
                     subcatIds.push(row.dataset.id);
                 }
-                subcategories = subcatIds.join(',');
+                let subcategories = subcatIds.join(',');
 
                function SendOrdering(categories, subcategories) {
                    $.ajax({
@@ -185,7 +183,7 @@
                         });
                     })
                     .fail(function(){
-                        console.log("Error occured")
+                        console.log("Error occurred")
                     });
                 }
 
@@ -209,7 +207,7 @@
                     });
                 })
                 .fail(function(){
-                    console.log("Error occured")
+                    console.log("Error occurred")
                 });
             }
 
@@ -304,7 +302,7 @@
                 }
             });
 
-            $(document).on("blur", "#input-new-budget", function (e){
+            $(document).on("blur", "#input-new-budget", function(){
                 $('.budget').load(" .budget");
             });
 
