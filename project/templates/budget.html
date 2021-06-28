@@ -37,7 +37,10 @@
                                        href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
                                         <i class="fas fa-chevron-left"></i>
                                     </a>
-                                    {{ view.kwargs.year }}-{{ view.kwargs.month }}
+                                    <div class="h3">
+                                        {{ view.kwargs.year }}-{{ view.kwargs.month }}
+                                    </div>
+
 
                                     <a class="h3"
                                        href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
