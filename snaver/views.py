@@ -418,7 +418,7 @@ class BudgetView(ListView):
 
         context['prev_month'] = prev_month(last_day)
         context['next_month'] = next_month(last_day)
-        context['to_be_budgeted'] = 1000
+        # TODO: fix this value. month_budgeted - sum_outflows
         context['available_from_prev_month'] = self.sum_outflows(
             start=first_day,
             end=last_day
