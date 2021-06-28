@@ -38,7 +38,7 @@
                             </thead>
                             <tbody id="transactions">
                             {% if transactions %}
-                                {% for transaction in transactions.transaction_list|dictsortreversed:'receipt_date' %}
+                                {% for transaction in transactions.transaction_list %}
                                     <tr>
                                         <td class="border-0 editable-date date" data-id="{{ transaction.id }}"
                                             data-type="transaction_date">{{ transaction.receipt_date|date:"c" }}
@@ -91,7 +91,8 @@
             ],
             language: {
                 searchPlaceholder: "in transactions"
-            }
+            },
+            "order": [[ 0, "desc" ]],
         });
         });
 
