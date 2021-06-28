@@ -77,6 +77,7 @@ class TransactionListView(generic.ListView):
         })
         return context
 
+
 class CategoryView(ListView):
     template_name = "budget.html"
 
@@ -315,6 +316,7 @@ def ajax_update(request, year=None, month=None):
 
     return JsonResponse({"success": "Object updated"})
 
+
 @csrf_exempt
 def update_transaction(request):
     id = request.POST.get('id', '')
@@ -353,6 +355,7 @@ def update_transaction(request):
         transaction.save()
 
     return JsonResponse({"success": "Object updated"})
+
 
 class BudgetView(ListView):
     model = Category
@@ -393,7 +396,9 @@ class BudgetView(ListView):
         self._set_current_date()
         first_day, last_day = self._this_months_range()
 
-        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('order', '-created_on') \
+        queryset = self.model.objects.filter(
+            budget_id=self.request.user.budgets.first().id
+        ).order_by('order', '-created_on') \
             .select_related() \
             .prefetch_related(
             Prefetch(
@@ -406,23 +411,27 @@ class BudgetView(ListView):
                                 transactions__receipt_date__lte=last_day,
                                 transactions__receipt_date__gte=first_day,
                             ), distinct=True), Decimal(0.00)),
-                    available=
-                        Coalesce(Sum('details__budgeted_amount',
-                                     filter=Q(
-                                         details__end_date__lte=last_day
-                                     ), distinct=True), Decimal(0.00))
-
-                        - Coalesce(Sum('transactions__outflow',
-                                       filter=Q(
-                                           transactions__receipt_date__lte=last_day,
-                                       ), distinct=True), Decimal(0.00))
-                        )
+                    available=Coalesce(
+                        Sum('details__budgeted_amount',
+                            filter=Q(
+                                details__end_date__lte=last_day
+                            ), distinct=True), Decimal(0.00)
+                    ) - Coalesce(
+                        Sum('transactions__outflow',
+                            filter=Q(
+                                transactions__receipt_date__lte=last_day,
+                            ), distinct=True), Decimal(0.00)
+                    )
+                )
             ),
             Prefetch(
                 "subcategories__details",
                 queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)
             ),
         )
+
+        return queryset
+
 
 @csrf_exempt
 def save_ordering(request):
