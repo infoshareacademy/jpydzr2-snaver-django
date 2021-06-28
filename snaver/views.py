@@ -5,8 +5,9 @@ from decimal import Decimal
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import F, Prefetch
+from django.db.models import F
 from django.db.models import OuterRef
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.db.models import Subquery
 from django.db.models import Sum

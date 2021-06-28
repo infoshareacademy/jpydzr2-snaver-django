@@ -5,13 +5,14 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
-from django.urls import reverse, reverse_lazy
 
 from accounts.forms import LoginForm
 from accounts.forms import SignUpForm
