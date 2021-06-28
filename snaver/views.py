@@ -385,7 +385,9 @@ class BudgetView(ListView):
         outlfow = Transaction.objects.filter(
             subcategory__category__budget_id=self.request.user.budgets.first().id,
             receipt_date__range=(start, end)
-        ).aggregate(outflow=Sum('outflow'))["outflow"]
+        ).aggregate(outflow=Coalesce(
+            Sum('outflow'), Decimal(0.00))
+        )["outflow"]
         return outlfow
 
     def sum_budgeted(self, end):
