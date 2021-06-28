@@ -7,6 +7,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -14,48 +15,36 @@
                     <table class="table" id="transactiontable">
                         <tr>
                             <th>
-
-                                <a href="/add-new" title="Add new transaction"
+                                <a href="{% url 'new-transaction' %}" title="Add new transaction"
                                    class="btn btn-primary pull-center">
-                                    Add transaction
+                                    Add new transaction
                                 </a>
-                            </th>
-                            <th>
-                                <div class="input-group">
-                                    <input autocomplete="off"
-                                           id="search"
-                                           title="Search transaction"
-                                           placeholder="Search"
-                                           type="text"
-                                           value class="form-control">
-                                </div>
                             </th>
                         </tr>
                     </table>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="transactionshead">
+                        <table class="table" id="transactions">
                             <thead class="text-primary">
                             <tr style="cursor:pointer">
-                                <th class="border-0" onclick="sortTable(0);">Date</th>
-                                <th class="border-0" onclick="sortTable(1);">Payee</th>
-                                <th class="border-0" onclick="sortTable(2);">Category</th>
-                                <th class="border-0" onclick="sortTable(3);">Description</th>
-                                <th class="border-0" onclick="sortTable(4);">Outflow</th>
-                                <th class="border-0" onclick="sortTable(5);">Inflow</th>
-
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Description</th>
+                                <th class="border-0">Payee</th>
+                                <th class="border-0">Category</th>
+                                <th class="border-0">Outflow</th>
+                                <th class="border-0">Inflow</th>
                             </tr>
                             </thead>
                             <tbody id="transactions">
                             {% if transactions %}
-                                {% for transaction in transactions.transaction_list|dictsortreversed:'receipt_date' %}
+                                {% for transaction in transactions.transaction_list %}
                                     <tr>
-
-{#TODO: fix date field - date in another format, empty field when not filled with data #}
-
                                         <td class="border-0 editable-date date" data-id="{{ transaction.id }}"
                                             data-type="transaction_date">{{ transaction.receipt_date|date:"c" }}
+                                        </td>
+                                        <td class="border-0 editable" data-id="{{ transaction.id }}"
+                                            data-type="transaction_name">{{ transaction.name }}
                                         </td>
                                         <td class="border-0 editable" data-id="{{ transaction.id }}"
                                             data-type="payee_name">{{ transaction.payee_name }}
@@ -64,42 +53,49 @@
                                             data-type="transaction_subcategory">
                                             <select class="border-0 editable-list" id="select"
                                                     name="list_of_subcategories">
-                                                <option selected value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
+                                                <option selected
+                                                        value="{{ transaction.subcategory.id }}">{{ transaction.subcategory.name }}</option>
 
                                                 {% for subcategory in subcategory_list %}
-                                                <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                    </td>
-                                    <td class="border-0 editable" data-id="{{ transaction.id }}"
-                                        data-type="transaction_name">{{ transaction.name }}
-                                    </td>
-
-{#TODO:add inflow/outflow validation, add info about validation displayed to user#}
-
-                                    <td class="border-0 editable" id="outflow"  data-id="{{ transaction.id }}"
-                                        data-type="outflow">{{ transaction.outflow }}
-                                    </td>
-                                    <td class="border-0 editable" id="inflow" data-id="{{ transaction.id }}"
-                                        data-type="inflow">{{ transaction.inflow }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% endif %}
-                        </tbody>
-                    </table>
+                                                    <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        {#TODO:add inflow/outflow validation, add info about validation displayed to user#}
+                                        <td class="border-0 editable" id="outflow" data-id="{{ transaction.id }}"
+                                            data-type="outflow">{{ transaction.outflow }}
+                                        </td>
+                                        <td class="border-0 editable" id="inflow" data-id="{{ transaction.id }}"
+                                            data-type="inflow">{{ transaction.inflow }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script>
+        $(document).ready(function () {
+            $('#transactions').DataTable({
+                "columnDefs": [
+                    {"searchable": false, "targets": 3}
+                ],
+                language: {
+                    searchPlaceholder: "in transactions"
+                },
+                "order": [[0, "desc"]],
+            });
+        });
+
         $(document).ready(function () {
             $(document).on("click", ".editable", function () {
                 let value = $(this).text()
@@ -110,13 +106,8 @@
             });
 
             $(document).on("click", ".editable-date", function () {
-                let x
                 let value = $(this).text()
-                let input = '<input type="date" tabindex="0" class="input-data form-control" value='+value+'>';
-                if (!input){
-                    input = x;
-                };
-
+                let input = '<input type="date" tabindex="0" class="input-data form-control" value=' + value + '>';
                 $(this).html(input);
                 $(this).removeClass("editable-date");
                 $('.input-data').focus();
@@ -143,109 +134,35 @@
                 }
             });
 
-        $(document).on("blur", ".input-data", function () {
-            console.log("lost focus");
-            let value = $(this).val();
-            let td = $(this).parent("td");
-            let id = td.data('id')
-            let type = td.data('type')
-            sendToServer(id, value, type);
-        });
+            $(document).on("blur", ".input-data", function () {
+                console.log("lost focus");
+                let value = $(this).val();
+                let td = $(this).parent("td");
+                let id = td.data('id')
+                let type = td.data('type')
+                sendToServer(id, value, type);
+            });
 
 
-    function sendToServer(id, value, type) {
-            console.log(id);
-            console.log(value);
-            console.log(type);
+            function sendToServer(id, value, type) {
+                console.log(id);
+                console.log(value);
+                console.log(type);
 
-            $.ajax({
-                url: "update-transaction",
-                type: "POST",
-                data: {id: id, type: type, value: value}
-            })
-                .done(function (response) {
-                    console.log(response);
-                    $('body').load("");
+                $.ajax({
+                    url: "update-transaction",
+                    type: "POST",
+                    data: {id: id, type: type, value: value}
                 })
-                .fail(function () {
-                    console.log("Error occured")
-                });
-    }
+                    .done(function (response) {
+                        console.log(response);
+                        $('body').load("");
+                    })
+                    .fail(function () {
+                        console.log("Error occurred")
+                    });
+            }
 
         });
-
-        // Search in transactions:
-
-{#TODO: it search also in list of transaction not only in selected one - needs to be fixed#}
-
-        $(document).ready(function () {
-            $("#search").on("keyup", function () {
-                let value = $(this).val().toLowerCase();
-                $("#transactions tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-
-        //Sort on click by date, payee, category, transaction, outflow, inflow
-        let asc = 0;
-
-        function sort_table(table, col) {
-            $('.sortorder').remove();
-            if (asc == 2) {
-                asc = -1;
-            } else {
-                asc = 2;
-            }
-
-
-            let rows = table.tBodies[0].rows;
-            let rlen = rows.length;
-            let arr = new Array();
-            let i, j, cells, clen;
-
-
-            for (i = 0; i < rlen; i++) {
-                cells = rows[i].cells;
-                clen = cells.length;
-                arr[i] = new Array();
-                for (j = 0; j < clen; j++) {
-                    arr[i][j] = cells[j].innerHTML;
-                }
-            }
-
-            arr.sort(function (a, b) {
-                let retval = 0;
-                let col1 = a[col].toLowerCase().replace(',', '').replace('$', '').replace(' usd', '')
-                let col2 = b[col].toLowerCase().replace(',', '').replace('$', '').replace(' usd', '')
-                let fA = parseFloat(col1);
-                let fB = parseFloat(col2);
-                if (col1 != col2) {
-                    if ((fA == col1) && (fB == col2)) {
-                        retval = (fA > fB) ? asc : -1 * asc;
-                    } else {
-                        retval = (col1 > col2) ? asc : -1 * asc;
-                    }
-                }
-                return retval;
-            });
-            for (let rowidx = 0; rowidx < rlen; rowidx++) {
-                for (let colidx = 0; colidx < arr[rowidx].length; colidx++) {
-                    table.tBodies[0].rows[rowidx].cells[colidx].innerHTML = arr[rowidx][colidx];
-                }
-            }
-
-            hdr = table.rows[0].cells[col];
-            if (asc == -1) {
-                $(hdr).html($(hdr).html() + '<span class="sortorder">▲</span>');
-            } else {
-                $(hdr).html($(hdr).html() + '<span class="sortorder">▼</span>');
-            }
-        }
-
-        function sortTable(n) {
-            sort_table(document.getElementById("transactionshead"), n);
-        }
-
     </script>
 {% endblock javascripts %}
