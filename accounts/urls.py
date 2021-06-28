@@ -3,11 +3,13 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.views.generic.base import TemplateView
 
+from .views import EmailChangeDoneView
+from .views import EmailChangeView
+from .views import ProfileView
 from .views import account_activation_sent
 from .views import activate
 from .views import login_view
 from .views import registration_view
-from .views import ProfileView, EmailChangeView, EmailChangeDoneView
 
 urlpatterns = [
     path('login/', login_view, name="login"),
