@@ -58,6 +58,7 @@ class Subcategory(models.Model):
         related_name='subcategories',
     )
     created_on = models.DateTimeField(default=timezone.now)
+    order = models.IntegerField(blank=False, default=100_000)
 
     def __str__(self):
         return f"{self.name}"

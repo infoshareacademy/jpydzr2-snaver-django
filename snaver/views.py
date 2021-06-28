@@ -298,7 +298,7 @@ def ajax_update(request, year=None, month=None):
 
     # CREATE NEW SUBCATEGORY
     if type == 'new-category':
-        category = Category(name=value, budget_id=budget.id)
+        category = Category(name=value, budget_id=budget.id, order=1)
         print(category)
         category.save()
 
@@ -322,6 +322,7 @@ def update_transaction(request):
     value = request.POST.get('value', '')
 
     if type == 'transaction_date':
+        print(value)
         transaction = Transaction.objects.get(id=id)
         transaction.receipt_date = value
         transaction.save()
@@ -392,12 +393,12 @@ class BudgetView(ListView):
         self._set_current_date()
         first_day, last_day = self._this_months_range()
 
-        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('-created_on') \
+        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('order', '-created_on') \
             .select_related() \
             .prefetch_related(
             Prefetch(
                 "subcategories",
-                queryset=Subcategory.objects.all().order_by('-created_on')
+                queryset=Subcategory.objects.all().order_by('order', '-created_on')
                     .annotate(
                     activity=Coalesce(
                         Sum('transactions__outflow',
@@ -425,18 +426,27 @@ class BudgetView(ListView):
 
 @csrf_exempt
 def save_ordering(request):
-    print('hello')
-    value = request.POST.get('value')
-    print(value)
+    categories = request.POST.get('categories')
+    categories_ids = categories.split(',')
 
-    ordered_ids = value.split(',')
+    subcategories = request.POST.get('subcategories')
+    subcategories_ids = subcategories.split(',')
 
     with transaction.atomic():
         current_order = 1
-        for lookup_id in ordered_ids:
+        for lookup_id in categories_ids:
             category = Category.objects.get(id=lookup_id)
             category.order = current_order
             category.save()
             print(category.order)
+            current_order += 1
+
+    with transaction.atomic():
+        current_order = 1
+        for lookup_id in subcategories_ids:
+            subcategory = Subcategory.objects.get(id=lookup_id)
+            subcategory.order = current_order
+            subcategory.save()
+            print(subcategory.order)
             current_order += 1
     return JsonResponse({"success": "Order updated"})

@@ -10,119 +10,133 @@
 
     <div class="budget">
 
-    <div class="col-12 col-sm-6 col-xl-4 mb-4">
-        <div class="card border-light shadow-sm">
-            <div class="card-body">
-                <div class="row d-block d-xl-flex align-items-center ml-3">
-                    <div class="col-12 col-xl-7 px-xl-0">
-                        <div class="d-none d-sm-block">
-                            <h2 class="h5">To be budgeted</h2>
-                            <h3 class="mb-1 text-success">$43,594</h3>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center ml-3">
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h5">To be budgeted</h2>
+                                <h3 class="mb-1 text-success">$43,594</h3>
+                            </div>
+                            <small>- $200 from previous month</small>
                         </div>
-                        <small>- $200 from previous monthhhh</small>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card mb-3">
-                <div class="card bg-yellow-alt shadow-sm">
-                    <div class="card-header d-flex flex-row align-items-center flex-0">
-                        <div class="d-block">
-                            <div class="d-flex ml-auto">
-                                <a class="h3 mr-2"
-                                   href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                                                                {{ view.kwargs.year }}-{{ view.kwargs.month }}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card bg-yellow-alt shadow-sm">
+                        <div class="card-header d-flex flex-row align-items-center flex-0">
+                            <div class="d-block">
+                                <div class="d-flex ml-auto">
+                                    <a class="h3 mr-2"
+                                       href="{% url "budget_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                    <div class="h3">
+                                        {{ view.kwargs.year }}-{{ view.kwargs.month }}
+                                    </div>
 
-                                <a class="h3"
-                                   href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
+
+                                    <a class="h3"
+                                       href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card border-light shadow-sm">
-                <div class="card-body">
-                    <div class="table-responsive">
-                    <table class="table table-centered table-nowrap mb-0 rounded table-hover" id="budget-table">
-                        <thead class="table-dark mb-5">
-                            <tr>
-                                <th class="border-0">Category&nbsp;&nbsp;&nbsp;&nbsp;<span class="new-category new-cat"><span class="fas fa-plus-circle"></span>&nbsp;&nbsp;new category</span></th>
-                                <th class="border-0">Budgeted</th>
-                                <th class="border-0">Activity</th>
-                                <th class="border-0">Available</th>
-                            </tr>
-
-                        </thead>
-                        <tbody class="mt-5" id="budgets-table">
-
-
-                        {% for category in object_list %}
-
-                                <tr class="table-primary category-row" data-id="{{ category.id }}">
-                                    <td class="" colspan="4" data-id="{{ category.id }}">
-                                        {{ category.name }}&nbsp;&nbsp;&nbsp;&nbsp;<span data-type="new-subcategory" class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
-                                    </td>
+                <div class="card border-light shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap mb-0 rounded table-hover"
+                                   id="budget-table">
+                                <thead class="table-dark mb-5">
+                                <tr>
+                                    <th class="border-0">Category&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                            class="new-category new-cat"><span class="fas fa-plus-circle"></span>&nbsp;&nbsp;new category</span>
+                                    </th>
+                                    <th class="border-0">Budgeted</th>
+                                    <th class="border-0">Activity</th>
+                                    <th class="border-0">Available</th>
                                 </tr>
 
-                            {% for subcategory in category.subcategories.all %}
+                                </thead>
+                                <tbody class="mt-5" id="budgets-table">
 
-                                <tr>
 
-                                    <td class="border-0 editable" data-id="{{ subcategory.id }}"
-                                    data-type="subcategory-name">{{ subcategory.name }}</td>
+                                {% for category in object_list %}
 
-                                    {% if subcategory.details.last %}
-                                        <td class="border-0 editable" data-id="{{ subcategory.details.last.id }}"
-                                            data-type="budgeted-amount">{% spaceless %}
-                                            {{ subcategory.details.last.budgeted_amount }}{% endspaceless %}
+                                    <tr class="table-primary category-row" data-id="{{ category.id }}">
+                                        <td class="" colspan="4" data-id="{{ category.id }}">
+                                            {{ category.name }}&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                data-type="new-subcategory"
+                                                class="ml-5 new-subcategory new-sub fas fa-plus-circle"></span>
                                         </td>
-                                    {% else %}
-                                        <td class="border-0 new-budget" data-parent-id="{{ subcategory.id }}"
-                                            data-type="budgeted-amount">0.00</td>
-                                        </td>
-                                    {% endif %}
+                                    </tr>
 
-                                    <td class="border-0">
-                                        {% if subcategory.activity  %}
-                                            {{ subcategory.activity }}
-                                        {% else %}
-                                            0.00
-                                        {% endif %}
-                                    </td>
+                                    {% for subcategory in category.subcategories.all %}
 
-                                    {% if subcategory.available >= 0 %}
-                                        <td class="border-0" style="color: green;">
-                                        {{ subcategory.available }}
-                                        </td>
-                                    {% else %}
-                                        <td class="border-0" style="color: red;">
-                                        {{ subcategory.available }}
-                                        </td>
-                                    {% endif %}
+                                        <tr class="subcategory-row" data-id="{{ subcategory.id }}">
 
-                                 </tr>
+                                            <td class="border-0 editable" data-id="{{ subcategory.id }}"
+                                                data-type="subcategory-name">{{ subcategory.name }}</td>
 
-                            {% endfor %}
+                                            {% if subcategory.details.last %}
+                                                <td class="border-0 editable"
+                                                    data-id="{{ subcategory.details.last.id }}"
+                                                    data-type="budgeted-amount">{% spaceless %}
+                                                    {{ subcategory.details.last.budgeted_amount }}{% endspaceless %}
+                                                </td>
+                                            {% else %}
+                                                <td class="border-0 new-budget" data-parent-id="{{ subcategory.id }}"
+                                                    data-type="budgeted-amount">0.00
+                                                </td>
+                                                </td>
+                                            {% endif %}
+
+                                            <td class="border-0">
+                                                {% if subcategory.activity %}
+                                                    {{ subcategory.activity }}
+                                                {% else %}
+                                                    0.00
+                                                {% endif %}
+                                            </td>
+
+                                            {% if subcategory.available > 0 %}
+                                                <td class="border-0" style="color: green;">
+                                                    {{ subcategory.available }}
+                                                </td>
+                                            {% elif subcategory.available == 0 %}
+                                                <td class="border-0" style="color: green;">
+                                                    0.00
+                                                </td>
+                                            {% else %}
+                                                <td class="border-0" style="color: red;">
+                                                    {{ subcategory.available }}
+                                                </td>
+                                            {% endif %}
+
+                                        </tr>
+
+                                    {% endfor %}
 
 
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                </div>
+
             </div>
-
         </div>
-    </div>
     </div>
 
 {% endblock content %}
@@ -131,44 +145,60 @@
 {% block javascripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
     <script>
-        let budgetTable = document.getElementById('budgets-table');
-           let sortable = Sortable.create(budgetTable, {
-               onEnd: () => {
-                saveOrdering();
+
+        $(document).ready(function () {
+            let budgetTable = document.getElementById('budgets-table');
+            let sortable = Sortable.create(budgetTable, {
+                onEnd: () => {
+                    saveOrdering();
                 }
-        });
+            });
 
-
-       function saveOrdering() {
-            let rows = document.getElementById("budgets-table").querySelectorAll('tr.category-row');
-            let ids = [];
-            for (let row of rows) {
-                ids.push(row.dataset.id);
-            }
-            value = ids.join(',');
-            console.log(value);
-
-           function SendOrdering(value) {
-               $.ajax({
-                    url: "save-ordering",
-                    type: "POST",
-                    data: {value:value}
-                })
-                .done(function(response){
-                    console.log(response);
-                    $('.budget').load(" .budget");
-                })
-                .fail(function(){
-                    console.log("Error occured")
+            function reinitSortable() {
+                let budgetTable = document.getElementById('budgets-table');
+                let sortable = Sortable.create(budgetTable, {
+                    onEnd: () => {
+                        saveOrdering();
+                    }
                 });
+                console.log(sortable);
             }
 
-           SendOrdering(value);
-        }
+            function saveOrdering() {
+                let rows = document.getElementById("budgets-table").querySelectorAll('tr.category-row');
+                let catIds = [];
+                for (let row of rows) {
+                    catIds.push(row.dataset.id);
+                }
+                let categories = catIds.join(',');
 
+                let rows2 = document.getElementById("budgets-table").querySelectorAll('tr.subcategory-row');
+                let subcatIds = [];
+                for (let row of rows2) {
+                    subcatIds.push(row.dataset.id);
+                }
+                let subcategories = subcatIds.join(',');
 
+                function SendOrdering(categories, subcategories) {
+                    $.ajax({
+                        url: "save-ordering",
+                        type: "POST",
+                        data: {categories: categories, subcategories: subcategories}
+                    })
+                        .done(function (response) {
+                            console.log(response);
+                            $('.budget').load(" .budget", function () {
+                                reinitSortable();
+                            });
+                        })
+                        .fail(function () {
+                            console.log("Error occurred")
+                        });
+                }
 
-        $(document).ready(function() {
+                SendOrdering(categories, subcategories);
+            }
+
 
             let chosen_row;
 
@@ -176,15 +206,18 @@
                 $.ajax({
                     url: "ajax-update",
                     type: "POST",
-                    data: {id:id, type:type, value:value}
+                    data: {id: id, type: type, value: value}
                 })
-                .done(function(response){
-                    console.log(response);
-                    $('.budget').load(" .budget");
-                })
-                .fail(function(){
-                    console.log("Error occured")
-                });
+                    .done(function (response) {
+                        console.log('oki');
+                        console.log(response);
+                        $('.budget').load(" .budget", function () {
+                            reinitSortable();
+                        });
+                    })
+                    .fail(function () {
+                        console.log("Error occurred")
+                    });
             }
 
             $(document).on("click", ".new-category", function () {
@@ -196,12 +229,14 @@
                 $('#category').focus();
             });
 
-            $(document).on("blur", "#category", function (){
-                $('.budget').load(" .budget");
+            $(document).on("blur", "#category", function () {
+                $('.budget').load(" .budget", function () {
+                    reinitSortable();
+                });
             });
 
-            $(document).on("keypress", "#category", function (e){
-                let key= e.which;
+            $(document).on("keypress", "#category", function (e) {
+                let key = e.which;
                 if (key === 13) {
                     let id = 0;
                     let type = 'new-category';
@@ -220,8 +255,8 @@
                 $('.input-data-new-subcat').focus();
             });
 
-            $(document).on("keypress", "#new-subcat", function (e){
-                let key= e.which;
+            $(document).on("keypress", "#new-subcat", function (e) {
+                let key = e.which;
                 if (key === 13) {
                     let id = chosen_row.data('id');
                     let type = 'new-subcategory'
@@ -233,40 +268,39 @@
             $(document).on("click", ".editable", function () {
                 let value = $(this).text()
                 let td = $(this).parent("td");
-                let type = td.data('type')
                 let input;
-                input = '<input type="text" tabindex="0" class="input-data form-control" value="'+value+'">';
+                input = '<input type="text" tabindex="0" class="input-data form-control" value="' + value + '">';
                 $(this).html(input);
                 $(this).removeClass("editable");
                 $('.input-data').focus();
             });
 
-            $(document).on("keypress", ".input-data", function (e){
-                let key= e.which;
+            $(document).on("keypress", ".input-data", function (e) {
+                let key = e.which;
                 if (key === 13) {
                     let value = $(this).val();
-                let td = $(this).parent("td");
-                let id = td.data('id')
-                let type = td.data('type')
-                sendToServer(id, value, type);
+                    let td = $(this).parent("td");
+                    let id = td.data('id')
+                    let type = td.data('type')
+                    sendToServer(id, value, type);
                 }
             });
 
-            $(document).on("blur", ".input-data", function (){
+            $(document).on("blur", ".input-data", function () {
                 $('.budget').load(" .budget");
             });
 
             $(document).on("click", ".new-budget", function () {
                 let value = $(this).text()
                 let input;
-                input = '<input type="text" tabindex="0" id="input-new-budget" class="form-control" value="'+value+'">';
+                input = '<input type="text" tabindex="0" id="input-new-budget" class="form-control" value="' + value + '">';
                 $(this).html(input);
                 $('#input-new-budget').focus();
                 $(this).removeClass("new-budget");
             });
 
-            $(document).on("keypress", "#input-new-budget", function (e){
-                let key= e.which;
+            $(document).on("keypress", "#input-new-budget", function (e) {
+                let key = e.which;
                 if (key === 13) {
                     let value = $(this).val();
                     let td = $(this).parent("td");
@@ -276,11 +310,9 @@
                 }
             });
 
-            $(document).on("blur", "#input-new-budget", function (e){
+            $(document).on("blur", "#input-new-budget", function () {
                 $('.budget').load(" .budget");
             });
-
-
         });
     </script>
 
