@@ -367,9 +367,7 @@ class BudgetView(ListView):
         if not self.kwargs.get("month", None):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
-    def _this_months_range(self):
-        year = int(self.kwargs["year"])
-        month = int(self.kwargs["month"])
+    def _months_range(self, year, month):
         day = monthrange(year, month)[1]  # the last day of the month
         first_day = datetime(
             year=year,
@@ -383,18 +381,63 @@ class BudgetView(ListView):
         )
         return first_day, last_day
 
+    def sum_outflows(self, start, end):
+        outlfow = Transaction.objects.filter(
+            subcategory__category__budget_id=self.request.user.budgets.first().id,
+            receipt_date__range=(start, end)
+        ).aggregate(outflow=Sum('outflow'))["outflow"]
+        return outlfow
+
+    def sum_budgeted(self, end):
+        queryset = Subcategory.objects.filter(
+            category__budget_id=self.request.user.budgets.first().id
+        ).aggregate(
+            to_be_budgeted=Coalesce(
+                Sum('details__budgeted_amount',
+                    filter=Q(
+                        details__end_date__lte=end
+                    ), distinct=True), Decimal(0.00)
+            ) - Coalesce(
+                Sum('transactions__outflow',
+                    filter=Q(
+                        transactions__receipt_date__lte=end,
+                    ), distinct=True), Decimal(0.00)
+            )
+        )
+        return queryset["to_be_budgeted"]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self._set_current_date()
-        _, last_day = self._this_months_range()
+        first_day, last_day = self._months_range(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"])
+        )
+
+        prev_first_day, prev_last_day = self._months_range(
+            year=prev_month(first_day).year,
+            month=prev_month(first_day).month
+        )
         context['prev_month'] = prev_month(last_day)
         context['next_month'] = next_month(last_day)
+        context['to_be_budgeted'] = 1000
+        context['available_from_prev_month'] = self.sum_outflows(
+            start=prev_first_day,
+            end=prev_last_day
+        )
+
+        context['to_be_budgeted'] = self.sum_budgeted(
+            end=prev_last_day
+        )
+
         return context
 
     def get_queryset(self):
-
         self._set_current_date()
-        first_day, last_day = self._this_months_range()
+        first_day, last_day = self._months_range(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"])
+        )
 
         queryset = self.model.objects.filter(
             budget_id=self.request.user.budgets.first().id
