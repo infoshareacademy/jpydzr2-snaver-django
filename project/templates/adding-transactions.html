@@ -15,7 +15,7 @@
                     <table class="table" id="transactiontable">
                         <tr>
                             <th>
-                                <a href="/add-new" title="Add new transaction"
+                                <a href="{% url 'new-transaction' %}" title="Add new transaction"
                                    class="btn btn-primary pull-center">
                                     Add new transaction
                                 </a>
@@ -158,7 +158,7 @@
                     $('body').load("");
                 })
                 .fail(function () {
-                    console.log("Error occured")
+                    console.log("Error occurred")
                 });
     }
 
