@@ -397,7 +397,8 @@ class BudgetView(ListView):
                     ), distinct=True), Decimal(0.00)
             )
         )
-        return queryset["to_be_budgeted"]
+        # quantize to change 0 to 0.00
+        return queryset["to_be_budgeted"].quantize(Decimal('.00'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
