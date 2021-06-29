@@ -361,13 +361,13 @@ class BudgetView(ListView):
     model = Category
     template_name = 'budget.html'
 
-    def _set_current_date(self):
+    def set_current_date(self):
         if not self.kwargs.get("year", None):
             self.kwargs["year"] = str(datetime.now().year)
         if not self.kwargs.get("month", None):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
-    def _months_range(self, year, month):
+    def months_range(self, year, month):
         day = monthrange(year, month)[1]  # the last day of the month
         first_day = datetime(
             year=year,
@@ -380,15 +380,6 @@ class BudgetView(ListView):
             day=day,
         )
         return first_day, last_day
-
-    def sum_outflows(self, start, end):
-        outlfow = Transaction.objects.filter(
-            subcategory__category__budget_id=self.request.user.budgets.first().id,
-            receipt_date__range=(start, end)
-        ).aggregate(outflow=Coalesce(
-            Sum('outflow'), Decimal(0.00))
-        )["outflow"]
-        return outlfow
 
     def sum_budgeted(self, end):
         queryset = Subcategory.objects.filter(
@@ -410,29 +401,22 @@ class BudgetView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self._set_current_date()
-        first_day, last_day = self._months_range(
+        self.set_current_date()
+        first_day, last_day = self.months_range(
             year=int(self.kwargs["year"]),
             month=int(self.kwargs["month"])
         )
 
         context['prev_month'] = prev_month(last_day)
         context['next_month'] = next_month(last_day)
-        # TODO: fix this value. month_budgeted - sum_outflows
-        context['available_from_prev_month'] = self.sum_outflows(
-            start=first_day,
-            end=last_day
-        )
 
-        context['to_be_budgeted'] = self.sum_budgeted(
-            end=last_day
-        )
+        context['to_be_budgeted'] = self.sum_budgeted(end=last_day)
 
         return context
 
     def get_queryset(self):
-        self._set_current_date()
-        first_day, last_day = self._months_range(
+        self.set_current_date()
+        first_day, last_day = self.months_range(
             year=int(self.kwargs["year"]),
             month=int(self.kwargs["month"])
         )
