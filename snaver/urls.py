@@ -23,6 +23,6 @@ urlpatterns = [
     path('add-new', TransactionCreateView.as_view(), name='new-transaction'),
     path('update-transaction', views.update_transaction, name="update-transaction"),
     path('ajax-update', views.ajax_update, name="update-category"),
-    path('save-ordering', views.save_ordering, name="update-order"),
+    re_path(r'save-ordering|budget/*/save-ordering', views.save_ordering, name="update-order"),
     re_path(r'^budget/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/ajax-update', views.ajax_update, name="update-category")
 ]
