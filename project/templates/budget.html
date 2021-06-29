@@ -204,7 +204,7 @@
 
             function sendToServer(id, value, type) {
                 $.ajax({
-                    url: "ajax-update",
+                    url: 'update-category',
                     type: "POST",
                     data: {id: id, type: type, value: value}
                 })
