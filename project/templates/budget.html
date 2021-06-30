@@ -17,9 +17,12 @@
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
                                 <h2 class="h5">To be budgeted</h2>
-                                <h3 class="mb-1 text-success">$43,594</h3>
+                                {% if to_be_budgeted >= 0 %}
+                                    <h3 class="mb-1 text-success">{{ to_be_budgeted }}</h3>
+                                {% else %}
+                                    <h3 class="mb-1 text-danger">{{ to_be_budgeted }}</h3>
+                                {% endif %}
                             </div>
-                            <small>- $200 from previous month</small>
                         </div>
                     </div>
                 </div>
