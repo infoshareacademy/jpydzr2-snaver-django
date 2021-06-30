@@ -16,6 +16,15 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.username}"
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            Budget.objects.create(
+                user=self,
+                name=f"Default budget {self.name}"
+            )
+
 
 class Budget(models.Model):
     name = models.CharField(
@@ -103,15 +112,11 @@ class Transaction(models.Model):
     outflow = models.DecimalField(
         decimal_places=2,
         max_digits=11,
-        blank=True,
-        null=True,
         default=0.00
     )
     inflow = models.DecimalField(
         decimal_places=2,
         max_digits=11,
-        blank=True,
-        null=True,
         default=0.00
     )
 

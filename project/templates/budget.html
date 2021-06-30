@@ -17,10 +17,12 @@
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
                                 <h2 class="h5">To be budgeted</h2>
-                                {% if to_be_budgeted >= 0 %}
+                                {% if to_be_budgeted == 0.00 %}
                                     <h3 class="mb-1 text-success">{{ to_be_budgeted }}</h3>
-                                {% else %}
+                                {% elif to_be_budgeted < 0.00 %}
                                     <h3 class="mb-1 text-danger">{{ to_be_budgeted }}</h3>
+                                {% else %}
+                                    <h3 class="mb-1 text-warning">{{ to_be_budgeted }}</h3>
                                 {% endif %}
                             </div>
                         </div>
@@ -207,7 +209,7 @@
 
             function sendToServer(id, value, type) {
                 $.ajax({
-                    url: "ajax-update",
+                    url: 'update-category',
                     type: "POST",
                     data: {id: id, type: type, value: value}
                 })

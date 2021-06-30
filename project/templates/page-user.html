@@ -7,68 +7,46 @@
 
 {% block content %}
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-header card-header-primary">
-        <h4 class="card-title">{{ user.username }} - Profile</h4>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-5">
-            <div class="form-group">
-              <label class="bmd-label-floating">UserID</label>
-              <input type="text" class="form-control" disabled value="{{ request.user.id }}">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title">{{ user.username }} - Profile</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Username</label>
+                                <input type="text" class="form-control" disabled value="{{ request.user.username }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Email address</label>
+                                <input type="email" class="form-control" disabled value="{{ request.user.email }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Date joined</label>
+                                <input type="email" class="form-control" disabled
+                                       value="{{ request.user.date_joined }}">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div>
+                        <ul>
+                            <li><a href="{% url 'email_change' user.id %}" class="text-primary">Change email</a>
+                            </li>
+                            <li><a href="{% url 'password_change' %}" class="text-primary">Change password</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label class="bmd-label-floating">Username</label>
-              <input type="text" class="form-control" disabled value="{{ request.user.username }}">
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <label class="bmd-label-floating">Email address</label>
-              <input type="email" class="form-control" disabled value="{{ request.user.email }}">
-            </div>
-          </div>
         </div>
-        <br>
-      </div>
-      <br>
-      <h4>
-        If you want to change your email, <a href="{% url 'email_change' user.id %}" class="text-primary">click here</a>.
-      </h4>
-      <br>
-      <h4>
-        If you want to change your password, <a href="{% url 'password_change' %}" class="text-primary">click here</a>.
-      </h4><br>
     </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card card-profile">
-      <div class="card-avatar">
-        <a href="#pablo">
-          <img class="img" src="/static/assets/img/faces/marc.jpg" />
-        </a>
-      </div>
-      <div class="card-body">
-        <h6 class="card-category text-gray">
-          {{ request.user.username }}
-        </h6>
-        <h4 class="card-title">
-          {{ request.suser.email }}
-        </h4>
-        <p class="card-description">
-          Don't be scared of the truth because we need to restart the human foundation in truth And I love you like
-          Kanye loves Kanye I love Rick Owens’ bed design but the back is...
-        </p>
-        <a href="#pablo" class="btn btn-primary btn-round">Follow</a>
-      </div>
-    </div>
-  </div>
-</div>
 
 {% endblock content %}
 
