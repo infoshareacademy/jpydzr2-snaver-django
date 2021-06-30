@@ -280,20 +280,14 @@ class BudgetView(ListView):
         )
         return first_day, last_day
 
-    def sum_budgeted(self, end):
+    def sum_budgeted(self):
         queryset = Subcategory.objects.filter(
             category__budget_id=self.request.user.budgets.first().id
         ).aggregate(
             to_be_budgeted=Coalesce(
-                Sum('transactions__inflow',
-                    filter=Q(
-                        transactions__receipt_date__lte=end,
-                    ), distinct=True), Decimal(0.00)
+                Sum('transactions__inflow', distinct=True), Decimal(0.00)
             ) - Coalesce(
-                Sum('details__budgeted_amount',
-                    filter=Q(
-                        details__end_date__lte=end
-                    ), distinct=True), Decimal(0.00)
+                Sum('details__budgeted_amount', distinct=True), Decimal(0.00)
             )
         )
         # quantize to change 0 to 0.00
@@ -310,7 +304,7 @@ class BudgetView(ListView):
         context['prev_month'] = prev_month(last_day)
         context['next_month'] = next_month(last_day)
 
-        context['to_be_budgeted'] = self.sum_budgeted(end=last_day)
+        context['to_be_budgeted'] = self.sum_budgeted()
 
         return context
 
