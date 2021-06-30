@@ -21,7 +21,7 @@ urlpatterns = [
     re_path(r'save-ordering|budget/*/save-ordering', views.save_ordering, name="update-order"),
     re_path(r'^budget/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/ajax-update', views.ajax_update, name="update-category"),
 
-    #Used for ajax updates
+    # Used for ajax updates
     path('update-transaction', views.update_transaction, name="update-transaction"),
     path('update-category', views.ajax_update, name="update-category"),
 ]
