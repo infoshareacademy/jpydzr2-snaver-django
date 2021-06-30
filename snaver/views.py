@@ -205,8 +205,12 @@ def ajax_update(request, year=None, month=None):
     if type == 'new-budget':
         subcategory_obj = Subcategory.objects.get(id=id)
         print(subcategory_obj)
-        detail = SubcategoryDetails(budgeted_amount=value, start_date=first_day, end_date=last_day,
-                                    subcategory=subcategory_obj)
+        detail = SubcategoryDetails(
+            budgeted_amount=value,
+            start_date=first_day,
+            end_date=last_day,
+            subcategory=subcategory_obj
+        )
         detail.save()
 
     return JsonResponse({"success": "Object updated"})
@@ -348,7 +352,10 @@ class BudgetView(ListView):
             ),
             Prefetch(
                 "subcategories__details",
-                queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)
+                queryset=SubcategoryDetails.objects.filter(
+                    start_date__lte=last_day,
+                    end_date__gte=first_day
+                )
             ),
         )
 

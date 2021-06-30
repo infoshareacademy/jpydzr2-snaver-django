@@ -2,7 +2,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from snaver.models import Subcategory
-from snaver.models import SubcategoryDetails
 from snaver.models import Transaction
 
 
@@ -47,7 +46,11 @@ class TransactionCreateForm(forms.ModelForm):
         inflow = cleaned_data.get("inflow")
 
         if not outflow and not inflow:
-            raise ValidationError({'outflow': 'At least one of outflow or inflow should have a value.'})
+            raise ValidationError(
+                {'outflow': 'At least one of outflow or inflow should have a value.'}
+            )
 
         if outflow and inflow:
-            raise ValidationError({'outflow': 'Only one of outflow or inflow should have a value.'})
+            raise ValidationError(
+                {'outflow': 'Only one of outflow or inflow should have a value.'}
+            )

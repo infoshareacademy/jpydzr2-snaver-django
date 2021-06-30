@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from django.views.generic.base import TemplateView
 
 from .views import EmailChangeDoneView
 from .views import EmailChangeView

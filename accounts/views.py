@@ -5,7 +5,6 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_text
@@ -99,6 +98,7 @@ def activate(request, uidb64, token):
         return redirect('home')
     else:
         return render(request, 'accounts/account_activation_invalid.html')
+
 
 class ProfileView(TemplateView):
     template_name = 'page-user.html'
