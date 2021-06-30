@@ -285,9 +285,9 @@ class BudgetView(ListView):
             category__budget_id=self.request.user.budgets.first().id
         ).aggregate(
             to_be_budgeted=Coalesce(
-                Sum('transactions__inflow', distinct=True), Decimal(0.00)
+                Sum('transactions__inflow'), Decimal(0.00)
             ) - Coalesce(
-                Sum('details__budgeted_amount', distinct=True), Decimal(0.00)
+                Sum('details__budgeted_amount'), Decimal(0.00)
             )
         )
         # quantize to change 0 to 0.00
