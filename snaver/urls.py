@@ -23,5 +23,5 @@ urlpatterns = [
 
     # Used for ajax updates
     path('update-transaction', views.update_transaction, name="update-transaction"),
-    path('update-category', views.ajax_update, name="update-category"),
+    re_path('update-category|budget/*/update-category', views.ajax_update, name="update-category"),
 ]

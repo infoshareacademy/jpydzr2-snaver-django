@@ -256,15 +256,13 @@ class BudgetView(ListView):
     model = Category
     template_name = 'budget.html'
 
-    def _set_current_date(self):
+    def set_current_date(self):
         if not self.kwargs.get("year", None):
             self.kwargs["year"] = str(datetime.now().year)
         if not self.kwargs.get("month", None):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
-    def _this_months_range(self):
-        year = int(self.kwargs["year"])
-        month = int(self.kwargs["month"])
+    def months_range(self, year, month):
         day = monthrange(year, month)[1]  # the last day of the month
         first_day = datetime(
             year=year,
@@ -278,21 +276,50 @@ class BudgetView(ListView):
         )
         return first_day, last_day
 
+    def sum_budgeted(self, end):
+        queryset = Subcategory.objects.filter(
+            category__budget_id=self.request.user.budgets.first().id
+        ).aggregate(
+            to_be_budgeted=Coalesce(
+                Sum('transactions__inflow',
+                    filter=Q(
+                        transactions__receipt_date__lte=end,
+                    ), distinct=True), Decimal(0.00)
+            ) - Coalesce(
+                Sum('details__budgeted_amount',
+                    filter=Q(
+                        details__end_date__lte=end
+                    ), distinct=True), Decimal(0.00)
+            )
+        )
+        # quantize to change 0 to 0.00
+        return queryset["to_be_budgeted"].quantize(Decimal('.00'))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self._set_current_date()
-        _, last_day = self._this_months_range()
+        self.set_current_date()
+        first_day, last_day = self.months_range(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"])
+        )
+
         context['prev_month'] = prev_month(last_day)
         context['next_month'] = next_month(last_day)
+
+        context['to_be_budgeted'] = self.sum_budgeted(end=last_day)
+
         return context
 
     def get_queryset(self):
+        self.set_current_date()
+        first_day, last_day = self.months_range(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"])
+        )
 
-        self._set_current_date()
-        first_day, last_day = self._this_months_range()
-
-        return self.model.objects.filter(budget_id=self.request.user.budgets.first().id).order_by('order',
-                                                                                                  '-created_on') \
+        queryset = self.model.objects.filter(
+            budget_id=self.request.user.budgets.first().id
+        ).order_by('order', '-created_on') \
             .select_related() \
             .prefetch_related(
             Prefetch(
@@ -304,17 +331,19 @@ class BudgetView(ListView):
                             filter=Q(
                                 transactions__receipt_date__lte=last_day,
                                 transactions__receipt_date__gte=first_day,
-                            ), distinct=True), Decimal(0.00)),
-                    available=
-                    Coalesce(Sum('details__budgeted_amount',
-                                 filter=Q(
-                                     details__end_date__lte=last_day
-                                 ), distinct=True), Decimal(0.00))
-
-                    - Coalesce(Sum('transactions__outflow',
-                                   filter=Q(
-                                       transactions__receipt_date__lte=last_day,
-                                   ), distinct=True), Decimal(0.00))
+                            ), distinct=True), Decimal(0.00)
+                    ),
+                    available=Coalesce(
+                        Sum('details__budgeted_amount',
+                            filter=Q(details__end_date__lte=last_day),
+                            distinct=True),
+                        Decimal(0.00)
+                    ) - Coalesce(
+                        Sum('transactions__outflow',
+                            filter=Q(transactions__receipt_date__lte=last_day),
+                            distinct=True),
+                        Decimal(0.00)
+                    )
                 )
             ),
             Prefetch(
@@ -322,6 +351,8 @@ class BudgetView(ListView):
                 queryset=SubcategoryDetails.objects.filter(start_date__lte=last_day, end_date__gte=first_day)
             ),
         )
+
+        return queryset
 
 
 @csrf_exempt
@@ -338,7 +369,6 @@ def save_ordering(request):
             category = Category.objects.get(id=lookup_id)
             category.order = current_order
             category.save()
-            print(category.order)
             current_order += 1
 
     with transaction.atomic():
@@ -347,6 +377,5 @@ def save_ordering(request):
             subcategory = Subcategory.objects.get(id=lookup_id)
             subcategory.order = current_order
             subcategory.save()
-            print(subcategory.order)
             current_order += 1
     return JsonResponse({"success": "Order updated"})
