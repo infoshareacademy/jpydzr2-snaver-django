@@ -123,8 +123,6 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = "snaver.CustomUser"
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # 3 days in seconds
 
 # Internationalization
@@ -158,8 +156,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 try:
-    from project.local_settings import *  # noqa: F403, F401
-except ImportError:
-    pass
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = os.environ["EMAIL_PORT"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+except Exception as e:
+    print(f"{e} not found in environment variables")
 
 django_heroku.settings(locals())
