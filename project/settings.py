@@ -122,6 +122,7 @@ AUTHENTICATION_BACKENDS = (
 AUTH_USER_MODEL = "snaver.CustomUser"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = 'snaver.help@snaver.com'
 
 PASSWORD_RESET_TIMEOUT = 60*60*24*3  # 3 days in seconds
 

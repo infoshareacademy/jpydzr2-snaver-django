@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
@@ -16,6 +19,7 @@ from django.views.generic.edit import UpdateView
 from accounts.forms import LoginForm
 from accounts.forms import SignUpForm
 from project.tokens import account_activation_token
+from snaver.models import CustomUser
 
 User = get_user_model()
 
@@ -49,18 +53,19 @@ def registration_view(request):
         if form.is_valid():
             form.save()
             raw_username = form.cleaned_data.get("username")
-            user = User.objects.get(username=raw_username)
+            user = CustomUser.objects.get(username=raw_username)
 
             current_site = get_current_site(request)
-            subject = 'Activate Your MySite Account'
+            subject = 'Activate your Snaver account!'
+            sender_address = settings.EMAIL_HOST_USER
             message = render_to_string(
                 'accounts/account_activation_email.html', {
-                    'user': user.username,
+                    'username': user.username,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': account_activation_token.make_token(user),
                 })
-            user.email_user(subject, message)
+            user.email_user(subject, message, sender_address)
 
             msg = f'{user.username} - account has been created'
             success = True
