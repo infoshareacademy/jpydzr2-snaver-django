@@ -1,6 +1,3 @@
-import os
-
-from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
@@ -57,7 +54,6 @@ def registration_view(request):
 
             current_site = get_current_site(request)
             subject = 'Activate your Snaver account!'
-            sender_address = settings.EMAIL_HOST_USER
             message = render_to_string(
                 'accounts/account_activation_email.html', {
                     'username': user.username,
@@ -65,7 +61,7 @@ def registration_view(request):
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': account_activation_token.make_token(user),
                 })
-            user.email_user(subject, message, sender_address)
+            user.email_user(subject, message)
 
             msg = f'{user.username} - account has been created'
             success = True

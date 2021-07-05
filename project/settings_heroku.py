@@ -163,6 +163,7 @@ try:
     EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 except Exception as e:
     print(f"{e} not found in environment variables")
 
