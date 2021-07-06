@@ -330,7 +330,7 @@ class BudgetView(ListView):
                                 transactions__receipt_date__lte=last_day,
                                 transactions__receipt_date__gte=first_day,
                             ), distinct=True)
-                        - Sum('transactions__outflow',
+                        + Sum('transactions__outflow',
                               filter=Q(
                                   transactions__receipt_date__lte=last_day,
                                   transactions__receipt_date__gte=first_day,
