@@ -34,7 +34,7 @@ except KeyError as e:
     print(f"{e} not found in environment variables")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['snaver.herokuapp.com', 'localhost', '127.0.0.1']
 
