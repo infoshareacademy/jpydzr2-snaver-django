@@ -325,11 +325,17 @@ class BudgetView(ListView):
                 queryset=Subcategory.objects.all().order_by('order', '-created_on')
                     .annotate(
                     activity=Coalesce(
-                        Sum('transactions__outflow',
+                        Sum('transactions__inflow',
                             filter=Q(
                                 transactions__receipt_date__lte=last_day,
                                 transactions__receipt_date__gte=first_day,
-                            ), distinct=True), Decimal(0.00)
+                            ), distinct=True)
+                        - Sum('transactions__outflow',
+                              filter=Q(
+                                  transactions__receipt_date__lte=last_day,
+                                  transactions__receipt_date__gte=first_day,
+                              ), distinct=True)
+                        , Decimal(0.00)
                     ),
                     available=Coalesce(
                         Sum('details__budgeted_amount',
