@@ -41,6 +41,12 @@
                     <span class="sidebar-text">Transactions</span>
                 </a>
             </li>
+            <li class="nav-item {% if 'reports' in segment %} active {% endif %}">
+                <a href="{% url 'reports' %}" class="nav-link">
+                    <span class="sidebar-icon"><span class="fas fa-chart-bar"></span></span>
+                    <span class="sidebar-text">Reports</span>
+                </a>
+            </li>
             <li class="nav-item {% if 'profile' in segment %} active {% endif %}">
                 <a href="{% url 'profile' %}" class="nav-link">
                     <span class="sidebar-icon"><span class="fas fa-user"></span></span>
