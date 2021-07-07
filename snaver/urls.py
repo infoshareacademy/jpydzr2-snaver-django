@@ -31,5 +31,8 @@ urlpatterns = [
         views.save_ordering,
         name="update-order"
     ),
-    path('reports', ReportsListView.as_view(), name='reports')
+    path('reports', ReportsListView.as_view(), name='reports'),
+    re_path(r'^reports/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/$',
+            login_required(ReportsListView.as_view()),
+            name='reports_select'),
 ]
