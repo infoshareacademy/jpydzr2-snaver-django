@@ -8,7 +8,6 @@
 
 {% block content %}
 
-
     <div class="reports">
 
     <div class="col-12 col-sm-6 col-xl-4 mb-4">
@@ -16,7 +15,6 @@
             <div class="card-body">
                 <h2>Reports</h2>
             </div>
-
         </div>
     </div>
 
@@ -34,8 +32,6 @@
                                 <div class="h3">
                                     {{ view.kwargs.year }}-{{ view.kwargs.month }}
                                 </div>
-
-
                                 <a class="h3"
                                    href="{% url "reports_select" next_month.year next_month.month|stringformat:"02d" %}">
                                     <i class="fas fa-chevron-right"></i>
@@ -48,34 +44,97 @@
 
             <div class="card border-light shadow-sm">
                 <div class="card-body">
-
-                    Hej hej to są raporty. Testuję wyświetlanie danych z queryset'u.
-                    <br>
-
-                    {% for category in object_list %}
-                        <br>
-                        {{ category.name }}
-
-                        {% for subcategory in category.subcategories.all %}
-                            <br>
-                            >>> {{ subcategory.name }} {{ subcategory.details.last.budgeted_amount }} // ACTIVITY=
-                            {{ subcategory.activity }}
-                        {% endfor %}
-                    {% endfor %}
-
+                    <div class="row">
+                        <div class="col-sm">
+                            <h3>TOTAL BUDGETED:
+                                <div id="total_budgeted" style="display: inline-block"></div>
+                            </h3>
+                            <div id="donutchart_budgeted" style="width: 700px; height: 700px;"></div>
+                        </div>
+                        <div class="col-sm">
+                            <h3>TOTAL ACTIVITY (EXPENSES):
+                                <div id="total_activity" style="display: inline-block"></div>
+                            </h3>
+                            <div id="donutchart_activity" style="width: 700px; height: 700px;"></div>
+                        </div>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
-
-
-
-
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", {packages: ["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Category name', 'Budgeted amount'],
+                {% for details in object_list %}
+                    ['{{ details.subcategory.name }}', {{ details.budgeted_amount }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                titleTextStyle: {fontSize: 20},
+                backgroundColor: {fill: 'transparent'},
+                pieSliceText: 'value',
+                chartArea: {top: 0, left: 0, height: '50%'},
+                legend: {alignment: 'center'}
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donutchart_budgeted'));
+            chart.draw(data, options);
+        }
+    </script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", {packages: ["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Category name', 'Activity amount'],
+                {% for details in object_list %}
+                    ['{{ details.subcategory.name }}', {{ details.activity }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                pieHole: 0.3,
+                titleTextStyle: {fontSize: 20},
+                backgroundColor: {fill: 'transparent'},
+                pieSliceText: 'value',
+                chartArea: {top: 0, left: 0, height: '50%'},
+                legend: {alignment: 'center'}
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donutchart_activity'));
+            chart.draw(data, options);
+        }
+    </script>
+
+    <script type="text/javascript">
+        var total_budgeted = 0;
+        {% for details in object_list %}
+            total_budgeted+={{ details.budgeted_amount }}
+        {% endfor %}
+        document.getElementById("total_budgeted").innerHTML = total_budgeted;
+    </script>
+
+    <script type="text/javascript">
+        var total_activity = 0;
+        {% for details in object_list %}
+            total_activity+={{ details.activity }}
+        {% endfor %}
+        document.getElementById("total_activity").innerHTML = total_activity;
+    </script>
 
 {% endblock javascripts %}
