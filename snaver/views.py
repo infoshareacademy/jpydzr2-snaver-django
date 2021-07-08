@@ -384,175 +384,56 @@ def save_ordering(request):
 
 class ReportsListView(ListView):
     template_name = 'reports.html'
-    model = Category
 
-    def set_current_date(self):
+    def _set_current_date(self):
         if not self.kwargs.get("year", None):
             self.kwargs["year"] = str(datetime.now().year)
         if not self.kwargs.get("month", None):
             self.kwargs["month"] = f"{datetime.now().month:02d}"
 
-    def months_range(self, year, month):
-        day = monthrange(year, month)[1]  # the last day of the month
-        first_day = datetime(
-            year=year,
-            month=month,
-            day=1,
+    def _this_month(self):
+        selected_date = datetime(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"]),
+            day=1
         )
-        last_day = datetime(
-            year=year,
-            month=month,
-            day=day,
-        )
-        return first_day, last_day
-
-    def sum_budgeted(self):
-        queryset = Subcategory.objects.filter(
-            category__budget_id=self.request.user.budgets.first().id
-        ).aggregate(
-            to_be_budgeted=Coalesce(
-                Sum('transactions__inflow'), Decimal(0.00)
-            ) - Coalesce(
-                Sum('details__budgeted_amount'), Decimal(0.00)
-            )
-        )
-        # quantize to change 0 to 0.00
-        return queryset["to_be_budgeted"].quantize(Decimal('.00'))
+        return selected_date
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.set_current_date()
-        first_day, last_day = self.months_range(
-            year=int(self.kwargs["year"]),
-            month=int(self.kwargs["month"])
-        )
-
-        context['prev_month'] = prev_month(last_day)
-        context['next_month'] = next_month(last_day)
-
-        context['to_be_budgeted'] = self.sum_budgeted()
-
+        self._set_current_date()
+        selected_date = self._this_month()
+        context['prev_month'] = prev_month(selected_date)
+        context['next_month'] = next_month(selected_date)
         return context
 
-    def get_queryset(self):
-        self.set_current_date()
-        first_day, last_day = self.months_range(
-            year=int(self.kwargs["year"]),
-            month=int(self.kwargs["month"])
-        )
+    def get_queryset(self, *args, **kwargs):
+        self._set_current_date()
+        selected_date = dateformat.format(
+            self._this_month(),
+            'Y-m-d')
 
-        queryset = self.model.objects.filter(
-            budget_id=self.request.user.budgets.first().id
-        ).order_by('order', '-created_on') \
-            .select_related() \
-            .prefetch_related(
-            Prefetch(
-                "subcategories",
-                queryset=Subcategory.objects.all().order_by('order', '-created_on')
-                    .annotate(
-                    activity=Coalesce(
-                        Sum('transactions__outflow',
-                            filter=Q(
-                                transactions__receipt_date__lte=last_day,
-                                transactions__receipt_date__gte=first_day,
-                            ), distinct=True), Decimal(0.00)
-                    ),
-                    available=Coalesce(
-                        Sum('details__budgeted_amount',
-                            filter=Q(details__end_date__lte=last_day),
-                            distinct=True),
-                        Decimal(0.00)
-                    ) - Coalesce(
-                        Sum('transactions__outflow',
-                            filter=Q(transactions__receipt_date__lte=last_day),
-                            distinct=True),
-                        Decimal(0.00)
+        subcategory_details = SubcategoryDetails.objects.filter(
+            subcategory__category__budget__user=self.request.user,
+            start_date__lte=selected_date,
+            end_date__gte=selected_date,
+        ).order_by(
+            "subcategory__category__name",
+            "subcategory__name"
+        ).annotate(
+            activity=Coalesce(  # Coalesce picks first non-null value
+                Sum('subcategory__transactions__outflow',
+                    filter=Q(
+                        subcategory__transactions__receipt_date__lte=F("end_date"),
+                        subcategory__transactions__receipt_date__gte=F("start_date")
                     )
-                )
-            ),
-            Prefetch(
-                "subcategories__details",
-                queryset=SubcategoryDetails.objects.filter(
-                    start_date__lte=last_day,
-                    end_date__gte=first_day
-                )
-            ),
+                    ),
+                Decimal(0.00),
+            )
+        ).annotate(
+            available=(
+                    F("budgeted_amount") - F("activity")
+            )
         )
 
-        return queryset
-
-
-
-    #
-    # def _set_current_date(self):
-    #     if not self.kwargs.get("year", None):
-    #         self.kwargs["year"] = str(datetime.now().year)
-    #     if not self.kwargs.get("month", None):
-    #         self.kwargs["month"] = f"{datetime.now().month:02d}"
-    #
-    # def _this_month(self):
-    #     selected_date = datetime(
-    #         year=int(self.kwargs["year"]),
-    #         month=int(self.kwargs["month"]),
-    #         day=1
-    #     )
-    #     return selected_date
-    #
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     self._set_current_date()
-    #     selected_date = self._this_month()
-    #     context['prev_month'] = prev_month(selected_date)
-    #     context['next_month'] = next_month(selected_date)
-    #     return context
-    #
-    # def get_queryset(self, *args, **kwargs):
-    #     self._set_current_date()
-    #     selected_date = dateformat.format(
-    #         self._this_month(),
-    #         'Y-m-d')
-    #
-    #     subcategory_details = SubcategoryDetails.objects.filter(
-    #         subcategory__category__budget__user=self.request.user,
-    #         start_date__lte=selected_date,
-    #         end_date__gte=selected_date,
-    #     ).order_by(
-    #         "subcategory__category__name",
-    #         "subcategory__name"
-    #     ).annotate(
-    #         activity=Coalesce(  # Coalesce picks first non-null value
-    #             Sum('subcategory__transaction__outflow',
-    #                 filter=Q(
-    #                     subcategory__transaction__receipt_date__lte=F("end_date"),
-    #                     subcategory__transaction__receipt_date__gte=F("start_date")
-    #                 )
-    #                 ),
-    #             Decimal(0.00),
-    #         )
-    #     ).annotate(
-    #         available=(
-    #                 F("budgeted_amount") - F("activity")
-    #         )
-    #     )
-    #
-    #     total_expenses = (
-    #         SubcategoryDetails.objects.filter(
-    #             subcategory__category__budget__user=self.request.user,
-    #             start_date__lte=selected_date,
-    #             end_date__gte=selected_date,
-    #         ).aggregate(Sum('subcategory__transaction__outflow'))
-    #     )
-    #
-    #     total_budgeted = (
-    #         SubcategoryDetails.objects.filter(
-    #             subcategory__category__budget__user=self.request.user,
-    #             start_date__lte=selected_date,
-    #             end_date__gte=selected_date,
-    #         ).aggregate(Sum('budgeted_amount'))
-    #     )
-    #
-    #     return (
-    #         subcategory_details,
-    #         total_expenses['subcategory__transaction__outflow__sum'],
-    #         total_budgeted["budgeted_amount__sum"],
-    #     )
+        return subcategory_details
