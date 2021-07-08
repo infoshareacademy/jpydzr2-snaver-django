@@ -46,25 +46,48 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm">
-                            <h3>TOTAL BUDGETED:
+                            <h4>TOTAL BUDGETED:
                                 <div id="total_budgeted" style="display: inline-block"></div>
-                            </h3>
+                            </h4>
                             <div id="donutchart_budgeted" style="width: 700px; height: 350px;"></div>
                         </div>
                         <div class="col-sm">
-                            <h3>TOTAL ACTIVITY (EXPENSES):
+                            <h4>TOTAL ACTIVITY (EXPENSES):
                                 <div id="total_activity" style="display: inline-block"></div>
-                            </h3>
+                            </h4>
                             <div id="donutchart_activity" style="width: 700px; height: 350px;"></div>
                         </div>
                     </div>
                 </div>
+
                 <div class="card-body" align="center">
                     <br>
                     <br>
                     <br>
-                    <h3>BUDGETED AMOUNTS VERSUS EXPENSES</h3>
-                    <div id="chart_div" style="height: 800px"></div>
+                    <h4>BUDGETED AMOUNTS VERSUS EXPENSES</h4>
+                    <div id="chart_div" style="height: 500px"></div>
+                </div>
+
+                <div class="card-body">
+                    <h4>ALERTS:</h4>
+                    <ui>
+                        {% for details in object_list %}
+                            {% if details.activity == details.budgeted_amount %}
+                                <li style="color: blue">
+                                    In category <b>"{{ details.subcategory.name }}"</b>
+                                    you have already spent as much as you have budgeted.
+                                </li>
+                            {% endif %}
+                            {% if details.activity > details.budgeted_amount %}
+                                <li style="color: red">
+                                    In category <b>"{{ details.subcategory.name }}"</b>
+                                    you spent more money than budgeted!
+                                    ( Budgeted - Expenses = {{ details.budgeted_amount }} - {{ details.activity }} =
+                                    <b>-{{ details.activity|sub:details.budgeted_amount }} )</b>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ui>
                 </div>
             </div>
         </div>
@@ -164,12 +187,13 @@
             ]);
 
             var options = {
-                {#title: 'BUDGETED AMOUNTS VERSUS EXPENSES',#}
                 titleTextStyle: {fontSize: 20},
                 chartArea: {
                     top: 20,
-                    width: '50%'
+                    bottom: 40,
+                    width: '50%',
                 },
+                colors: ['#392084', 'orange'],
                 hAxis: {
                     minValue: 0,
                     textStyle: {
