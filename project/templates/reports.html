@@ -49,15 +49,22 @@
                             <h3>TOTAL BUDGETED:
                                 <div id="total_budgeted" style="display: inline-block"></div>
                             </h3>
-                            <div id="donutchart_budgeted" style="width: 700px; height: 700px;"></div>
+                            <div id="donutchart_budgeted" style="width: 700px; height: 350px;"></div>
                         </div>
                         <div class="col-sm">
                             <h3>TOTAL ACTIVITY (EXPENSES):
                                 <div id="total_activity" style="display: inline-block"></div>
                             </h3>
-                            <div id="donutchart_activity" style="width: 700px; height: 700px;"></div>
+                            <div id="donutchart_activity" style="width: 700px; height: 350px;"></div>
                         </div>
                     </div>
+                </div>
+                <div class="card-body" align="center">
+                    <br>
+                    <br>
+                    <br>
+                    <h3>BUDGETED AMOUNTS VERSUS EXPENSES</h3>
+                    <div id="chart_div" style="height: 800px"></div>
                 </div>
             </div>
         </div>
@@ -67,6 +74,24 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+
+    <script type="text/javascript">
+        var total_budgeted = 0;
+        {% for details in object_list %}
+            total_budgeted+={{ details.budgeted_amount }}
+        {% endfor %}
+        document.getElementById("total_budgeted").innerHTML = total_budgeted;
+    </script>
+
+
+    <script type="text/javascript">
+        var total_activity = 0;
+        {% for details in object_list %}
+            total_activity+={{ details.activity }}
+        {% endfor %}
+        document.getElementById("total_activity").innerHTML = total_activity;
+    </script>
+
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -85,7 +110,7 @@
                 titleTextStyle: {fontSize: 20},
                 backgroundColor: {fill: 'transparent'},
                 pieSliceText: 'value',
-                chartArea: {top: 0, left: 0, height: '50%'},
+                chartArea: {top: 0, left: 0, height: '100%'},
                 legend: {alignment: 'center'}
             };
 
@@ -93,6 +118,7 @@
             chart.draw(data, options);
         }
     </script>
+
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -112,7 +138,7 @@
                 titleTextStyle: {fontSize: 20},
                 backgroundColor: {fill: 'transparent'},
                 pieSliceText: 'value',
-                chartArea: {top: 0, left: 0, height: '50%'},
+                chartArea: {top: 0, left: 0, height: '100%'},
                 legend: {alignment: 'center'}
             };
 
@@ -121,20 +147,59 @@
         }
     </script>
 
-    <script type="text/javascript">
-        var total_budgeted = 0;
-        {% for details in object_list %}
-            total_budgeted+={{ details.budgeted_amount }}
-        {% endfor %}
-        document.getElementById("total_budgeted").innerHTML = total_budgeted;
-    </script>
 
-    <script type="text/javascript">
-        var total_activity = 0;
-        {% for details in object_list %}
-            total_activity+={{ details.activity }}
-        {% endfor %}
-        document.getElementById("total_activity").innerHTML = total_activity;
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {
+            packages: ['corechart', 'bar']
+        });
+        google.charts.setOnLoadCallback(drawAxisTickColors);
+
+        function drawAxisTickColors() {
+            var data = google.visualization.arrayToDataTable([
+                ['Amount', 'Budgeted amount', 'Expenses'],
+                {% for details in object_list %}
+                    ['{{ details.subcategory.name }}', {{ details.budgeted_amount }}, {{ details.activity }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                {#title: 'BUDGETED AMOUNTS VERSUS EXPENSES',#}
+                titleTextStyle: {fontSize: 20},
+                chartArea: {
+                    top: 20,
+                    width: '50%'
+                },
+                hAxis: {
+                    minValue: 0,
+                    textStyle: {
+                        bold: true,
+                        fontSize: 12,
+                        color: '#4d4d4d'
+                    },
+                    titleTextStyle: {
+                        bold: true,
+                        fontSize: 18,
+                        color: '#4d4d4d'
+                    }
+                },
+                vAxis: {
+                    title: 'Categories',
+                    textStyle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#848484'
+                    },
+                    titleTextStyle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#848484'
+                    }
+                }
+            };
+            var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
     </script>
 
 {% endblock javascripts %}
