@@ -69,11 +69,11 @@
                 </div>
 
                 <div class="card-body">
-                    <h4>ALERTS:</h4>
+                    <h4>SUMMARY:</h4>
                     <ui>
                         {% for details in object_list %}
                             {% if details.activity == details.budgeted_amount %}
-                                <li style="color: blue">
+                                <li style="color: darkgreen">
                                     In category <b>"{{ details.subcategory.name }}"</b>
                                     you have already spent as much as you have budgeted.
                                 </li>
