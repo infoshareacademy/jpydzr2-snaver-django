@@ -29,7 +29,10 @@
                                     <div class="d-none d-sm-block">
                                         <br>
                                         <h2 class="h5">Budgeted:</h2>
-                                        <h3 class="mb-1 text-black">10000</h3>
+                                        <div id="total_budgeted"></div>
+                                        <h3 class="mb-1 text-black">
+                                            $$$.$$
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
@@ -43,12 +46,16 @@
                                 <div class="col-12 col-xl-7 px-xl-0">
                                     <div class="d-none d-sm-block">
                                         <h2 class="h5">Outflows:</h2>
-                                        <h3 class="mb-1 text-black">50000</h3>
+                                        <h3 class="mb-1 text-black">
+                                            <div id="total_outflow"></div>
+                                        </h3>
                                     </div>
                                     <div class="d-none d-sm-block">
                                         <br>
                                         <h2 class="h5">Inflows:</h2>
-                                        <h3 class="mb-1 text-black">60000</h3>
+                                        <h3 class="mb-1 text-black">
+                                            $$$.$$
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
@@ -62,13 +69,9 @@
                                 <div class="col-12 col-xl-7 px-xl-0">
                                     <div class="d-none d-sm-block">
                                         <h2 class="h5">Available:</h2>
-                                        {% if to_be_budgeted == 0.00 %}
-                                            <h3 class="mb-1 text-success">{{ to_be_budgeted }}</h3>
-                                        {% elif to_be_budgeted < 0.00 %}
-                                            <h3 class="mb-1 text-danger">{{ to_be_budgeted }}</h3>
-                                        {% else %}
-                                            <h3 class="mb-1 text-warning">{{ to_be_budgeted }}</h3>
-                                        {% endif %}
+                                        <h3 class="mb-1 text-black">
+                                            <div id="total_available"></div>
+                                        </h3>
                                     </div>
                                 </div>
                             </div>
@@ -194,6 +197,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
     <script>
 
@@ -365,6 +369,22 @@
                 $('.budget').load(" .budget");
             });
         });
+    </script>
+
+
+    <script type="text/javascript">
+        let total_budgeted = 0;
+        let total_outflow = 0;
+        let total_inflow = 0;
+        let total_available = 0;
+        {% for category in object_list %}
+            {% for subcategory in category.subcategories.all %}
+                total_outflow += {{ subcategory.activity }};
+                total_available += {{ subcategory.available }};
+            {% endfor %}
+        {% endfor %}
+        document.getElementById("total_outflow").innerHTML = total_outflow;
+        document.getElementById("total_available").innerHTML = total_available;
     </script>
 
 {% endblock javascripts %}
