@@ -341,7 +341,16 @@ class BudgetView(ListView):
                             filter=Q(transactions__receipt_date__lte=last_day),
                             distinct=True),
                         Decimal(0.00)
-                    )
+                    ),
+                    budgeted=Coalesce(
+                        Sum('details__budgeted_amount',
+                            filter=Q(
+                                details__end_date__lte=last_day,
+                                details__end_date__gte=first_day,
+                            ),
+                            distinct=True),
+                        Decimal(0.00)
+                    ),
                 )
             ),
             Prefetch(

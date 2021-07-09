@@ -29,9 +29,8 @@
                                     <div class="d-none d-sm-block">
                                         <br>
                                         <h2 class="h5">Budgeted:</h2>
-                                        <div id="total_budgeted"></div>
                                         <h3 class="mb-1 text-black">
-                                            $$$.$$
+                                            <div id="total_budgeted"></div>
                                         </h3>
                                     </div>
                                 </div>
@@ -380,16 +379,17 @@
         const field_with_total_available = document.getElementById('total_available');
         {% for category in object_list %}
             {% for subcategory in category.subcategories.all %}
+                total_budgeted += {{ subcategory.budgeted }};
                 total_outflow += {{ subcategory.activity }};
                 total_available += {{ subcategory.available }};
             {% endfor %}
         {% endfor %}
         if (total_available > 0) {
-            field_with_total_available.style.color="green";
+            field_with_total_available.className = "mb-1 text-success";
+        } else {
+            field_with_total_available.className = "mb-1 text-danger";
         }
-        else {
-            field_with_total_available.style.color="red";
-        }
+        document.getElementById("total_budgeted").innerHTML = total_budgeted.toFixed(2);
         document.getElementById("total_outflow").innerHTML = total_outflow.toFixed(2);
         document.getElementById("total_available").innerHTML = total_available.toFixed(2);
     </script>
