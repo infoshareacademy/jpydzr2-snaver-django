@@ -168,7 +168,7 @@
                                                     {{ subcategory.available }}
                                                 </td>
                                             {% elif subcategory.available == 0 %}
-                                                <td class="border-0" style="color: green;">
+                                                <td class="border-0" style="color: black;">
                                                     0.00
                                                 </td>
                                             {% else %}
@@ -390,8 +390,8 @@
         else {
             field_with_total_available.style.color="red";
         }
-        document.getElementById("total_outflow").innerHTML = total_outflow;
-        document.getElementById("total_available").innerHTML = total_available;
+        document.getElementById("total_outflow").innerHTML = total_outflow.toFixed(2);
+        document.getElementById("total_available").innerHTML = total_available.toFixed(2);
     </script>
 
 {% endblock javascripts %}
