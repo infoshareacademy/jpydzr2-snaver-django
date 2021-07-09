@@ -100,18 +100,12 @@
 
     <script type="text/javascript">
         var total_budgeted = 0;
-        {% for details in object_list %}
-            total_budgeted+={{ details.budgeted_amount }}
-        {% endfor %}
-        document.getElementById("total_budgeted").innerHTML = total_budgeted;
-    </script>
-
-
-    <script type="text/javascript">
         var total_activity = 0;
         {% for details in object_list %}
+            total_budgeted+={{ details.budgeted_amount }}
             total_activity+={{ details.activity }}
         {% endfor %}
+        document.getElementById("total_budgeted").innerHTML = total_budgeted;
         document.getElementById("total_activity").innerHTML = total_activity;
     </script>
 
