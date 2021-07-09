@@ -377,12 +377,19 @@
         let total_outflow = 0;
         let total_inflow = 0;
         let total_available = 0;
+        const field_with_total_available = document.getElementById('total_available');
         {% for category in object_list %}
             {% for subcategory in category.subcategories.all %}
                 total_outflow += {{ subcategory.activity }};
                 total_available += {{ subcategory.available }};
             {% endfor %}
         {% endfor %}
+        if (total_available > 0) {
+            field_with_total_available.style.color="green";
+        }
+        else {
+            field_with_total_available.style.color="red";
+        }
         document.getElementById("total_outflow").innerHTML = total_outflow;
         document.getElementById("total_available").innerHTML = total_available;
     </script>
