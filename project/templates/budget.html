@@ -53,7 +53,7 @@
                                         <br>
                                         <h2 class="h5">Inflows:</h2>
                                         <h3 class="mb-1 text-black">
-                                            $$$.$$
+                                            <div id="total_inflow"></div>
                                         </h3>
                                     </div>
                                 </div>
@@ -381,6 +381,7 @@
             {% for subcategory in category.subcategories.all %}
                 total_budgeted += {{ subcategory.budgeted }};
                 total_outflow += {{ subcategory.activity }};
+                total_inflow += {{ subcategory.inflow }};
                 total_available += {{ subcategory.available }};
             {% endfor %}
         {% endfor %}
@@ -391,6 +392,7 @@
         }
         document.getElementById("total_budgeted").innerHTML = total_budgeted.toFixed(2);
         document.getElementById("total_outflow").innerHTML = total_outflow.toFixed(2);
+        document.getElementById("total_inflow").innerHTML = total_inflow.toFixed(2);
         document.getElementById("total_available").innerHTML = total_available.toFixed(2);
     </script>
 

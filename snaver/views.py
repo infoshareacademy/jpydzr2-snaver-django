@@ -351,6 +351,15 @@ class BudgetView(ListView):
                             distinct=True),
                         Decimal(0.00)
                     ),
+                    inflow=Coalesce(
+                        Sum('transactions__inflow',
+                            filter=Q(
+                                transactions__receipt_date__lte=last_day,
+                                transactions__receipt_date__gte=first_day,
+                            ),
+                            distinct=True),
+                        Decimal(0.00)
+                    ),
                 )
             ),
             Prefetch(
