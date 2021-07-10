@@ -5,9 +5,11 @@ from decimal import Decimal
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import DecimalField
 from django.db.models import F
 from django.db.models import Prefetch
 from django.db.models import Q
+from django.db.models import Subquery
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
@@ -281,14 +283,27 @@ class BudgetView(ListView):
         return first_day, last_day
 
     def sum_budgeted(self):
+        transaction_inflow = Subcategory.objects.filter(
+            category__budget_id=self.request.user.budgets.first().id
+        ).annotate(
+            transaction_inflow=Coalesce(
+                Sum('transactions__inflow'), Decimal(0.00)
+            )
+        )
+
+        budgeted_amount = Subcategory.objects.filter(
+            category__budget_id=self.request.user.budgets.first().id
+        ).annotate(
+            budgeted_amount=Coalesce(
+                Sum('details__budgeted_amount'), Decimal(0.00)
+            )
+        )
+
         queryset = Subcategory.objects.filter(
             category__budget_id=self.request.user.budgets.first().id
         ).aggregate(
-            to_be_budgeted=Coalesce(
-                Sum('transactions__inflow'), Decimal(0.00)
-            ) - Coalesce(
-                Sum('details__budgeted_amount'), Decimal(0.00)
-            )
+            to_be_budgeted=Sum(Subquery(transaction_inflow.values("transaction_inflow"), output_field=DecimalField()))
+            - Sum(Subquery(budgeted_amount.values("budgeted_amount"), output_field=DecimalField()))
         )
         # quantize to change 0 to 0.00
         return queryset["to_be_budgeted"].quantize(Decimal('.00'))
