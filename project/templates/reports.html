@@ -1,0 +1,223 @@
+{% extends "layouts/base.html" %}
+{% load mathfilters %}
+
+{% block title %} Transactions {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="reports">
+
+    <div class="col-12 col-sm-6 col-xl-4 mb-4">
+        <div class="card border-light shadow-sm">
+            <div class="card-body">
+                <h2>Reports</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card bg-yellow-alt shadow-sm">
+                    <div class="card-header d-flex flex-row align-items-center flex-0">
+                        <div class="d-block">
+                            <div class="d-flex ml-auto">
+                                <a class="h3 mr-2"
+                                   href="{% url "reports_select" prev_month.year prev_month.month|stringformat:"02d" %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                <div class="h3">
+                                    {{ view.kwargs.year }}-{{ view.kwargs.month }}
+                                </div>
+                                <a class="h3"
+                                   href="{% url "reports_select" next_month.year next_month.month|stringformat:"02d" %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm">
+                            <h4>TOTAL BUDGETED:
+                                <div id="total_budgeted" style="display: inline-block"></div>
+                            </h4>
+                            <div id="donutchart_budgeted" style="width: 700px; height: 350px;"></div>
+                        </div>
+                        <div class="col-sm">
+                            <h4>TOTAL ACTIVITY (EXPENSES):
+                                <div id="total_activity" style="display: inline-block"></div>
+                            </h4>
+                            <div id="donutchart_activity" style="width: 700px; height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body" align="center">
+                    <br>
+                    <br>
+                    <br>
+                    <h4>BUDGETED AMOUNTS VERSUS EXPENSES</h4>
+                    <div id="chart_div" style="height: 500px"></div>
+                </div>
+
+                <div class="card-body">
+                    <h4>SUMMARY:</h4>
+                    <ui>
+                        {% for details in object_list %}
+                            {% if details.activity == details.budgeted_amount %}
+                                <li style="color: darkgreen">
+                                    In category <b>"{{ details.subcategory.name }}"</b>
+                                    you have already spent as much as you have budgeted.
+                                </li>
+                            {% endif %}
+                            {% if details.activity > details.budgeted_amount %}
+                                <li style="color: red">
+                                    In category <b>"{{ details.subcategory.name }}"</b>
+                                    you spent more money than budgeted!
+                                    ( Budgeted - Expenses = {{ details.budgeted_amount }} - {{ details.activity }} =
+                                    <b>-{{ details.activity|sub:details.budgeted_amount }} )</b>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ui>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <script type="text/javascript">
+        var total_budgeted = 0;
+        var total_activity = 0;
+        {% for details in object_list %}
+            total_budgeted+={{ details.budgeted_amount }}
+            total_activity+={{ details.activity }}
+        {% endfor %}
+        document.getElementById("total_budgeted").innerHTML = total_budgeted;
+        document.getElementById("total_activity").innerHTML = total_activity;
+    </script>
+
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", {packages: ["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Category name', 'Budgeted amount'],
+                {% for details in object_list %}
+                    ['{{ details.subcategory.name }}', {{ details.budgeted_amount }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                titleTextStyle: {fontSize: 20},
+                backgroundColor: {fill: 'transparent'},
+                pieSliceText: 'value',
+                chartArea: {top: 0, left: 0, height: '100%'},
+                legend: {alignment: 'center'}
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donutchart_budgeted'));
+            chart.draw(data, options);
+        }
+    </script>
+
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", {packages: ["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Category name', 'Activity amount'],
+                {% for details in object_list %}
+                    ['{{ details.subcategory.name }}', {{ details.activity }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                pieHole: 0.3,
+                titleTextStyle: {fontSize: 20},
+                backgroundColor: {fill: 'transparent'},
+                pieSliceText: 'value',
+                chartArea: {top: 0, left: 0, height: '100%'},
+                legend: {alignment: 'center'}
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donutchart_activity'));
+            chart.draw(data, options);
+        }
+    </script>
+
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {
+            packages: ['corechart', 'bar']
+        });
+        google.charts.setOnLoadCallback(drawAxisTickColors);
+
+        function drawAxisTickColors() {
+            var data = google.visualization.arrayToDataTable([
+                ['Amount', 'Budgeted amount', 'Expenses'],
+                {% for details in object_list %}
+                    ['{{ details.subcategory.name }}', {{ details.budgeted_amount }}, {{ details.activity }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                titleTextStyle: {fontSize: 20},
+                chartArea: {
+                    top: 20,
+                    bottom: 40,
+                    width: '50%',
+                },
+                colors: ['#392084', 'orange'],
+                hAxis: {
+                    minValue: 0,
+                    textStyle: {
+                        bold: true,
+                        fontSize: 12,
+                        color: '#4d4d4d'
+                    },
+                    titleTextStyle: {
+                        bold: true,
+                        fontSize: 18,
+                        color: '#4d4d4d'
+                    }
+                },
+                vAxis: {
+                    title: 'Categories',
+                    textStyle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#848484'
+                    },
+                    titleTextStyle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#848484'
+                    }
+                }
+            };
+            var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+
+{% endblock javascripts %}

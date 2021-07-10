@@ -380,3 +380,60 @@ def save_ordering(request):
             subcategory.save()
             current_order += 1
     return JsonResponse({"success": "Order updated"})
+
+
+class ReportsListView(ListView):
+    template_name = 'reports.html'
+
+    def _set_current_date(self):
+        if not self.kwargs.get("year", None):
+            self.kwargs["year"] = str(datetime.now().year)
+        if not self.kwargs.get("month", None):
+            self.kwargs["month"] = f"{datetime.now().month:02d}"
+
+    def _this_month(self):
+        selected_date = datetime(
+            year=int(self.kwargs["year"]),
+            month=int(self.kwargs["month"]),
+            day=1
+        )
+        return selected_date
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self._set_current_date()
+        selected_date = self._this_month()
+        context['prev_month'] = prev_month(selected_date)
+        context['next_month'] = next_month(selected_date)
+        return context
+
+    def get_queryset(self, *args, **kwargs):
+        self._set_current_date()
+        selected_date = dateformat.format(
+            self._this_month(),
+            'Y-m-d')
+
+        subcategory_details = SubcategoryDetails.objects.filter(
+            subcategory__category__budget__user=self.request.user,
+            start_date__lte=selected_date,
+            end_date__gte=selected_date,
+        ).order_by(
+            "subcategory__category__name",
+            "subcategory__name"
+        ).annotate(
+            activity=Coalesce(  # Coalesce picks first non-null value
+                Sum('subcategory__transactions__outflow',
+                    filter=Q(
+                        subcategory__transactions__receipt_date__lte=F("end_date"),
+                        subcategory__transactions__receipt_date__gte=F("start_date")
+                    )
+                    ),
+                Decimal(0.00),
+            )
+        ).annotate(
+            available=(
+                    F("budgeted_amount") - F("activity")
+            )
+        )
+
+        return subcategory_details

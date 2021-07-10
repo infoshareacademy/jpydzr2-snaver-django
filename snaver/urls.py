@@ -5,6 +5,7 @@ from django.urls import re_path
 from snaver import views
 # from snaver.views import ChartsListView
 from snaver.views import BudgetView
+from snaver.views import ReportsListView
 from snaver.views import TransactionCreateView
 from snaver.views import TransactionListView
 
@@ -30,4 +31,8 @@ urlpatterns = [
         views.save_ordering,
         name="update-order"
     ),
+    path('reports', ReportsListView.as_view(), name='reports'),
+    re_path(r'^reports/(?P<year>[0-9]{4})(?P<month>[0-9]{2})/$',
+            login_required(ReportsListView.as_view()),
+            name='reports_select'),
 ]
