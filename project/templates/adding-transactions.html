@@ -77,6 +77,8 @@
                 </div>
             </div>
         </div>
+        <button onclick="download_csv_file()" class="btn btn-primary pull-center"
+                title="Export all transactions to csv file with just one clik">Download CSV file</button>
     </div>
 
 {% endblock content %}
@@ -165,4 +167,43 @@
 
         });
     </script>
+
+
+    <script>
+        //create CSV file data in an array
+        var csvFileData = [
+            {% for transaction in transactions.transaction_list %}
+                [
+                    '{{ transaction.receipt_date }}',
+                    '{{ transaction.name }}',
+                    '{{ transaction.payee_name }}',
+                    '{{ transaction.subcategory.name }}',
+                    '{{ transaction.outflow }}',
+                    '{{ transaction.inflow }}',
+                ],
+            {% endfor %}
+        ];
+
+        //create a user-defined function to download CSV file
+        function download_csv_file() {
+
+            //define the heading for each row of the data
+            var csv = 'DATE;DESCRIPTION;PAYEE;CATEGORY;OUTFLOW;INFLOW\n';
+
+            //merge the data with CSV
+            csvFileData.forEach(function (row) {
+                csv += row.join(';');
+                csv += "\n";
+            });
+
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            hiddenElement.target = '_blank';
+
+            //provide the name for the CSV file to be downloaded
+            hiddenElement.download = 'Snaver_transactions.csv';
+            hiddenElement.click();
+        }
+    </script>
+
 {% endblock javascripts %}
