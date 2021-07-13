@@ -9,21 +9,70 @@
 {% block content %}
 
     <div class="budget">
-
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-light shadow-sm">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center ml-3">
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h5">To be budgeted</h2>
-                                {% if to_be_budgeted == 0.00 %}
-                                    <h3 class="mb-1 text-success">{{ to_be_budgeted }}</h3>
-                                {% elif to_be_budgeted < 0.00 %}
-                                    <h3 class="mb-1 text-danger">{{ to_be_budgeted }}</h3>
-                                {% else %}
-                                    <h3 class="mb-1 text-warning">{{ to_be_budgeted }}</h3>
-                                {% endif %}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card border-light shadow-sm">
+                        <div class="card-body">
+                            <div class="row d-block d-xl-flex align-items-center ml-3">
+                                <div class="col-12 col-xl-7 px-xl-0">
+                                    <div class="d-none d-sm-block">
+                                        <h2 class="h5">To be budgeted:</h2>
+                                        {% if to_be_budgeted == 0.00 %}
+                                            <h3 class="mb-1 text-success">{{ to_be_budgeted }}</h3>
+                                        {% elif to_be_budgeted < 0.00 %}
+                                            <h3 class="mb-1 text-danger">{{ to_be_budgeted }}</h3>
+                                        {% else %}
+                                            <h3 class="mb-1 text-warning">{{ to_be_budgeted }}</h3>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-none d-sm-block">
+                                        <br>
+                                        <h2 class="h5">Budgeted:</h2>
+                                        <h3 class="mb-1 text-black">
+                                            <div id="total_budgeted"></div>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="card border-light shadow-sm">
+                        <div class="card-body">
+                            <div class="row d-block d-xl-flex align-items-center ml-3">
+                                <div class="col-12 col-xl-7 px-xl-0">
+                                    <div class="d-none d-sm-block">
+                                        <h2 class="h5">Outflows:</h2>
+                                        <h3 class="mb-1 text-black">
+                                            <div id="total_outflow"></div>
+                                        </h3>
+                                    </div>
+                                    <div class="d-none d-sm-block">
+                                        <br>
+                                        <h2 class="h5">Inflows:</h2>
+                                        <h3 class="mb-1 text-black">
+                                            <div id="total_inflow"></div>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="card border-light shadow-sm">
+                        <div class="card-body">
+                            <div class="row d-block d-xl-flex align-items-center ml-3">
+                                <div class="col-12 col-xl-7 px-xl-0">
+                                    <div class="d-none d-sm-block">
+                                        <h2 class="h5">Available:</h2>
+                                        <h3 class="mb-1 text-black">
+                                            <div id="total_available"></div>
+                                        </h3>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -45,7 +94,6 @@
                                     <div class="h3">
                                         {{ view.kwargs.year }}-{{ view.kwargs.month }}
                                     </div>
-
 
                                     <a class="h3"
                                        href="{% url "budget_select" next_month.year next_month.month|stringformat:"02d" %}">
@@ -119,7 +167,7 @@
                                                     {{ subcategory.available }}
                                                 </td>
                                             {% elif subcategory.available == 0 %}
-                                                <td class="border-0" style="color: green;">
+                                                <td class="border-0" style="color: black;">
                                                     0.00
                                                 </td>
                                             {% else %}
@@ -148,6 +196,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
     <script>
 
@@ -319,6 +368,32 @@
                 $('.budget').load(" .budget");
             });
         });
+    </script>
+
+
+    <script type="text/javascript">
+        let total_budgeted = 0;
+        let total_outflow = 0;
+        let total_inflow = 0;
+        let total_available = 0;
+        const field_with_total_available = document.getElementById('total_available');
+        {% for category in object_list %}
+            {% for subcategory in category.subcategories.all %}
+                total_budgeted += {{ subcategory.budgeted }};
+                total_outflow += {{ subcategory.activity }};
+                total_inflow += {{ subcategory.inflow }};
+                total_available += {{ subcategory.available }};
+            {% endfor %}
+        {% endfor %}
+        if (total_available > 0) {
+            field_with_total_available.className = "mb-1 text-success";
+        } else {
+            field_with_total_available.className = "mb-1 text-danger";
+        }
+        document.getElementById("total_budgeted").innerHTML = total_budgeted.toFixed(2);
+        document.getElementById("total_outflow").innerHTML = total_outflow.toFixed(2);
+        document.getElementById("total_inflow").innerHTML = total_inflow.toFixed(2);
+        document.getElementById("total_available").innerHTML = total_available.toFixed(2);
     </script>
 
 {% endblock javascripts %}
